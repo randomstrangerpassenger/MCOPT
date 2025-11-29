@@ -30,6 +30,18 @@ public class ModifierChain implements GoalModifier {
     }
 
     /**
+     * Add all modifiers from another chain to this chain.
+     * The modifiers are copied, not shared, so each chain remains independent.
+     *
+     * @param other The chain whose modifiers to add
+     */
+    public void addAll(ModifierChain other) {
+        for (ModifierNode node : other.modifiers) {
+            modifiers.add(new ModifierNode(node.modifier));
+        }
+    }
+
+    /**
      * Enable or disable automatic optimization (call frequency reordering).
      *
      * @param enable true to enable optimization

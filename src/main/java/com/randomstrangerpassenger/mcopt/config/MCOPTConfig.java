@@ -87,6 +87,9 @@ public class MCOPTConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_GOLEM_SPAWN_FIX;
     public static final ModConfigSpec.IntValue GOLEM_SPAWN_SEARCH_RANGE;
 
+    // Portal Reliability
+    public static final ModConfigSpec.BooleanValue ENABLE_PASSENGER_PORTAL_FIX;
+
     static {
         BUILDER.comment("MCOPT Client-Side Performance Configuration")
                .push("general");
@@ -261,6 +264,16 @@ public class MCOPTConfig {
                 .comment("How many blocks downward to search for a safe golem spawn surface",
                         "Smaller values stay closer to vanilla behavior; larger values help sky-platform farms")
                 .defineInRange("golemSpawnSearchRange", 6, 1, 32);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Portal behavior reliability")
+               .push("portals");
+
+        ENABLE_PASSENGER_PORTAL_FIX = BUILDER
+                .comment("Carry passengers through Nether/End portals together with their vehicle",
+                        "Prevents riders from being stranded when the mount or vehicle enters a portal first")
+                .define("enablePassengerPortalFix", true);
 
         BUILDER.pop();
 

@@ -50,6 +50,11 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **지붕/장식물 우회**: 높이맵 때문에 지붕 위나 장식 블록에 걸려 스폰이 무산되는 문제 완화
 - **검색 깊이 조절**: 설정을 통해 얼마나 아래로 안전한 지면을 찾을지 선택 가능
 
+#### 포탈 탑승자 동기화 ⭐ NEW
+- **동승자 보호**: 말을 탄 플레이어, 보트/광산수레 승객이 네더·엔드 포탈을 통과할 때 함께 이동
+- **차량 우선 처리 대응**: 포탈 판정이 탈것에만 적용되는 바닐라 로직을 보완해 탑승객이 낙오되지 않음
+- **호환성 우선**: 포탈 처리 흐름만 보강해 다른 포탈/차원 관련 모드와 충돌을 최소화
+
 #### Dynamic Memory Management ⭐ NEW
 - **GC Spike Prevention**: Object pooling for Vec3 and BlockPos to reduce garbage collection pressure
 - **Smart Resource Cleanup**: Automatic cleanup of unused assets on world unload/disconnect
@@ -174,6 +179,13 @@ enableSnowAccumulationFix = true
 enableGolemSpawnFix = true
 # 골렘 스폰 위치를 아래로 최대 몇 블록까지 검색할지 (1-32)
 golemSpawnSearchRange = 6
+```
+
+#### Portals
+```toml
+[general.portals]
+# 탈것이 먼저 포탈에 닿아도 탑승자가 함께 전송되도록 보강
+enablePassengerPortalFix = true
 ```
 
 #### Memory Management

@@ -6,6 +6,7 @@
   "refmap": "mcopt.refmap.json",
   "mixins": [
     "ExperienceOrbMixin",
+    "EntityPortalMixin",
     "MobAIMixin",
     "SnowLayerBlockMixin"
   ],

@@ -50,6 +50,10 @@ public class MCOPT {
         if (MCOPTConfig.ENABLE_MAX_HEALTH_STABILITY.get()) {
             LOGGER.info("Max health stability fix: ENABLED");
         }
+
+        if (MCOPTConfig.ENABLE_ATTRIBUTE_RANGE_EXPANSION.get()) {
+            LOGGER.info("Attribute cap expansion: ENABLED (max {})", MCOPTConfig.ATTRIBUTE_MAX_LIMIT.get());
+        }
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

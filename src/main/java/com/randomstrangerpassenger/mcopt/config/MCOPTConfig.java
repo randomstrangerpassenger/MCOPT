@@ -49,6 +49,10 @@ public class MCOPTConfig {
     // Health Stability
     public static final ModConfigSpec.BooleanValue ENABLE_MAX_HEALTH_STABILITY;
 
+    // Attribute Range Expansion
+    public static final ModConfigSpec.BooleanValue ENABLE_ATTRIBUTE_RANGE_EXPANSION;
+    public static final ModConfigSpec.DoubleValue ATTRIBUTE_MAX_LIMIT;
+
     // Experience Orb Merging Settings
     public static final ModConfigSpec.BooleanValue ENABLE_XP_ORB_MERGING;
     public static final ModConfigSpec.DoubleValue XP_ORB_MERGE_RADIUS;
@@ -298,6 +302,23 @@ public class MCOPTConfig {
                 .comment("Preserve player health percentage when MAX_HEALTH changes",
                         "Prevents losing extra hearts after relogging or when temporary buffs expire")
                 .define("enableMaxHealthStability", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Attribute range safety for heavily-modded equipment")
+               .push("attributes");
+
+        ENABLE_ATTRIBUTE_RANGE_EXPANSION = BUILDER
+                .comment("Allow attribute values to exceed vanilla caps (1024) without being clamped",
+                        "Prevents modded items from losing stats when max health, attack damage, or other attributes go high",
+                        "Keep enabled unless another mod intentionally enforces lower maximums")
+                .define("enableAttributeRangeExpansion", true);
+
+        ATTRIBUTE_MAX_LIMIT = BUILDER
+                .comment("Maximum value used when clamping RangedAttributes",
+                        "Defaults to 1,000,000,000 to cover extreme modded gear while avoiding overflow",
+                        "Set lower if another mod expects tighter bounds")
+                .defineInRange("attributeMaxLimit", 1_000_000_000D, 1.0D, Double.MAX_VALUE);
 
         BUILDER.pop();
 

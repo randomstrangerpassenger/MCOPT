@@ -36,6 +36,10 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Per-Frame Particle Limiting**: Prevents FPS drops from particle explosions
 - **Probabilistic Spawn Reduction**: Maintains visual quality while reducing particle count
 - **Distance-Based Particle Culling**: Skips particles that are too far from the camera
+- **Particle Occlusion Culling** ⭐ NEW: 보이는 파티클만 그려서 GPU 낭비를 줄임
+  - 카메라와 파티클 사이에 불투명 블록이 있으면 렌더를 건너뜀
+  - 기본 3프레임마다 시야 차단을 재검사해 과도한 레이캐스트를 방지
+  - `particles.particleCullingRange`로 검사 거리, `particles.particleOcclusionCheckInterval`로 재검사 주기를 조절
 
 #### Snow Accumulation Optimization ⭐ NEW
 - **Simple Snowy Fix 스타일**: 눈 층이 늘어날 때 불필요한 이웃 알림을 줄여 눈보라 시 청크 리빌드 스파이크 감소

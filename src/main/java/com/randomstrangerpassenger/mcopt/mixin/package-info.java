@@ -79,7 +79,7 @@
  * <h2>Compatibility Notes</h2>
  * <p>All mixins are designed to coexist with other performance mods:</p>
  * <ul>
- *   <li>No @Redirect or @Overwrite - only @Inject</li>
+ *   <li>Prefer @Inject over invasive redirections; use @Redirect only for tight render hooks</li>
  *   <li>Respects other mods' cancellations</li>
  *   <li>Uses unique member names to avoid conflicts</li>
  * </ul>

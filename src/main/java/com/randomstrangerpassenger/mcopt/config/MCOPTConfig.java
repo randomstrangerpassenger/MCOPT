@@ -33,6 +33,9 @@ public class MCOPTConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_PARTICLE_OPTIMIZATIONS;
     public static final ModConfigSpec.IntValue MAX_PARTICLES_PER_FRAME;
     public static final ModConfigSpec.DoubleValue PARTICLE_SPAWN_REDUCTION;
+    public static final ModConfigSpec.BooleanValue ENABLE_PARTICLE_CULLING;
+    public static final ModConfigSpec.IntValue PARTICLE_OCCLUSION_CHECK_INTERVAL;
+    public static final ModConfigSpec.DoubleValue PARTICLE_CULLING_RANGE;
 
     // Memory Management
     public static final ModConfigSpec.BooleanValue ENABLE_MEMORY_OPTIMIZATIONS;
@@ -208,6 +211,21 @@ public class MCOPTConfig {
         PARTICLE_SPAWN_REDUCTION = BUILDER
                 .comment("Reduce particle spawn rate by this factor (0.0 = no reduction, 0.5 = 50% fewer particles)")
                 .defineInRange("particleSpawnReduction", 0.25, 0.0, 0.9);
+
+        ENABLE_PARTICLE_CULLING = BUILDER
+                .comment("Enable occlusion-based particle culling (Recommended: true)")
+                .define("enableParticleCulling", true);
+
+        PARTICLE_OCCLUSION_CHECK_INTERVAL = BUILDER
+                .comment("How many render calls to wait before re-checking if a particle is occluded")
+                .defineInRange("particleOcclusionCheckInterval", 3, 1, 10);
+
+        PARTICLE_CULLING_RANGE = BUILDER
+                .comment(
+                        "Maximum distance (in blocks) to run occlusion checks.",
+                        "Particles beyond this range skip occlusion tests to reduce overhead."
+                )
+                .defineInRange("particleCullingRange", 48.0, 8.0, 160.0);
 
         BUILDER.pop();
 

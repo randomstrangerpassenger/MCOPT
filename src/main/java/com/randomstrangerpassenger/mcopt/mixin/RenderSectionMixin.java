@@ -2,6 +2,7 @@ package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.client.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
@@ -37,9 +38,9 @@ public class RenderSectionMixin {
         }
 
         // Calculate chunk center position (in world coordinates)
-        double chunkCenterX = origin.getX() * 16.0 + 8.0;
-        double chunkCenterY = origin.getY() * 16.0 + 8.0;
-        double chunkCenterZ = origin.getZ() * 16.0 + 8.0;
+        double chunkCenterX = origin.getX() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
+        double chunkCenterY = origin.getY() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
+        double chunkCenterZ = origin.getZ() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
 
         // Use cached frame data for culling decision
         // This avoids redundant camera/config lookups per section

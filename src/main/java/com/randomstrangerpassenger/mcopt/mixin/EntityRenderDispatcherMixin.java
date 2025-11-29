@@ -1,6 +1,7 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.client.Camera;
@@ -71,7 +72,8 @@ public class EntityRenderDispatcherMixin {
 
             // If entity is behind the camera (dot product < 0)
             double dotProduct = viewVector.dot(toEntity);
-            if (dotProduct < -0.5 && distanceSquared > 256) { // 16 blocks
+            if (dotProduct < MCOPTConstants.Performance.BACKFACE_CULLING_DOT_THRESHOLD
+                && distanceSquared > MCOPTConstants.Minecraft.ENTITY_BACKFACE_CULLING_DISTANCE_SQ) {
                 ci.cancel();
             }
         }

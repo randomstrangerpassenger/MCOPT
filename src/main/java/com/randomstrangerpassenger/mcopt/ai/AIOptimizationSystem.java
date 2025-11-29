@@ -2,8 +2,6 @@ package com.randomstrangerpassenger.mcopt.ai;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.MCOPTEntityTypeTags;
-import com.randomstrangerpassenger.mcopt.ai.filters.EntityFilter;
-import com.randomstrangerpassenger.mcopt.ai.filters.FilterResult;
 import com.randomstrangerpassenger.mcopt.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.ai.modifiers.RemoveGoalModifier;

@@ -3,6 +3,7 @@ package com.randomstrangerpassenger.mcopt.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -30,7 +31,6 @@ public class PanicButtonHandler {
     );
 
     private static long lastPanicTime = 0;
-    private static final long PANIC_COOLDOWN_MS = 5000; // 5 seconds cooldown
 
     /**
      * Event handler for registering key mappings.
@@ -69,8 +69,8 @@ public class PanicButtonHandler {
         long currentTime = System.currentTimeMillis();
 
         // Check cooldown
-        if (currentTime - lastPanicTime < PANIC_COOLDOWN_MS) {
-            long remainingCooldown = (PANIC_COOLDOWN_MS - (currentTime - lastPanicTime)) / 1000;
+        if (currentTime - lastPanicTime < MCOPTConstants.Performance.PANIC_BUTTON_COOLDOWN_MS) {
+            long remainingCooldown = (MCOPTConstants.Performance.PANIC_BUTTON_COOLDOWN_MS - (currentTime - lastPanicTime)) / 1000;
             sendFeedback("Memory panic on cooldown (" + remainingCooldown + "s remaining)", true);
             return;
         }
@@ -82,20 +82,20 @@ public class PanicButtonHandler {
         try {
             // Get memory before cleanup
             Runtime runtime = Runtime.getRuntime();
-            long usedBefore = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
+            long usedBefore = (runtime.totalMemory() - runtime.freeMemory()) / MCOPTConstants.UI.BYTES_PER_MB;
 
             // Suggest garbage collection
             System.gc();
 
             // Wait a moment for GC to complete
             try {
-                Thread.sleep(100);
+                Thread.sleep(MCOPTConstants.Performance.GC_WAIT_TIME_MS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
 
             // Get memory after cleanup
-            long usedAfter = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
+            long usedAfter = (runtime.totalMemory() - runtime.freeMemory()) / MCOPTConstants.UI.BYTES_PER_MB;
             long freed = usedBefore - usedAfter;
 
             // Send feedback to player

@@ -2,6 +2,7 @@ package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.client.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -70,7 +71,7 @@ public class LevelRendererMixin {
             mcopt$cameraPosition = camera.getPosition();
 
             // Update shared frame cache for RenderSectionMixin to use
-            double renderDistance = minecraft.options.renderDistance().get() * 16.0;
+            double renderDistance = minecraft.options.renderDistance().get() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
             double verticalStretch = MCOPTConfig.VERTICAL_RENDER_STRETCH.get();
             double horizontalStretch = MCOPTConfig.HORIZONTAL_RENDER_STRETCH.get();
 
@@ -99,12 +100,12 @@ public class LevelRendererMixin {
         SectionPos sectionPos = renderSection.getOrigin();
 
         // Calculate chunk center position (in world coordinates)
-        double chunkCenterX = sectionPos.getX() * 16.0 + 8.0;
-        double chunkCenterY = sectionPos.getY() * 16.0 + 8.0;
-        double chunkCenterZ = sectionPos.getZ() * 16.0 + 8.0;
+        double chunkCenterX = sectionPos.getX() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
+        double chunkCenterY = sectionPos.getY() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
+        double chunkCenterZ = sectionPos.getZ() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
 
         // Calculate elliptical distance
-        double renderDistance = minecraft.options.renderDistance().get() * 16.0;
+        double renderDistance = minecraft.options.renderDistance().get() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
         boolean shouldCull = mcopt$isOutsideEllipsoid(
             mcopt$cameraPosition.x, mcopt$cameraPosition.y, mcopt$cameraPosition.z,
             chunkCenterX, chunkCenterY, chunkCenterZ,

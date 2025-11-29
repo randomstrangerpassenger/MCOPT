@@ -2,6 +2,7 @@ package com.randomstrangerpassenger.mcopt.client;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,7 +21,6 @@ public class MemoryHudRenderer {
 
     private static long lastUpdateTime = 0;
     private static String cachedMemoryText = "";
-    private static final long UPDATE_INTERVAL_MS = 1000; // Update every second
 
     /**
      * Register the memory HUD as a GUI layer.
@@ -56,24 +56,19 @@ public class MemoryHudRenderer {
 
         // Update memory stats periodically
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastUpdateTime > UPDATE_INTERVAL_MS) {
+        if (currentTime - lastUpdateTime > MCOPTConstants.UI.MEMORY_HUD_UPDATE_INTERVAL_MS) {
             updateMemoryStats();
             lastUpdateTime = currentTime;
         }
 
         // Render the HUD text
-        int x = 5; // Left margin
-        int y = 5; // Top margin
-        int color = 0xFFFFFF; // White text
-        int shadowColor = 0x000000; // Black shadow
-
         // Draw with shadow for better readability
         guiGraphics.drawString(
             minecraft.font,
             cachedMemoryText,
-            x,
-            y,
-            color,
+            MCOPTConstants.UI.HUD_MARGIN_X,
+            MCOPTConstants.UI.HUD_MARGIN_Y,
+            MCOPTConstants.UI.COLOR_WHITE,
             true // Enable shadow
         );
     }
@@ -89,8 +84,8 @@ public class MemoryHudRenderer {
         long usedMemory = totalMemory - freeMemory;
 
         // Convert to MB for readability
-        long usedMB = usedMemory / (1024 * 1024);
-        long maxMB = maxMemory / (1024 * 1024);
+        long usedMB = usedMemory / MCOPTConstants.UI.BYTES_PER_MB;
+        long maxMB = maxMemory / MCOPTConstants.UI.BYTES_PER_MB;
 
         // Calculate percentage
         int percentage = (int) ((usedMemory * 100) / maxMemory);

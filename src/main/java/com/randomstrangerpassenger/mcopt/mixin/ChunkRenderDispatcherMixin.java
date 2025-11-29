@@ -14,7 +14,10 @@ import org.spongepowered.asm.mixin.callback.CallbackInfoReturnable;
 @Mixin(SectionRenderDispatcher.class)
 public class ChunkRenderDispatcherMixin {
 
+    /** Tracks the number of chunk updates processed in the current frame */
     private int mcopt$frameUpdateCount = 0;
+
+    /** Stores the timestamp of the last frame to detect frame changes */
     private long mcopt$lastFrameTime = 0;
 
     /**

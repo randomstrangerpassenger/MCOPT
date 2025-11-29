@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.randomstrangerpassenger.mcopt.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "mcopt.refmap.json",
+  "client": [
+    "ChunkRenderDispatcherMixin",
+    "EntityRenderDispatcherMixin",
+    "ParticleEngineMixin",
+    "LevelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

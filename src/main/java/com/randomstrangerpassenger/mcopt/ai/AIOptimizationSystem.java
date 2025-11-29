@@ -6,11 +6,20 @@ import com.randomstrangerpassenger.mcopt.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.ai.modifiers.RemoveGoalModifier;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +65,12 @@ public class AIOptimizationSystem {
             }
 
             MCOPT.LOGGER.info("Initializing AI Optimization System...");
+
+            if (!FeatureToggles.isAiOptimizationsEnabled()) {
+                MCOPT.LOGGER.info("AI optimization disabled due to compatibility settings");
+                initialized = true;
+                return;
+            }
 
             // Initialize math caching if enabled
             if (MCOPTConfig.ENABLE_MATH_CACHE.get()) {
@@ -199,7 +214,11 @@ public class AIOptimizationSystem {
      * @param mob The mob whose goals to process
      */
     public static void processMobGoals(Mob mob) {
-        if (!MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get()) {
+        if (!FeatureToggles.isAiOptimizationsEnabled()) {
+            return;
+        }
+
+        if (!isOptimizationCandidate(mob)) {
             return;
         }
 
@@ -283,6 +302,34 @@ public class AIOptimizationSystem {
         }
 
         return current;
+    }
+
+    private static boolean isOptimizationCandidate(Mob mob) {
+        if (isBossMob(mob)) {
+            return false;
+        }
+
+        if (mob instanceof AbstractVillager) {
+            return false;
+        }
+
+        // Hostile and passive mobs that commonly use AI goals we tweak
+        return mob instanceof Monster
+                || mob instanceof Animal
+                || mob instanceof WaterAnimal
+                || mob instanceof Squid
+                || mob instanceof Frog
+                || mob instanceof AbstractHorse;
+    }
+
+    private static boolean isBossMob(Mob mob) {
+        EntityType<?> type = mob.getType();
+
+        if (type.is(Tags.EntityTypes.BOSSES)) {
+            return true;
+        }
+
+        return mob instanceof EnderDragon;
     }
 
     /**

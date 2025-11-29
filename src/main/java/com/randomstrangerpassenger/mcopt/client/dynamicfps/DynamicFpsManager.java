@@ -2,6 +2,7 @@ package com.randomstrangerpassenger.mcopt.client.dynamicfps;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
@@ -45,7 +46,7 @@ public final class DynamicFpsManager {
             userDefinedFramerate = readUserFramerateLimit();
         }
 
-        if (!MCOPTConfig.ENABLE_DYNAMIC_FPS.get()) {
+        if (!FeatureToggles.isDynamicFpsEnabled()) {
             restoreUserLimitIfNeeded();
             return;
         }
@@ -76,6 +77,11 @@ public final class DynamicFpsManager {
     }
 
     private int resolveTargetLimit(DynamicFpsState state) {
+        if (!MCOPTConfig.ENABLE_BACKGROUND_THROTTLING.get()
+                && (state == DynamicFpsState.UNFOCUSED || state == DynamicFpsState.MINIMIZED)) {
+            return userDefinedFramerate;
+        }
+
         return switch (state) {
             case MINIMIZED -> MCOPTConfig.MINIMIZED_FRAME_RATE_LIMIT.get();
             case UNFOCUSED -> MCOPTConfig.UNFOCUSED_FRAME_RATE_LIMIT.get();

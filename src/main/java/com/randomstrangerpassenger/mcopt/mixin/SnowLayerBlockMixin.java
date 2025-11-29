@@ -1,6 +1,7 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +29,7 @@ public abstract class SnowLayerBlockMixin {
      */
     @Inject(method = "handlePrecipitation", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"), cancellable = true)
     private void mcopt$skipNoopSnowUpdates(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation, CallbackInfo ci) {
-        if (!MCOPTConfig.ENABLE_SNOW_ACCUMULATION_FIX.get()) {
+        if (!FeatureToggles.isBetterSnowLogicEnabled()) {
             return;
         }
 
@@ -57,7 +58,7 @@ public abstract class SnowLayerBlockMixin {
      */
     @ModifyArg(method = "handlePrecipitation", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"), index = 2)
     private int mcopt$reduceNeighborSpam(int originalFlags) {
-        if (!MCOPTConfig.ENABLE_SNOW_ACCUMULATION_FIX.get()) {
+        if (!FeatureToggles.isBetterSnowLogicEnabled()) {
             return originalFlags;
         }
 

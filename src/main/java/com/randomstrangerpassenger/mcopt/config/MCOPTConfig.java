@@ -13,6 +13,7 @@ public class MCOPTConfig {
 
     // Dynamic FPS Settings
     public static final ModConfigSpec.BooleanValue ENABLE_DYNAMIC_FPS;
+    public static final ModConfigSpec.BooleanValue ENABLE_BACKGROUND_THROTTLING;
     public static final ModConfigSpec.IntValue MENU_FRAME_RATE_LIMIT;
     public static final ModConfigSpec.IntValue UNFOCUSED_FRAME_RATE_LIMIT;
     public static final ModConfigSpec.IntValue MINIMIZED_FRAME_RATE_LIMIT;
@@ -40,6 +41,7 @@ public class MCOPTConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_RESOURCE_CLEANUP;
     public static final ModConfigSpec.BooleanValue SHOW_MEMORY_HUD;
     public static final ModConfigSpec.BooleanValue ENABLE_LEAK_GUARD;
+    public static final ModConfigSpec.BooleanValue LEAK_SAFE_CLEANUP;
     public static final ModConfigSpec.IntValue LEAK_CHECK_DELAY_TICKS;
     public static final ModConfigSpec.IntValue LEAK_MEMORY_ALERT_MB;
     public static final ModConfigSpec.BooleanValue LEAK_GC_NUDGE;
@@ -82,6 +84,7 @@ public class MCOPTConfig {
 
     // Weather Optimizations
     public static final ModConfigSpec.BooleanValue ENABLE_SNOW_ACCUMULATION_FIX;
+    public static final ModConfigSpec.BooleanValue ENABLE_BETTER_SNOW_LOGIC;
 
     // Village Safety
     public static final ModConfigSpec.BooleanValue ENABLE_GOLEM_SPAWN_FIX;
@@ -103,6 +106,11 @@ public class MCOPTConfig {
         ENABLE_DYNAMIC_FPS = BUILDER
                 .comment("Enable adaptive FPS limits when the game is in the background or showing menus")
                 .define("enableDynamicFps", true);
+
+        ENABLE_BACKGROUND_THROTTLING = BUILDER
+                .comment("Lower FPS caps when the window is unfocused or minimized",
+                        "Disable to keep full-speed rendering in the background (useful for capture/recording)")
+                .define("enableBackgroundThrottling", true);
 
         MENU_FRAME_RATE_LIMIT = BUILDER
                 .comment("FPS limit while any menu or pause screen is open")
@@ -223,6 +231,11 @@ public class MCOPTConfig {
                 .comment("Enable leak guard (AllTheLeaks-inspired) to watch for stuck client worlds")
                 .define("enableLeakGuard", true);
 
+        LEAK_SAFE_CLEANUP = BUILDER
+                .comment("Attempt gentle cache cleanup only when client threads are idle",
+                        "Prevents aggressive sweeps that can crash active threads")
+                .define("leakSafeCleanup", true);
+
         LEAK_CHECK_DELAY_TICKS = BUILDER
                 .comment("Ticks to wait after unloading a level before reporting potential leaks")
                 .defineInRange("leakCheckDelayTicks", 200, 20, 2400);
@@ -252,6 +265,10 @@ public class MCOPTConfig {
                 .comment("Skip redundant neighbor notifications when snow layers thicken during precipitation",
                         "Reduces chunk rebuild spam during heavy snowfall while keeping visuals identical")
                 .define("enableSnowAccumulationFix", true);
+
+        ENABLE_BETTER_SNOW_LOGIC = BUILDER
+                .comment("Enable MCOPT's improved snow accumulation logic (disable for vanilla behaviour)")
+                .define("enableBetterSnowLogic", true);
 
         BUILDER.pop();
 

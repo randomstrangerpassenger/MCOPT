@@ -3,6 +3,7 @@ package com.randomstrangerpassenger.mcopt.leaks;
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.client.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.neoforged.api.distmarker.Dist;
@@ -32,10 +33,11 @@ public class LeakGuard {
     private static int lastLeakWarningTick = -1;
     private static long lastMemorySample = 0L;
     private static long lastMemoryAlert = 0L;
+    private static boolean safeCleanupPerformed = false;
 
     @SubscribeEvent
     public static void onLevelUnload(LevelEvent.Unload event) {
-        if (!event.getLevel().isClientSide() || !MCOPTConfig.ENABLE_LEAK_GUARD.get()) {
+        if (!event.getLevel().isClientSide() || !FeatureToggles.isLeakGuardEnabled()) {
             return;
         }
 
@@ -46,7 +48,7 @@ public class LeakGuard {
 
     @SubscribeEvent
     public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-        if (!MCOPTConfig.ENABLE_LEAK_GUARD.get()) {
+        if (!FeatureToggles.isLeakGuardEnabled()) {
             return;
         }
 
@@ -58,7 +60,7 @@ public class LeakGuard {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || !MCOPTConfig.ENABLE_LEAK_GUARD.get()) {
+        if (event.phase != TickEvent.Phase.END || !FeatureToggles.isLeakGuardEnabled()) {
             return;
         }
 
@@ -71,6 +73,7 @@ public class LeakGuard {
         ticksSinceUnload = 0;
         gcAttempted = false;
         lastLeakWarningTick = -1;
+        safeCleanupPerformed = false;
 
         // Clear MCOPT-owned static caches so they don't keep world references
         RenderFrameCache.reset();
@@ -105,6 +108,31 @@ public class LeakGuard {
                 MCOPT.LOGGER.warn("Leak guard triggered System.gc() to help release the old level");
             }
         }
+
+        attemptSafeCleanup(oldLevel);
+    }
+
+    private static void attemptSafeCleanup(ClientLevel oldLevel) {
+        if (safeCleanupPerformed || !MCOPTConfig.LEAK_SAFE_CLEANUP.get()) {
+            return;
+        }
+
+        if (Minecraft.getInstance().level == oldLevel) {
+            return;
+        }
+
+        boolean otherThreadsActive = Thread.getAllStackTraces().keySet().stream()
+                .anyMatch(thread -> thread != Thread.currentThread()
+                        && thread.isAlive()
+                        && thread.getState() == Thread.State.RUNNABLE);
+
+        if (otherThreadsActive) {
+            return;
+        }
+
+        safeCleanupPerformed = true;
+        RenderFrameCache.reset();
+        MCOPT.LOGGER.debug("Leak guard: performed idle-thread cleanup for lingering client level");
     }
 
     private static void sampleMemory() {

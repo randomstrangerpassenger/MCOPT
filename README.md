@@ -29,6 +29,8 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **창 상태 기반 FPS 캡**: 플레이 화면, 메뉴, 비활성화, 최소화 상태마다 서로 다른 FPS 제한 적용
 - **원본 값 보존**: 사용자가 지정한 최대 FPS를 기억했다가 포커스를 되찾으면 즉시 복원
 - **완전 독립 구현**: 렌더 스레드의 프레임 한도만 건드려 다른 모드/루프와 충돌 최소화
+- **백그라운드 스로틀링 토글**: `enableBackgroundThrottling`으로 녹화/방송 시 백그라운드에서도 풀 프레임 유지 가능
+- **중복 기능 자동 비활성화**: `dynamic_fps` 또는 `fps_reducer` 모드 감지 시 내장 컨트롤러를 자동으로 끔
 
 #### Particle System Optimization
 - **Per-Frame Particle Limiting**: Prevents FPS drops from particle explosions
@@ -38,12 +40,13 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 #### Snow Accumulation Optimization ⭐ NEW
 - **Simple Snowy Fix 스타일**: 눈 층이 늘어날 때 불필요한 이웃 알림을 줄여 눈보라 시 청크 리빌드 스파이크 감소
 - **Vanilla 호환**: 눈 쌓이는 방식은 그대로 유지하면서 업데이트 플래그만 최소화
+- **바닐라 토글 제공**: `enableBetterSnowLogic`을 끄면 원본 눈 적층 방식 그대로 사용
 
 #### Experience Orb Merging Optimization ⭐ NEW
 - **Automatic Orb Merging**: Combines nearby experience orbs into single entities
 - **Configurable Merge Radius**: Adjust how aggressively orbs merge
 - **Performance Boost**: Significantly reduces lag during mob farming or mining
-- **Fully Compatible**: Works seamlessly with vanilla gameplay mechanics
+- **충돌 회피**: Clumps 모드 감지 시 자동으로 비활성화해 중복 병합을 방지
 
 #### Iron Golem Spawn 안정화 ⭐ NEW
 - **Villager 소환 보정**: 마을 주민이 소환하는 철 골렘의 스폰 위치를 주변 지면으로 부드럽게 내림
@@ -71,7 +74,9 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **월드 전환 메모리 누수 감시**: 언로드된 월드 참조가 남아있는지 실시간 감시
 - **경량 GC 보조 옵션**: 필요 시 단 한 번의 `System.gc()`로 정체된 참조 해제 시도
 - **메모리 사용량 경고**: 설정된 임계치 이상 사용 시 경고 로그 출력
+- **안전 청소**: 실행 중인 스레드를 건드리지 않고 유휴 상태에서만 캐시를 정리
 - **MCOPT 캐시 초기화**: 월드 언로드 시 자체 캐시를 즉시 비워 누수 위험 최소화
+- **타 모드 감지**: AllTheLeaks/MemoryLeakFix가 설치되어 있으면 자동 비활성화
 
 #### Max Health 안정화 ⭐ NEW
 - **비율 기반 체력 유지**: MAX_HEALTH 속성이 변해도 현재 체력 비율을 유지
@@ -87,6 +92,7 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
   - Sheep-specific: EatBlock (wool regrowth)
   - Aquatic mobs: Swimming, Panic, Flee behaviors
 - **Performance Scaling**: Greater improvements with more mobs (100+ entities)
+- **호환성 우선**: 보스/주민은 건드리지 않고, AI-Improvements 모드가 설치되면 자동으로 비활성화
 - **Inspired by AI-Improvements**: Independent implementation with Mixin-based injection
 
 ### ⚙️ Highly Configurable
@@ -111,6 +117,9 @@ After the first launch, a configuration file will be created at `.minecraft/conf
 [general.dynamic_fps]
 # 게임 화면이 아닌 상황에서 FPS를 자동으로 낮춰 CPU/GPU 사용량을 줄입니다
 enableDynamicFps = true
+
+# 백그라운드에서도 풀 FPS를 유지할지 여부 (녹화/방송 시 true -> false 권장)
+enableBackgroundThrottling = true
 
 # 메뉴나 일시정지 화면에서의 FPS 제한 (0은 무제한)
 menuFrameRateLimit = 30
@@ -175,6 +184,8 @@ particleSpawnReduction = 0.25
 [general.weather]
 # 눈 층이 쌓일 때 불필요한 이웃 알림을 줄여 렌더링 스파이크 완화
 enableSnowAccumulationFix = true
+# 바닐라 눈 적층 방식을 유지하고 싶다면 false로 설정
+enableBetterSnowLogic = true
 ```
 
 #### Village
@@ -215,6 +226,8 @@ enableResourceCleanup = true
 showMemoryHud = true
 # Enable AllTheLeaks 스타일 누수 감시
 enableLeakGuard = true
+# 실행 중인 스레드를 방해하지 않고 유휴 상태에서만 청소
+leakSafeCleanup = true
 # 월드 언로드 후 경고를 띄우기까지 대기할 틱 수 (기본: 200틱 = 10초)
 leakCheckDelayTicks = 200
 # 경고를 발생시킬 메모리 사용량(MB)
@@ -239,6 +252,7 @@ enableMaxHealthStability = true
 [general.xp_orb_merging]
 # Enable experience orb merging
 enableXpOrbMerging = true
+# Clumps 모드가 설치되어 있으면 자동으로 비활성화됩니다
 # Merge radius in blocks (0.5-5.0, default: 1.5)
 # Larger radius = more aggressive merging
 xpOrbMergeRadius = 1.5
@@ -252,6 +266,7 @@ xpOrbMergeDelay = 10
 [general.ai_optimizations]
 # Enable AI optimization system
 enableAiOptimizations = true
+# AI-Improvements가 설치되어 있으면 자동으로 비활성화됩니다
 # Enable math function caching (atan2, sin, cos)
 enableMathCache = true
 # Replace mob LookControl with optimized version
@@ -349,6 +364,12 @@ MCOPT is designed with mod compatibility as the highest priority:
 If you experience issues with other mods, try:
 1. Disabling specific optimizations in the config
 2. Reporting the issue on our [GitHub Issues](https://github.com/randomstrangerpassenger/MCOPT/issues) page
+
+### 자동 호환성 보호
+- Clumps 설치 시: 경험치 병합 최적화 자동 비활성화
+- AI-Improvements 설치 시: 엔티티 AI 최적화 자동 비활성화
+- Dynamic FPS/FPS Reducer 설치 시: 내장 동적 FPS 컨트롤러 자동 비활성화
+- AllTheLeaks/MemoryLeakFix 설치 시: Leak Guard 자동 비활성화
 
 ## Building from Source
 

@@ -5,6 +5,7 @@ import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import com.randomstrangerpassenger.mcopt.golem.GolemSpawnFixHandler;
 import com.randomstrangerpassenger.mcopt.client.dynamicfps.DynamicFpsManager;
 import com.randomstrangerpassenger.mcopt.client.bucket.BucketPreviewHandler;
+import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -26,6 +27,10 @@ public class MCOPT {
         // Register configuration
         modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.SPEC);
 
+        // Resolve feature toggles based on config and mod compatibility
+        FeatureToggles.refreshFromConfig();
+        modEventBus.addListener(FeatureToggles::onModConfigReloaded);
+
         // Event handlers
         MinecraftForge.EVENT_BUS.register(new GolemSpawnFixHandler());
 
@@ -40,7 +45,7 @@ public class MCOPT {
         LOGGER.info("MCOPT common setup");
 
         // Initialize AI optimization system
-        if (MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get()) {
+        if (FeatureToggles.isAiOptimizationsEnabled()) {
             event.enqueueWork(() -> {
                 AIOptimizationSystem.init();
                 LOGGER.info("AI optimization system: ENABLED");
@@ -67,15 +72,15 @@ public class MCOPT {
             LOGGER.info("Particle system optimizations: ENABLED");
         }
 
-        if (MCOPTConfig.ENABLE_XP_ORB_MERGING.get()) {
+        if (FeatureToggles.isXpOrbMergingEnabled()) {
             LOGGER.info("Experience orb merging optimizations: ENABLED");
         }
 
-        if (MCOPTConfig.ENABLE_LEAK_GUARD.get()) {
+        if (FeatureToggles.isLeakGuardEnabled()) {
             LOGGER.info("Leak guard (AllTheLeaks-style world leak detection): ENABLED");
         }
 
-        if (MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get()) {
+        if (FeatureToggles.isAiOptimizationsEnabled()) {
             LOGGER.info("AI optimization: ENABLED");
             if (MCOPTConfig.ENABLE_MATH_CACHE.get()) {
                 LOGGER.info("  - Math caching: ENABLED");
@@ -85,7 +90,7 @@ public class MCOPT {
             }
         }
 
-        if (MCOPTConfig.ENABLE_DYNAMIC_FPS.get()) {
+        if (FeatureToggles.isDynamicFpsEnabled()) {
             LOGGER.info("Dynamic FPS controller: ENABLED");
             MinecraftForge.EVENT_BUS.register(new DynamicFpsManager());
         }

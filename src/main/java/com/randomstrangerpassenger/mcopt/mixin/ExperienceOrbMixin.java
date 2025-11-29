@@ -1,6 +1,7 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +35,7 @@ public abstract class ExperienceOrbMixin {
      */
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci) {
-        if (!MCOPTConfig.ENABLE_XP_ORB_MERGING.get()) {
+        if (!FeatureToggles.isXpOrbMergingEnabled()) {
             return;
         }
 

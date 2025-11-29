@@ -1,4 +1,19 @@
 {
   "key.categories.mcopt": "MCOPT Performance Mod",
-  "key.mcopt.memory_panic": "Emergency Memory Cleanup (Panic Button)"
+  "key.mcopt.memory_panic": "Emergency Memory Cleanup (Panic Button)",
+  "tooltip.mcopt.bucket.fluid": "Fluid: %s",
+  "tooltip.mcopt.bucket.entity": "Contained Entity: %s",
+  "tooltip.mcopt.bucket.custom_name": "Name: %s",
+  "tooltip.mcopt.bucket.axolotl": "Axolotl Variant: %s",
+  "tooltip.mcopt.bucket.axolotl.lucy": "Leucistic (Pink)",
+  "tooltip.mcopt.bucket.axolotl.wild": "Wild (Brown)",
+  "tooltip.mcopt.bucket.axolotl.gold": "Gold",
+  "tooltip.mcopt.bucket.axolotl.cyan": "Cyan",
+  "tooltip.mcopt.bucket.axolotl.blue": "Blue (Rare)",
+  "tooltip.mcopt.bucket.tropical_fish": "Pattern: %s on %s (%s)",
+  "text.mcopt.panic_button.title": "Memory Panic Cleanup Triggered!",
+  "text.mcopt.panic_button.subtitle": "Reclaiming resources and running GC...",
+  "text.mcopt.panic_button.cleared": "Cleanup complete: Freed %s MB",
+  "text.mcopt.panic_button.no_change": "Cleanup complete: No memory reclaimed",
+  "text.mcopt.panic_button.failed": "Cleanup failed: %s"
 }

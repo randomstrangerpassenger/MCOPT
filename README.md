@@ -55,6 +55,11 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **차량 우선 처리 대응**: 포탈 판정이 탈것에만 적용되는 바닐라 로직을 보완해 탑승객이 낙오되지 않음
 - **호환성 우선**: 포탈 처리 흐름만 보강해 다른 포탈/차원 관련 모드와 충돌을 최소화
 
+#### 버킷 미리보기 ⭐ NEW
+- **버킷 내용 툴팁**: 버킷에 담긴 액체나 생명체 정보를 툴팁에 표시해 이름만으로는 구분하기 어려운 경우를 해소
+- **희귀 변이 식별**: 열대어 패턴/색상 조합, 아홀로틀 변종 색상을 바로 보여 레어 물고기나 파란 아홀로틀을 놓치지 않음
+- **완전 클라이언트 사이드**: 시각 정보만 추가하므로 서버 권한 없이도 안전하게 사용 가능, 다른 모드 버킷에도 대응
+
 #### Dynamic Memory Management ⭐ NEW
 - **GC Spike Prevention**: Object pooling for Vec3 and BlockPos to reduce garbage collection pressure
 - **Smart Resource Cleanup**: Automatic cleanup of unused assets on world unload/disconnect
@@ -186,6 +191,13 @@ golemSpawnSearchRange = 6
 [general.portals]
 # 탈것이 먼저 포탈에 닿아도 탑승자가 함께 전송되도록 보강
 enablePassengerPortalFix = true
+```
+
+#### Buckets
+```toml
+[general.buckets]
+# 버킷 안의 액체나 엔티티 정보를 툴팁으로 보여줍니다 (클라이언트 전용)
+enableBucketPreview = true
 ```
 
 #### Memory Management

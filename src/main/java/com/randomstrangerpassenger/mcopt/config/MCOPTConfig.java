@@ -90,6 +90,9 @@ public class MCOPTConfig {
     // Portal Reliability
     public static final ModConfigSpec.BooleanValue ENABLE_PASSENGER_PORTAL_FIX;
 
+    // Bucket Introspection
+    public static final ModConfigSpec.BooleanValue ENABLE_BUCKET_PREVIEW;
+
     static {
         BUILDER.comment("MCOPT Client-Side Performance Configuration")
                .push("general");
@@ -274,6 +277,17 @@ public class MCOPTConfig {
                 .comment("Carry passengers through Nether/End portals together with their vehicle",
                         "Prevents riders from being stranded when the mount or vehicle enters a portal first")
                 .define("enablePassengerPortalFix", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Bucket content introspection")
+               .push("buckets");
+
+        ENABLE_BUCKET_PREVIEW = BUILDER
+                .comment("Show detailed tooltips for buckets to reveal stored fluids or entities",
+                        "Helps identify tropical fish variants, axolotl colors, and modded fluids",
+                        "Purely client-side and compatible with other mods")
+                .define("enableBucketPreview", true);
 
         BUILDER.pop();
 

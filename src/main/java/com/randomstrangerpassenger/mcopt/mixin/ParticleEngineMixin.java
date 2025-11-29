@@ -17,13 +17,15 @@ import java.util.Random;
 @Mixin(ParticleEngine.class)
 public class ParticleEngineMixin {
 
-    private int mcopt$particlesThisFrame = 0;
-    private long mcopt$lastFrameTime = 0;
+    // Particle count tracking (reset every tick for frame-accurate limiting)
+    private int mcopt$particlesThisTick = 0;
     private final Random mcopt$random = new Random();
 
     /**
      * Limits particle spawning to prevent FPS drops from excessive particles.
      * Uses probabilistic reduction to maintain visual quality while improving performance.
+     *
+     * Note: Counter is reset in tick() method for proper frame synchronization.
      */
     @Inject(
         method = "createParticle",
@@ -44,17 +46,9 @@ public class ParticleEngineMixin {
             return;
         }
 
-        long currentTime = System.currentTimeMillis();
-
-        // Reset counter each frame
-        if (currentTime != mcopt$lastFrameTime) {
-            mcopt$particlesThisFrame = 0;
-            mcopt$lastFrameTime = currentTime;
-        }
-
-        // Hard limit on particles per frame
+        // Hard limit on particles per tick
         int maxParticles = MCOPTConfig.MAX_PARTICLES_PER_FRAME.get();
-        if (mcopt$particlesThisFrame >= maxParticles) {
+        if (mcopt$particlesThisTick >= maxParticles) {
             ci.cancel();
             return;
         }
@@ -66,25 +60,23 @@ public class ParticleEngineMixin {
             return;
         }
 
-        mcopt$particlesThisFrame++;
+        mcopt$particlesThisTick++;
     }
 
     /**
-     * Optimizes particle tick updates by skipping particles that are far away
-     * or outside the view frustum.
+     * Resets the particle counter at the start of each tick.
+     * This ensures proper synchronization with the game's update cycle.
      */
     @Inject(
         method = "tick",
         at = @At("HEAD")
     )
-    private void optimizeParticleTick(CallbackInfo ci) {
-        // Reset frame counter on tick
-        // This ensures we don't carry over counts between frames
+    private void resetParticleCounter(CallbackInfo ci) {
         if (!MCOPTConfig.ENABLE_PARTICLE_OPTIMIZATIONS.get()) {
             return;
         }
 
-        // Additional tick optimizations can be added here
-        // For example, culling particles that are too far from the camera
+        // Reset counter at the start of each tick for proper frame synchronization
+        mcopt$particlesThisTick = 0;
     }
 }

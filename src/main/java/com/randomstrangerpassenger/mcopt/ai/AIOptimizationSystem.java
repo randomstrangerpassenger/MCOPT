@@ -1,22 +1,21 @@
 package com.randomstrangerpassenger.mcopt.ai;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
+import com.randomstrangerpassenger.mcopt.MCOPTEntityTypeTags;
 import com.randomstrangerpassenger.mcopt.ai.filters.EntityFilter;
 import com.randomstrangerpassenger.mcopt.ai.filters.FilterResult;
 import com.randomstrangerpassenger.mcopt.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.ai.modifiers.RemoveGoalModifier;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.PanicGoal;
-import net.minecraft.world.entity.animal.*;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Main system for AI optimization and goal management.
@@ -32,38 +31,50 @@ import java.util.*;
  */
 public class AIOptimizationSystem {
 
-    private static boolean initialized = false;
+    // Thread-safe initialization flag (volatile ensures visibility across threads)
+    private static volatile boolean initialized = false;
 
-    private static final Map<Class<? extends Mob>, ModifierChain> entityModifiers = new HashMap<>();
+    // Tag-based modifiers for better mod compatibility and data pack support
+    // Using ConcurrentHashMap for thread-safe access during multi-threaded entity processing
+    private static final Map<TagKey<EntityType<?>>, ModifierChain> tagModifiers = new ConcurrentHashMap<>();
     private static final ModifierChain globalModifiers = new ModifierChain();
 
     /**
      * Initialize the AI optimization system.
      * Must be called during FMLCommonSetupEvent.
+     * Thread-safe using double-checked locking pattern.
      */
     public static void init() {
+        // Double-checked locking for thread-safe initialization
         if (initialized) {
-            MCOPT.LOGGER.warn("AIOptimizationSystem already initialized");
+            MCOPT.LOGGER.warn("AIOptimizationSystem already initialized, skipping");
             return;
         }
 
-        MCOPT.LOGGER.info("Initializing AI Optimization System...");
+        synchronized (AIOptimizationSystem.class) {
+            // Check again inside synchronized block
+            if (initialized) {
+                return;
+            }
 
-        // Initialize math caching if enabled
-        if (MCOPTConfig.ENABLE_MATH_CACHE.get()) {
-            MathCache.init();
+            MCOPT.LOGGER.info("Initializing AI Optimization System...");
+
+            // Initialize math caching if enabled
+            if (MCOPTConfig.ENABLE_MATH_CACHE.get()) {
+                MathCache.init();
+            }
+
+            // Setup global modifiers (apply to all mobs)
+            setupGlobalModifiers();
+
+            // Setup entity-specific modifiers
+            setupAnimalModifiers();
+            setupAquaticModifiers();
+
+            initialized = true;
+            MCOPT.LOGGER.info("AI Optimization System initialized with {} global modifiers and {} tag-based modifier groups",
+                    globalModifiers.size(), tagModifiers.size());
         }
-
-        // Setup global modifiers (apply to all mobs)
-        setupGlobalModifiers();
-
-        // Setup entity-specific modifiers
-        setupAnimalModifiers();
-        setupAquaticModifiers();
-
-        initialized = true;
-        MCOPT.LOGGER.info("AI Optimization System initialized with {} global modifiers and {} entity-specific modifier groups",
-                globalModifiers.size(), entityModifiers.size());
     }
 
     /**
@@ -84,72 +95,74 @@ public class AIOptimizationSystem {
     }
 
     /**
-     * Setup modifiers for farm animals (Cow, Pig, Chicken, Sheep).
+     * Setup modifiers for farm animals using tag-based system.
+     * This allows better mod compatibility and data pack customization.
      */
     private static void setupAnimalModifiers() {
-        ModifierChain animalChain = new ModifierChain();
+        // Base farm animal modifiers (applies to all farm animals)
+        ModifierChain farmAnimalChain = new ModifierChain();
 
         // Float goal
-        animalChain.add(new RemoveGoalModifier(
+        farmAnimalChain.add(new RemoveGoalModifier(
                 GoalFilter.matchClassHierarchy(FloatGoal.class),
                 MCOPTConfig.REMOVE_ANIMAL_FLOAT
         ));
 
         // Panic goal
-        animalChain.add(new RemoveGoalModifier(
+        farmAnimalChain.add(new RemoveGoalModifier(
                 GoalFilter.matchClassHierarchy(PanicGoal.class),
                 MCOPTConfig.REMOVE_ANIMAL_PANIC
         ));
 
-        // Breed goal
-        animalChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("Breed"),
+        // Breed goal (class-based filtering for better version compatibility)
+        farmAnimalChain.add(new RemoveGoalModifier(
+                GoalFilter.matchClassHierarchy(BreedGoal.class),
                 MCOPTConfig.REMOVE_ANIMAL_BREED
         ));
 
-        // Tempt goal
-        animalChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("Tempt"),
+        // Tempt goal (class-based filtering for better version compatibility)
+        farmAnimalChain.add(new RemoveGoalModifier(
+                GoalFilter.matchClassHierarchy(TemptGoal.class),
                 MCOPTConfig.REMOVE_ANIMAL_TEMPT
         ));
 
-        // Follow parent goal
-        animalChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("FollowParent"),
+        // Follow parent goal (class-based filtering for better version compatibility)
+        farmAnimalChain.add(new RemoveGoalModifier(
+                GoalFilter.matchClassHierarchy(FollowParentGoal.class),
                 MCOPTConfig.REMOVE_ANIMAL_FOLLOW_PARENT
         ));
 
-        // Random stroll goal
-        animalChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("Stroll"),
+        // Random stroll goal (class-based, catches RandomStrollGoal and WaterAvoidingRandomStrollGoal)
+        farmAnimalChain.add(new RemoveGoalModifier(
+                GoalFilter.matchClassHierarchy(RandomStrollGoal.class),
                 MCOPTConfig.REMOVE_ANIMAL_STROLL
         ));
 
-        // Apply to all farm animal types (except Sheep, which has additional modifiers)
-        entityModifiers.put(Cow.class, animalChain);
-        entityModifiers.put(Pig.class, animalChain);
-        entityModifiers.put(Chicken.class, animalChain);
+        // Apply to all farm animals via tag
+        tagModifiers.put(MCOPTEntityTypeTags.FARM_ANIMALS, farmAnimalChain);
 
-        // Sheep-specific: Create a chain that includes all animal modifiers plus EatBlock removal
-        ModifierChain sheepChain = new ModifierChain();
-        sheepChain.addAll(animalChain);  // Inherit all animal modifiers
-        sheepChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("EatBlock"),
+        // Wool-growing animals (Sheep): Additional modifiers for EatBlock behavior
+        ModifierChain woolGrowingChain = new ModifierChain();
+        woolGrowingChain.addAll(farmAnimalChain);  // Inherit all farm animal modifiers
+        woolGrowingChain.add(new RemoveGoalModifier(
+                GoalFilter.matchClassHierarchy(EatBlockGoal.class),
                 MCOPTConfig.REMOVE_SHEEP_EAT_BLOCK
         ));
 
-        entityModifiers.put(Sheep.class, sheepChain);
+        tagModifiers.put(MCOPTEntityTypeTags.WOOL_GROWING_ANIMALS, woolGrowingChain);
     }
 
     /**
-     * Setup modifiers for aquatic mobs (Fish, Squid).
+     * Setup modifiers for aquatic mobs using tag-based system.
+     * This allows better mod compatibility and data pack customization.
      */
     private static void setupAquaticModifiers() {
         // Fish modifiers
         ModifierChain fishChain = new ModifierChain();
 
+        // Random swimming goal (class-based filtering for better version compatibility)
         fishChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("Swim"),
+                GoalFilter.matchClassHierarchy(RandomSwimmingGoal.class),
                 MCOPTConfig.REMOVE_FISH_SWIM
         ));
 
@@ -158,26 +171,27 @@ public class AIOptimizationSystem {
                 MCOPTConfig.REMOVE_FISH_PANIC
         ));
 
-        // Apply to fish types
-        entityModifiers.put(Cod.class, fishChain);
-        entityModifiers.put(Salmon.class, fishChain);
-        entityModifiers.put(TropicalFish.class, fishChain);
-        entityModifiers.put(Pufferfish.class, fishChain);
+        // Apply to all fish via tag
+        tagModifiers.put(MCOPTEntityTypeTags.FISH, fishChain);
 
         // Squid modifiers
         ModifierChain squidChain = new ModifierChain();
 
+        // Squid's RandomMovementGoal is an inner class, so we use pattern matching as fallback
+        // This provides better compatibility across different Minecraft versions
         squidChain.add(new RemoveGoalModifier(
                 GoalFilter.matchNamePattern("RandomMovement"),
                 MCOPTConfig.REMOVE_SQUID_RANDOM_MOVEMENT
         ));
 
+        // Flee goal (class-based filtering)
         squidChain.add(new RemoveGoalModifier(
-                GoalFilter.matchNamePattern("Flee"),
+                GoalFilter.matchClassHierarchy(FleeGoal.class),
                 MCOPTConfig.REMOVE_SQUID_FLEE
         ));
 
-        entityModifiers.put(Squid.class, squidChain);
+        // Apply to all squid-like entities via tag
+        tagModifiers.put(MCOPTEntityTypeTags.SQUID_LIKE, squidChain);
     }
 
     /**
@@ -225,12 +239,9 @@ public class AIOptimizationSystem {
             // Apply global modifiers
             goal = globalModifiers.modify(mob, goal);
 
-            // Apply entity-specific modifiers if any
+            // Apply tag-based modifiers if any
             if (goal != null) {
-                ModifierChain entityChain = getModifierChain(mob.getClass());
-                if (entityChain != null) {
-                    goal = entityChain.modify(mob, goal);
-                }
+                goal = applyTagModifiers(mob, goal);
             }
 
             // Mark for removal if null
@@ -250,22 +261,30 @@ public class AIOptimizationSystem {
     }
 
     /**
-     * Get the modifier chain for a specific entity class, checking inheritance.
+     * Apply tag-based modifiers to a goal.
+     * Checks if the mob's entity type matches any registered tags.
+     *
+     * @param mob The mob to check tags for
+     * @param goal The goal to modify
+     * @return Modified goal (or null if removed)
      */
-    private static ModifierChain getModifierChain(Class<? extends Mob> mobClass) {
-        // Direct match
-        if (entityModifiers.containsKey(mobClass)) {
-            return entityModifiers.get(mobClass);
-        }
+    private static Goal applyTagModifiers(Mob mob, Goal goal) {
+        EntityType<?> entityType = mob.getType();
+        Goal current = goal;
 
-        // Check inheritance
-        for (Map.Entry<Class<? extends Mob>, ModifierChain> entry : entityModifiers.entrySet()) {
-            if (entry.getKey().isAssignableFrom(mobClass)) {
-                return entry.getValue();
+        // Apply modifiers for each matching tag
+        for (Map.Entry<TagKey<EntityType<?>>, ModifierChain> entry : tagModifiers.entrySet()) {
+            if (entityType.is(entry.getKey())) {
+                current = entry.getValue().modify(mob, current);
+
+                // If goal was removed, stop processing
+                if (current == null) {
+                    return null;
+                }
             }
         }
 
-        return null;
+        return current;
     }
 
     /**

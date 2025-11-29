@@ -9,6 +9,7 @@
   ],
   "client": [
     "ChunkRenderDispatcherMixin",
+    "EntityMovementMixin",
     "EntityRenderDispatcherMixin",
     "ParticleEngineMixin",
     "LevelRendererMixin",

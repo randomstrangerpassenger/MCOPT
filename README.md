@@ -36,6 +36,13 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Performance Boost**: Significantly reduces lag during mob farming or mining
 - **Fully Compatible**: Works seamlessly with vanilla gameplay mechanics
 
+#### Dynamic Memory Management ⭐ NEW
+- **GC Spike Prevention**: Object pooling for Vec3 and BlockPos to reduce garbage collection pressure
+- **Smart Resource Cleanup**: Automatic cleanup of unused assets on world unload/disconnect
+- **Memory HUD**: Real-time RAM usage display in top-left corner
+- **Panic Button (F8)**: Emergency memory cleanup with instant feedback
+- **FerriteCore Compatible**: Designed to complement static memory optimizations
+
 ### ⚙️ Highly Configurable
 
 All optimizations can be toggled and fine-tuned through the mod's configuration file located at `.minecraft/config/mcopt-client.toml`.
@@ -108,6 +115,12 @@ particleSpawnReduction = 0.25
 enableMemoryOptimizations = true
 # Prevent garbage collection during rendering
 aggressiveGCPrevention = true
+# Enable object pooling for Vec3 and BlockPos (reduces GC pressure)
+enableObjectPooling = true
+# Enable aggressive resource cleanup on world unload/disconnect
+enableResourceCleanup = true
+# Show memory usage HUD in top-left corner
+showMemoryHud = true
 ```
 
 #### Experience Orb Merging
@@ -129,10 +142,12 @@ For best performance in singleplayer:
 1. Enable all optimizations in the config
 2. Enable `enableEllipticalRenderDistance` for 10-35% FPS boost
 3. Enable `enableXpOrbMerging` to reduce lag during mob farming/mining
-4. Set `chunkUpdateLimit` to 4-6 for smooth FPS
-5. Set `verticalRenderStretch` to 0.5-0.75 for better performance
-6. Set `entityCullingDistance` based on your render distance (32-64 for normal, 64-128 for high)
-7. Set `particleSpawnReduction` to 0.25-0.5 depending on your preferences
+4. Enable `enableObjectPooling` and `showMemoryHud` to monitor and reduce GC pressure
+5. Use **F8 (Panic Button)** when experiencing sudden lag to free memory
+6. Set `chunkUpdateLimit` to 4-6 for smooth FPS
+7. Set `verticalRenderStretch` to 0.5-0.75 for better performance
+8. Set `entityCullingDistance` based on your render distance (32-64 for normal, 64-128 for high)
+9. Set `particleSpawnReduction` to 0.25-0.5 depending on your preferences
 
 For high-end systems:
 - Increase `chunkUpdateLimit` to 10-15 for faster world updates
@@ -153,6 +168,16 @@ For low-end systems:
 - Set `xpOrbMergeDelay` to 15-20 to reduce CPU overhead
 - Enable `aggressiveChunkCulling`
 
+## Key Bindings
+
+MCOPT adds the following key bindings (configurable in Minecraft's Controls menu):
+
+| Key | Function | Description |
+|-----|----------|-------------|
+| **F8** | Memory Panic Button | Triggers emergency memory cleanup (GC + pool clearing) with 5-second cooldown |
+
+The panic button provides instant feedback via chat message showing how much memory was freed.
+
 ## Compatibility
 
 MCOPT is designed with mod compatibility as the highest priority:
@@ -162,6 +187,7 @@ MCOPT is designed with mod compatibility as the highest priority:
 - Safe to use with content mods (no gameplay changes)
 
 ### Known Compatible Mods
+- **FerriteCore**: Perfect compatibility - MCOPT handles dynamic memory while FerriteCore handles static memory
 - Shader mods (OptiFine alternatives)
 - World generation mods
 - Content and gameplay mods
@@ -216,6 +242,9 @@ The compiled mod will be located in `build/libs/mcopt-1.0.0.jar`
 6. **Calculation caching**: Avoids redundant expensive operations
 7. **Configurable stretch factors**: Fine-tune vertical/horizontal render shapes
 8. **Entity merging**: Combines nearby experience orbs to reduce entity count
+9. **Object pooling**: Reuses Vec3 and BlockPos instances to prevent GC spikes
+10. **Smart resource cleanup**: Aggressive cleanup on world unload/disconnect
+11. **Memory monitoring**: Real-time HUD and emergency cleanup button
 
 ## Contributing
 

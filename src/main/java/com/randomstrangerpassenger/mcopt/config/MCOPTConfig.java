@@ -30,6 +30,9 @@ public class MCOPTConfig {
     // Memory Management
     public static final ModConfigSpec.BooleanValue ENABLE_MEMORY_OPTIMIZATIONS;
     public static final ModConfigSpec.BooleanValue AGGRESSIVE_GC_PREVENTION;
+    public static final ModConfigSpec.BooleanValue ENABLE_OBJECT_POOLING;
+    public static final ModConfigSpec.BooleanValue ENABLE_RESOURCE_CLEANUP;
+    public static final ModConfigSpec.BooleanValue SHOW_MEMORY_HUD;
 
     // Experience Orb Merging Settings
     public static final ModConfigSpec.BooleanValue ENABLE_XP_ORB_MERGING;
@@ -128,6 +131,18 @@ public class MCOPTConfig {
         AGGRESSIVE_GC_PREVENTION = BUILDER
                 .comment("Prevent garbage collection during critical rendering phases")
                 .define("aggressiveGCPrevention", true);
+
+        ENABLE_OBJECT_POOLING = BUILDER
+                .comment("Enable object pooling for Vec3 and BlockPos (Reduces GC pressure)")
+                .define("enableObjectPooling", true);
+
+        ENABLE_RESOURCE_CLEANUP = BUILDER
+                .comment("Enable aggressive resource cleanup on world unload/disconnect")
+                .define("enableResourceCleanup", true);
+
+        SHOW_MEMORY_HUD = BUILDER
+                .comment("Show memory usage HUD in top-left corner")
+                .define("showMemoryHud", true);
 
         BUILDER.pop();
 

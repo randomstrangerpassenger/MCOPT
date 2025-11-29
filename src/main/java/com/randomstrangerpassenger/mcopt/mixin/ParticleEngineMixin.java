@@ -1,11 +1,18 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
+import com.randomstrangerpassenger.mcopt.client.particle.ParticleCullingAccess;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.core.particles.ParticleOptions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.callback.CallbackInfo;
 
 import java.util.Random;
@@ -78,5 +85,39 @@ public class ParticleEngineMixin {
 
         // Reset counter at the start of each tick for proper frame synchronization
         mcopt$particlesThisTick = 0;
+    }
+
+    /**
+     * Performs lightweight occlusion culling before rendering each particle. This mirrors the
+     * "pc" mod behavior by skipping particles hidden behind opaque blocks while preserving
+     * vanilla visuals for visible effects.
+     */
+    @Redirect(
+        method = "render",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/particle/Particle;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;F)V"
+        )
+    )
+    private void mcopt$conditionallyRenderParticle(
+        Particle instance,
+        PoseStack poseStack,
+        BufferSource bufferSource,
+        LightTexture lightTexture,
+        Camera camera,
+        float partialTicks
+    ) {
+        if (!MCOPTConfig.ENABLE_PARTICLE_OPTIMIZATIONS.get() || !MCOPTConfig.ENABLE_PARTICLE_CULLING.get()) {
+            instance.render(poseStack, bufferSource, lightTexture, camera, partialTicks);
+            return;
+        }
+
+        double maxDistance = MCOPTConfig.PARTICLE_CULLING_RANGE.get();
+        int checkInterval = MCOPTConfig.PARTICLE_OCCLUSION_CHECK_INTERVAL.get();
+        ParticleCullingAccess access = (ParticleCullingAccess) instance;
+
+        if (access.mcopt$shouldRender(camera, partialTicks, maxDistance * maxDistance, checkInterval)) {
+            instance.render(poseStack, bufferSource, lightTexture, camera, partialTicks);
+        }
     }
 }

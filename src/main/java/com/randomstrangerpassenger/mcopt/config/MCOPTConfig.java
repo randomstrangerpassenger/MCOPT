@@ -108,6 +108,9 @@ public class MCOPTConfig {
     // Bucket Introspection
     public static final ModConfigSpec.BooleanValue ENABLE_BUCKET_PREVIEW;
 
+    // Fishing Reliability
+    public static final ModConfigSpec.BooleanValue ENABLE_FISHING_ROD_FIX;
+
     // Enchanting Fixes
     public static final ModConfigSpec.BooleanValue FIX_ENCHANTMENT_RNG;
 
@@ -364,6 +367,16 @@ public class MCOPTConfig {
                         "Helps identify tropical fish variants, axolotl colors, and modded fluids",
                         "Purely client-side and compatible with other mods")
                 .define("enableBucketPreview", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Fishing rod reliability")
+               .push("fishing");
+
+        ENABLE_FISHING_ROD_FIX = BUILDER
+                .comment("낚싯찌 참조가 어긋나 낚싯대가 먹통이 되는 상황을 자동으로 정리합니다.",
+                        "플레이어가 차원을 이동하거나 낚싯대를 치웠을 때 남아 있는 찌를 안전하게 제거합니다.")
+                .define("enableFishingRodFix", true);
 
         BUILDER.pop();
 

@@ -83,6 +83,11 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **무차별 링크 방지**: 가까운 다른 포탈로 튕기는 바닐라 경향을 줄여 멀티포탈 거점에서도 안정적인 이동 보장
 - **경량 구현**: Mixin 한 곳에서 입구만 기록하고 도착 시 살짝 재배치하는 방식으로 타 모드와의 충돌 여지 최소화
 
+#### 낚싯대 동기화 복구 (Fishing Rod Fix 영감) ⭐ NEW
+- **고아 낚싯찌 정리**: 낚싯대가 사라지거나 차원을 이동한 뒤 남아버린 낚싯찌를 자동으로 제거해 "낚싯대 먹통" 상태를 해소
+- **거리/청크 안전 검사**: 플레이어와 1024블록 이상 떨어지거나 언로드된 청크에 남은 낚싯찌를 감지해 줄을 정리
+- **완전 서버 사이드**: 로직을 건드리지 않고 참조만 정리해 다른 낚시 확장 모드와도 충돌 없이 동작
+
 #### 버킷 미리보기 ⭐ NEW
 - **버킷 내용 툴팁**: 버킷에 담긴 액체나 생명체 정보를 툴팁에 표시해 이름만으로는 구분하기 어려운 경우를 해소
 - **희귀 변이 식별**: 열대어 패턴/색상 조합, 아홀로틀 변종 색상을 바로 보여 레어 물고기나 파란 아홀로틀을 놓치지 않음
@@ -199,6 +204,13 @@ verticalRenderStretch = 0.75
 horizontalRenderStretch = 1.0
 # Show debug overlay with culled chunk count
 showCulledChunksDebug = false
+```
+
+#### Fishing rod stability
+```toml
+[general.fishing]
+# 낚싯대/찌 참조가 어긋났을 때 자동으로 정리해 재투척을 가능하게 합니다
+enableFishingRodFix = true
 ```
 
 #### Entity Culling

@@ -19,6 +19,7 @@ public final class FeatureToggles {
     private static boolean leakGuardEnabled;
     private static boolean dynamicFpsEnabled;
     private static boolean betterSnowLogicEnabled;
+    private static boolean actionGuardEnabled;
 
     private FeatureToggles() {
     }
@@ -52,6 +53,12 @@ public final class FeatureToggles {
 
         betterSnowLogicEnabled = MCOPTConfig.ENABLE_SNOW_ACCUMULATION_FIX.get()
                 && MCOPTConfig.ENABLE_BETTER_SNOW_LOGIC.get();
+
+        boolean dontDoThatLoaded = modList.isLoaded("dontdothat");
+        actionGuardEnabled = MCOPTConfig.ENABLE_ACTION_GUARD.get() && !dontDoThatLoaded;
+        if (dontDoThatLoaded && MCOPTConfig.ENABLE_ACTION_GUARD.get()) {
+            MCOPT.LOGGER.info("dontDoThat 모드가 감지되었습니다. 중복 적용을 피하기 위해 MCOPT 액션 가드를 비활성화합니다.");
+        }
     }
 
     public static boolean isXpOrbMergingEnabled() {
@@ -72,6 +79,10 @@ public final class FeatureToggles {
 
     public static boolean isBetterSnowLogicEnabled() {
         return betterSnowLogicEnabled;
+    }
+
+    public static boolean isActionGuardEnabled() {
+        return actionGuardEnabled;
     }
 
     public static void onModConfigReloaded(ModConfigEvent event) {

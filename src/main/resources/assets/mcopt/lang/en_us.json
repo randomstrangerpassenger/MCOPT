@@ -15,5 +15,8 @@
   "text.mcopt.panic_button.subtitle": "Reclaiming resources and running GC...",
   "text.mcopt.panic_button.cleared": "Cleanup complete: Freed %s MB",
   "text.mcopt.panic_button.no_change": "Cleanup complete: No memory reclaimed",
-  "text.mcopt.panic_button.failed": "Cleanup failed: %s"
+  "text.mcopt.panic_button.failed": "Cleanup failed: %s",
+  "mcopt.safety.pet_guard": "That creature is tamed! Sneak to attack anyway.",
+  "mcopt.safety.villager_guard": "%s looks harmless. Sneak to swing if you're sure.",
+  "mcopt.safety.decoration_guard": "Decoration protected. Sneak to break intentionally."
 }

@@ -114,6 +114,13 @@ public class MCOPTConfig {
     // Enchanting Fixes
     public static final ModConfigSpec.BooleanValue FIX_ENCHANTMENT_RNG;
 
+    // Safety Guard (dontDoThat-inspired)
+    public static final ModConfigSpec.BooleanValue ENABLE_ACTION_GUARD;
+    public static final ModConfigSpec.BooleanValue GUARD_PROTECT_TAMED_PETS;
+    public static final ModConfigSpec.BooleanValue GUARD_PROTECT_VILLAGERS;
+    public static final ModConfigSpec.BooleanValue GUARD_PROTECT_DECORATIONS;
+    public static final ModConfigSpec.BooleanValue GUARD_ALLOW_SNEAK_BYPASS;
+
     // Clear Lag
     public static final ModConfigSpec.BooleanValue ENABLE_CLEAR_LAG;
     public static final ModConfigSpec.IntValue CLEAR_LAG_INTERVAL_TICKS;
@@ -387,6 +394,32 @@ public class MCOPTConfig {
                 .comment("재료나 라피스가 바뀔 때마다 마법 부여 테이블의 난수 시드를 갱신합니다",
                         "플레이어 고유 시드로 고정된 기존 방식보다 실제 무작위에 가깝게 만들어 예측을 어렵게 합니다")
                 .define("fixEnchantmentRNG", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Accidental-grief guard inspired by dontDoThat")
+               .push("safety_guard");
+
+        ENABLE_ACTION_GUARD = BUILDER
+                .comment("우호적인 엔티티를 잘못 공격하는 것을 막는 안전장치를 활성화합니다",
+                        "dontDoThat 모드와 동일한 자리에 동작하지만 MCOPT만으로도 독립적으로 사용 가능합니다")
+                .define("enableActionGuard", true);
+
+        GUARD_PROTECT_TAMED_PETS = BUILDER
+                .comment("길들여진 늑대/고양이/앵무새 등을 실수로 때리지 못하도록 막습니다")
+                .define("protectTamedPets", true);
+
+        GUARD_PROTECT_VILLAGERS = BUILDER
+                .comment("주민/행상인/좀비 주민을 공격하려고 할 때 한 번 더 확인합니다")
+                .define("protectVillagers", true);
+
+        GUARD_PROTECT_DECORATIONS = BUILDER
+                .comment("아이템 액자, 그림 등 장식용 행잉 엔티티를 한 번에 부수지 못하도록 방지합니다")
+                .define("protectDecorations", true);
+
+        GUARD_ALLOW_SNEAK_BYPASS = BUILDER
+                .comment("웅크린 상태로 공격하면 보호된 엔티티에도 피해를 줄 수 있도록 예외를 둡니다")
+                .define("allowSneakBypass", true);
 
         BUILDER.pop();
 

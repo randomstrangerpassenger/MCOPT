@@ -83,6 +83,12 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **무차별 링크 방지**: 가까운 다른 포탈로 튕기는 바닐라 경향을 줄여 멀티포탈 거점에서도 안정적인 이동 보장
 - **경량 구현**: Mixin 한 곳에서 입구만 기록하고 도착 시 살짝 재배치하는 방식으로 타 모드와의 충돌 여지 최소화
 
+#### dontDoThat 스타일 안전장치 ⭐ NEW
+- **길들여진 애완동물 보호**: 늑대·고양이·앵무새 등 길들여진 동물을 실수로 때리면 공격을 취소하고 경고를 표시
+- **주민/행상인 보호**: 우호적인 마을 주민을 때릴 때 한 번 더 확인해 갑작스런 평판 하락을 방지
+- **장식물 보호**: 아이템 액자나 그림이 한 방에 부서지지 않도록 막아두고, 원할 경우 웅크린 상태로만 파괴 허용
+- **호환성 우선**: 기존 dontDoThat 모드가 설치되어 있으면 자동으로 비활성화해 중복 기능을 피함
+
 #### 낚싯대 동기화 복구 (Fishing Rod Fix 영감) ⭐ NEW
 - **고아 낚싯찌 정리**: 낚싯대가 사라지거나 차원을 이동한 뒤 남아버린 낚싯찌를 자동으로 제거해 "낚싯대 먹통" 상태를 해소
 - **거리/청크 안전 검사**: 플레이어와 1024블록 이상 떨어지거나 언로드된 청크에 남은 낚싯찌를 감지해 줄을 정리
@@ -276,6 +282,25 @@ golemSpawnSearchRange = 6
 enablePassengerPortalFix = true
 # 차원별 마지막 포탈 좌표를 기억해 되돌아올 때 같은 포탈로 배정
 enablePortalRedirect = true
+```
+
+#### Safety Guard (dontDoThat 스타일)
+```toml
+[general.safety_guard]
+# 길들여진 동물, 주민, 장식물을 실수로 공격하는 것을 막습니다
+enableActionGuard = true
+
+# 길들여진 애완동물을 보호합니다
+protectTamedPets = true
+
+# 주민/행상인을 보호합니다
+protectVillagers = true
+
+# 아이템 액자/그림 등 장식 엔티티를 보호합니다 (액자 안이 비어 있으면 자동 허용)
+protectDecorations = true
+
+# 웅크린 상태(Shift)에서는 보호를 우회할 수 있도록 허용합니다
+allowSneakBypass = true
 ```
 
 #### Buckets

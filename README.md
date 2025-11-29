@@ -43,6 +43,17 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Panic Button (F8)**: Emergency memory cleanup with instant feedback
 - **FerriteCore Compatible**: Designed to complement static memory optimizations
 
+#### Entity AI Optimization ⭐ NEW
+- **Math Function Caching**: Pre-computed atan2, sin, cos lookup tables for AI calculations
+- **Optimized LookControl**: Replaces mob LookControl with cached math version
+- **Selective AI Goal Removal**: Configure which AI behaviors to disable per mob type
+  - Common goals: LookAtPlayer, RandomLookAround
+  - Animal behaviors: Float, Panic, Breed, Tempt, FollowParent, Stroll
+  - Sheep-specific: EatBlock (wool regrowth)
+  - Aquatic mobs: Swimming, Panic, Flee behaviors
+- **Performance Scaling**: Greater improvements with more mobs (100+ entities)
+- **Inspired by AI-Improvements**: Independent implementation with Mixin-based injection
+
 ### ⚙️ Highly Configurable
 
 All optimizations can be toggled and fine-tuned through the mod's configuration file located at `.minecraft/config/mcopt-client.toml`.
@@ -136,6 +147,43 @@ xpOrbMergeRadius = 1.5
 xpOrbMergeDelay = 10
 ```
 
+#### Entity AI Optimization
+```toml
+[general.ai_optimizations]
+# Enable AI optimization system
+enableAiOptimizations = true
+# Enable math function caching (atan2, sin, cos)
+enableMathCache = true
+# Replace mob LookControl with optimized version
+enableOptimizedLookControl = true
+
+[general.ai_optimizations.common_goals]
+# Remove LookAtPlayerGoal from all mobs
+removeLookAtPlayer = false
+# Remove RandomLookAroundGoal from all mobs
+removeRandomLookAround = false
+
+[general.ai_optimizations.animal_goals]
+# Animal AI goal removal (applies to Cow, Pig, Chicken, Sheep)
+removeFloat = false        # WARNING: Animals may not swim!
+removePanic = false        # Animals won't flee when attacked
+removeBreed = false        # Disables breeding
+removeTempt = false        # Won't follow food
+removeFollowParent = false # Babies won't follow parents
+removeStroll = false       # Major performance gain, makes animals static
+
+[general.ai_optimizations.sheep_goals]
+# Sheep-specific AI goal removal
+removeEatBlock = false     # Sheep won't eat grass to regrow wool
+
+[general.ai_optimizations.aquatic_goals]
+# Aquatic mob AI goal removal
+removeFishSwim = false         # Fish won't swim randomly
+removeFishPanic = false        # Fish won't flee
+removeSquidRandomMovement = false  # Major ocean performance gain
+removeSquidFlee = false        # Squids won't flee from players
+```
+
 ## Performance Tips
 
 For best performance in singleplayer:
@@ -143,11 +191,13 @@ For best performance in singleplayer:
 2. Enable `enableEllipticalRenderDistance` for 10-35% FPS boost
 3. Enable `enableXpOrbMerging` to reduce lag during mob farming/mining
 4. Enable `enableObjectPooling` and `showMemoryHud` to monitor and reduce GC pressure
-5. Use **F8 (Panic Button)** when experiencing sudden lag to free memory
-6. Set `chunkUpdateLimit` to 4-6 for smooth FPS
-7. Set `verticalRenderStretch` to 0.5-0.75 for better performance
-8. Set `entityCullingDistance` based on your render distance (32-64 for normal, 64-128 for high)
-9. Set `particleSpawnReduction` to 0.25-0.5 depending on your preferences
+5. Enable `enableAiOptimizations` for better performance with many mobs
+6. Use **F8 (Panic Button)** when experiencing sudden lag to free memory
+7. Set `chunkUpdateLimit` to 4-6 for smooth FPS
+8. Set `verticalRenderStretch` to 0.5-0.75 for better performance
+9. Set `entityCullingDistance` based on your render distance (32-64 for normal, 64-128 for high)
+10. Set `particleSpawnReduction` to 0.25-0.5 depending on your preferences
+11. For mob farms: Enable `removeStroll`, `removeRandomLookAround` for major performance gains
 
 For high-end systems:
 - Increase `chunkUpdateLimit` to 10-15 for faster world updates
@@ -167,6 +217,8 @@ For low-end systems:
 - Set `xpOrbMergeRadius` to 2.5-5.0 for maximum orb reduction
 - Set `xpOrbMergeDelay` to 15-20 to reduce CPU overhead
 - Enable `aggressiveChunkCulling`
+- **AI Optimizations for low-end**: Enable `removeStroll`, `removeRandomLookAround`, `removeBreed` for passive mobs
+- For ocean biomes: Enable `removeSquidRandomMovement` and `removeFishSwim` for major gains
 
 ## Key Bindings
 
@@ -245,6 +297,9 @@ The compiled mod will be located in `build/libs/mcopt-1.0.0.jar`
 9. **Object pooling**: Reuses Vec3 and BlockPos instances to prevent GC spikes
 10. **Smart resource cleanup**: Aggressive cleanup on world unload/disconnect
 11. **Memory monitoring**: Real-time HUD and emergency cleanup button
+12. **Math caching**: Pre-computed trigonometric lookup tables for AI calculations
+13. **AI goal filtering**: Selective removal of expensive AI behaviors
+14. **Optimized mob controllers**: Replacement of vanilla LookControl with cached version
 
 ## Contributing
 
@@ -262,7 +317,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Inspired by optimization strategies from Sodium, Lithium, and Embeddium
+- Inspired by optimization strategies from:
+  - **Sodium, Lithium, Embeddium**: Rendering and logic optimizations
+  - **AI-Improvements**: Entity AI optimization concepts
+  - **FerriteCore**: Memory optimization approaches
 - All implementations are original and independent
 - Thanks to the NeoForge team for the excellent modding platform
 

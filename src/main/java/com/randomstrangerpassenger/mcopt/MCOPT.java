@@ -1,5 +1,6 @@
 package com.randomstrangerpassenger.mcopt;
 
+import com.randomstrangerpassenger.mcopt.ai.AIOptimizationSystem;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -30,6 +31,14 @@ public class MCOPT {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("MCOPT common setup");
+
+        // Initialize AI optimization system
+        if (MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get()) {
+            event.enqueueWork(() -> {
+                AIOptimizationSystem.init();
+                LOGGER.info("AI optimization system: ENABLED");
+            });
+        }
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -49,6 +58,16 @@ public class MCOPT {
 
         if (MCOPTConfig.ENABLE_XP_ORB_MERGING.get()) {
             LOGGER.info("Experience orb merging optimizations: ENABLED");
+        }
+
+        if (MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get()) {
+            LOGGER.info("AI optimization: ENABLED");
+            if (MCOPTConfig.ENABLE_MATH_CACHE.get()) {
+                LOGGER.info("  - Math caching: ENABLED");
+            }
+            if (MCOPTConfig.ENABLE_OPTIMIZED_LOOK_CONTROL.get()) {
+                LOGGER.info("  - Optimized LookControl: ENABLED");
+            }
         }
     }
 }

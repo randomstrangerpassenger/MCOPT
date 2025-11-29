@@ -39,6 +39,32 @@ public class MCOPTConfig {
     public static final ModConfigSpec.DoubleValue XP_ORB_MERGE_RADIUS;
     public static final ModConfigSpec.IntValue XP_ORB_MERGE_DELAY;
 
+    // AI Optimization Settings
+    public static final ModConfigSpec.BooleanValue ENABLE_AI_OPTIMIZATIONS;
+    public static final ModConfigSpec.BooleanValue ENABLE_MATH_CACHE;
+    public static final ModConfigSpec.BooleanValue ENABLE_OPTIMIZED_LOOK_CONTROL;
+
+    // AI Goal Removal - Common Settings
+    public static final ModConfigSpec.BooleanValue REMOVE_LOOK_AT_PLAYER;
+    public static final ModConfigSpec.BooleanValue REMOVE_RANDOM_LOOK_AROUND;
+
+    // AI Goal Removal - Animals (Cow, Pig, Chicken, Sheep)
+    public static final ModConfigSpec.BooleanValue REMOVE_ANIMAL_FLOAT;
+    public static final ModConfigSpec.BooleanValue REMOVE_ANIMAL_PANIC;
+    public static final ModConfigSpec.BooleanValue REMOVE_ANIMAL_BREED;
+    public static final ModConfigSpec.BooleanValue REMOVE_ANIMAL_TEMPT;
+    public static final ModConfigSpec.BooleanValue REMOVE_ANIMAL_FOLLOW_PARENT;
+    public static final ModConfigSpec.BooleanValue REMOVE_ANIMAL_STROLL;
+
+    // AI Goal Removal - Sheep Specific
+    public static final ModConfigSpec.BooleanValue REMOVE_SHEEP_EAT_BLOCK;
+
+    // AI Goal Removal - Aquatic Mobs (Fish, Squid)
+    public static final ModConfigSpec.BooleanValue REMOVE_FISH_SWIM;
+    public static final ModConfigSpec.BooleanValue REMOVE_FISH_PANIC;
+    public static final ModConfigSpec.BooleanValue REMOVE_SQUID_RANDOM_MOVEMENT;
+    public static final ModConfigSpec.BooleanValue REMOVE_SQUID_FLEE;
+
     static {
         BUILDER.comment("MCOPT Client-Side Performance Configuration")
                .push("general");
@@ -166,6 +192,113 @@ public class MCOPTConfig {
                         "20 ticks = 1 second")
                 .defineInRange("xpOrbMergeDelay", 10, 1, 40);
 
+        BUILDER.pop();
+
+        BUILDER.comment("Entity AI Optimizations")
+               .push("ai_optimizations");
+
+        ENABLE_AI_OPTIMIZATIONS = BUILDER
+                .comment("Enable AI optimization system (Recommended: true)",
+                        "Optimizes entity AI performance through math caching and selective AI goal removal",
+                        "Based on concepts from AI-Improvements mod, but with independent implementation")
+                .define("enableAiOptimizations", true);
+
+        ENABLE_MATH_CACHE = BUILDER
+                .comment("Enable math function caching (atan2, sin, cos)",
+                        "Significantly improves AI rotation calculations with minimal memory cost",
+                        "This was a major optimization in Minecraft 1.7-1.9, still provides small gains in 1.21+")
+                .define("enableMathCache", true);
+
+        ENABLE_OPTIMIZED_LOOK_CONTROL = BUILDER
+                .comment("Replace mob LookControl with optimized version",
+                        "Uses cached math functions for rotation calculations",
+                        "Requires enableMathCache to be true for maximum benefit")
+                .define("enableOptimizedLookControl", true);
+
+        BUILDER.comment("Common AI Goal Removal")
+               .push("common_goals");
+
+        REMOVE_LOOK_AT_PLAYER = BUILDER
+                .comment("Remove LookAtPlayerGoal from all mobs",
+                        "Prevents mobs from looking at players (improves performance, affects aesthetics)")
+                .define("removeLookAtPlayer", false);
+
+        REMOVE_RANDOM_LOOK_AROUND = BUILDER
+                .comment("Remove RandomLookAroundGoal from all mobs",
+                        "Prevents mobs from randomly looking around (improves performance, affects aesthetics)")
+                .define("removeRandomLookAround", false);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Animal AI Goal Removal (applies to Cow, Pig, Chicken, Sheep)")
+               .push("animal_goals");
+
+        REMOVE_ANIMAL_FLOAT = BUILDER
+                .comment("Remove FloatGoal from animals",
+                        "WARNING: Animals may not swim properly if disabled!")
+                .define("removeFloat", false);
+
+        REMOVE_ANIMAL_PANIC = BUILDER
+                .comment("Remove PanicGoal from animals",
+                        "Animals won't run away when attacked (improves performance, affects gameplay)")
+                .define("removePanic", false);
+
+        REMOVE_ANIMAL_BREED = BUILDER
+                .comment("Remove BreedGoal from animals",
+                        "Disables animal breeding (major performance improvement if you don't breed animals)")
+                .define("removeBreed", false);
+
+        REMOVE_ANIMAL_TEMPT = BUILDER
+                .comment("Remove TemptGoal from animals",
+                        "Animals won't follow players holding food (improves performance)")
+                .define("removeTempt", false);
+
+        REMOVE_ANIMAL_FOLLOW_PARENT = BUILDER
+                .comment("Remove FollowParentGoal from animals",
+                        "Baby animals won't follow parents (improves performance)")
+                .define("removeFollowParent", false);
+
+        REMOVE_ANIMAL_STROLL = BUILDER
+                .comment("Remove RandomStrollGoal from animals",
+                        "Animals won't wander randomly (major performance improvement, makes animals static)")
+                .define("removeStroll", false);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Sheep-Specific AI Goal Removal")
+               .push("sheep_goals");
+
+        REMOVE_SHEEP_EAT_BLOCK = BUILDER
+                .comment("Remove EatBlockGoal from sheep",
+                        "Sheep won't eat grass to regrow wool (improves performance)")
+                .define("removeEatBlock", false);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Aquatic Mob AI Goal Removal (Fish and Squid)")
+               .push("aquatic_goals");
+
+        REMOVE_FISH_SWIM = BUILDER
+                .comment("Remove RandomSwimmingGoal from fish",
+                        "Fish won't swim randomly (improves performance in ocean biomes)")
+                .define("removeFishSwim", false);
+
+        REMOVE_FISH_PANIC = BUILDER
+                .comment("Remove PanicGoal from fish",
+                        "Fish won't flee when attacked (improves performance)")
+                .define("removeFishPanic", false);
+
+        REMOVE_SQUID_RANDOM_MOVEMENT = BUILDER
+                .comment("Remove SquidRandomMovementGoal from squids",
+                        "Squids won't move randomly (major performance improvement in ocean biomes)")
+                .define("removeSquidRandomMovement", false);
+
+        REMOVE_SQUID_FLEE = BUILDER
+                .comment("Remove SquidFleeGoal from squids",
+                        "Squids won't flee from players (improves performance)")
+                .define("removeSquidFlee", false);
+
+        BUILDER.pop();
         BUILDER.pop();
         BUILDER.pop();
 

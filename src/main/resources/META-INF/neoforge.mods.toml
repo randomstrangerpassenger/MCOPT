@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "mcopt"
+version = "${file.jarVersion}"
+displayName = "MCOPT"
+authors = "randomstrangerpassenger"
+description = '''
+Performance optimization mod for Minecraft focused on client-side improvements.
+Provides various optimizations for chunk rendering, entity culling, and particle systems
+while maintaining compatibility with other mods.
+'''
+displayURL = "https://github.com/randomstrangerpassenger/MCOPT"
+
+[[mixins]]
+config = "mcopt.mixins.json"
+
+[[dependencies.mcopt]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.mcopt]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"

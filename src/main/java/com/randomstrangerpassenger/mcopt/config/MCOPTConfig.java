@@ -100,6 +100,9 @@ public class MCOPTConfig {
     // Bucket Introspection
     public static final ModConfigSpec.BooleanValue ENABLE_BUCKET_PREVIEW;
 
+    // Enchanting Fixes
+    public static final ModConfigSpec.BooleanValue FIX_ENCHANTMENT_RNG;
+
     static {
         BUILDER.comment("MCOPT Client-Side Performance Configuration")
                .push("general");
@@ -309,6 +312,16 @@ public class MCOPTConfig {
                         "Helps identify tropical fish variants, axolotl colors, and modded fluids",
                         "Purely client-side and compatible with other mods")
                 .define("enableBucketPreview", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Enchanting behavior fixes")
+               .push("enchanting");
+
+        FIX_ENCHANTMENT_RNG = BUILDER
+                .comment("재료나 라피스가 바뀔 때마다 마법 부여 테이블의 난수 시드를 갱신합니다",
+                        "플레이어 고유 시드로 고정된 기존 방식보다 실제 무작위에 가깝게 만들어 예측을 어렵게 합니다")
+                .define("fixEnchantmentRNG", true);
 
         BUILDER.pop();
 

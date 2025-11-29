@@ -63,6 +63,11 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **희귀 변이 식별**: 열대어 패턴/색상 조합, 아홀로틀 변종 색상을 바로 보여 레어 물고기나 파란 아홀로틀을 놓치지 않음
 - **완전 클라이언트 사이드**: 시각 정보만 추가하므로 서버 권한 없이도 안전하게 사용 가능, 다른 모드 버킷에도 대응
 
+#### 마법 부여 난수 리롤 ⭐ NEW
+- **진짜 무작위화**: 테이블 슬롯(재료/라피스)이 바뀔 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
+- **간단한 설정 토글**: `fixEnchantmentRNG` 옵션으로 기존 바닐라식(플레이어 고정 시드)과 자유롭게 전환
+- **비침습적 구현**: UI/요구 레벨 등 원본 동작은 그대로 유지한 채 난수만 교체해 다른 모드와의 충돌을 최소화
+
 #### Dynamic Memory Management ⭐ NEW
 - **GC Spike Prevention**: Object pooling for Vec3 and BlockPos to reduce garbage collection pressure
 - **Smart Resource Cleanup**: Automatic cleanup of unused assets on world unload/disconnect
@@ -214,6 +219,13 @@ enablePassengerPortalFix = true
 [general.buckets]
 # 버킷 안의 액체나 엔티티 정보를 툴팁으로 보여줍니다 (클라이언트 전용)
 enableBucketPreview = true
+```
+
+#### Enchanting
+```toml
+[general.enchanting]
+# 테이블 슬롯이 변할 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
+fixEnchantmentRNG = true
 ```
 
 #### Memory Management

@@ -1,5 +1,6 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
+import com.randomstrangerpassenger.mcopt.client.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,7 @@ public class RenderSectionMixin {
 
     /**
      * Checks if this chunk section should be culled based on elliptical distance from camera.
+     * Uses the shared RenderFrameCache to avoid redundant per-section calculations.
      */
     @Unique
     private boolean mcopt$shouldCullSection() {
@@ -34,55 +36,14 @@ public class RenderSectionMixin {
             return false;
         }
 
-        Minecraft minecraft = Minecraft.getInstance();
-        Camera camera = minecraft.gameRenderer.getMainCamera();
-        if (camera == null) {
-            return false;
-        }
-
-        Vec3 cameraPos = camera.getPosition();
-
         // Calculate chunk center position (in world coordinates)
         double chunkCenterX = origin.getX() * 16.0 + 8.0;
         double chunkCenterY = origin.getY() * 16.0 + 8.0;
         double chunkCenterZ = origin.getZ() * 16.0 + 8.0;
 
-        // Get render distance
-        double renderDistance = minecraft.options.renderDistance().get() * 16.0;
-
-        // Check if outside ellipsoid
-        return mcopt$isOutsideEllipsoid(
-            cameraPos.x, cameraPos.y, cameraPos.z,
-            chunkCenterX, chunkCenterY, chunkCenterZ,
-            renderDistance
-        );
-    }
-
-    /**
-     * Calculates if a position is outside the render ellipsoid.
-     * Uses configurable vertical and horizontal stretch factors.
-     */
-    @Unique
-    private boolean mcopt$isOutsideEllipsoid(
-        double camX, double camY, double camZ,
-        double chunkX, double chunkY, double chunkZ,
-        double baseRenderDistance
-    ) {
-        // Get stretch configuration
-        double verticalStretch = MCOPTConfig.VERTICAL_RENDER_STRETCH.get();
-        double horizontalStretch = MCOPTConfig.HORIZONTAL_RENDER_STRETCH.get();
-
-        // Calculate distance components with stretch factors
-        double dx = (camX - chunkX) * horizontalStretch;
-        double dy = (camY - chunkY) * verticalStretch;
-        double dz = (camZ - chunkZ) * horizontalStretch;
-
-        // Calculate squared distance in ellipsoid space
-        double distanceSquared = dx * dx + dy * dy + dz * dz;
-        double renderDistanceSquared = baseRenderDistance * baseRenderDistance;
-
-        // If distance is greater than render distance, cull this chunk
-        return distanceSquared > renderDistanceSquared;
+        // Use cached frame data for culling decision
+        // This avoids redundant camera/config lookups per section
+        return RenderFrameCache.shouldCullChunk(chunkCenterX, chunkCenterY, chunkCenterZ);
     }
 
     /**

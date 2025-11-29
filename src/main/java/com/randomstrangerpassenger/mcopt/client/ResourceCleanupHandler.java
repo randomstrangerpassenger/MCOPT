@@ -74,12 +74,10 @@ public class ResourceCleanupHandler {
                 MCOPT.LOGGER.debug("Level renderer state checked");
             }
 
-            // Suggest garbage collection (only if aggressive GC is enabled)
-            if (MCOPTConfig.AGGRESSIVE_GC_PREVENTION.get()) {
-                // Paradoxically, we suggest GC during cleanup to free memory immediately
-                System.gc();
-                MCOPT.LOGGER.debug("Garbage collection suggested");
-            }
+            // Note: We no longer force garbage collection here as it can cause lag spikes.
+            // Modern JVM garbage collectors (especially in Java 21) are efficient enough
+            // to handle memory cleanup automatically. Manual GC is only available via
+            // the panic button (F8) for emergency debugging purposes.
 
             MCOPT.LOGGER.info("Memory cleanup completed successfully");
 

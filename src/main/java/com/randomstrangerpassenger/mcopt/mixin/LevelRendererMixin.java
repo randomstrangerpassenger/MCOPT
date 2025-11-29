@@ -1,5 +1,6 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
+import com.randomstrangerpassenger.mcopt.client.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -36,43 +37,20 @@ public class LevelRendererMixin {
     private Minecraft minecraft;
 
     @Unique
-    private Frustum mcopt$cachedFrustum;
-    @Unique
-    private long mcopt$lastFrustumUpdate = 0;
-    @Unique
-    private static final long FRUSTUM_CACHE_TIME = 16; // ~1 frame at 60fps
-
-    @Unique
     private int mcopt$culledChunksThisFrame = 0;
     @Unique
     private int mcopt$totalChunksThisFrame = 0;
     @Unique
     private Vec3 mcopt$cameraPosition;
 
-    /**
-     * Caches frustum calculations to reduce CPU overhead.
-     * The frustum doesn't change every tick, so we can safely cache it briefly.
-     */
-    @Inject(
-        method = "prepareCullFrustum",
-        at = @At("HEAD")
-    )
-    private void cacheFrustumCalculation(CallbackInfo ci) {
-        if (!MCOPTConfig.AGGRESSIVE_CHUNK_CULLING.get()) {
-            return;
-        }
-
-        long currentTime = System.currentTimeMillis();
-
-        // Update cached frustum only if enough time has passed
-        if (currentTime - mcopt$lastFrustumUpdate > FRUSTUM_CACHE_TIME) {
-            mcopt$lastFrustumUpdate = currentTime;
-            // Frustum will be recalculated
-        }
-    }
+    // Note: Frustum caching was removed because:
+    // 1. The frustum changes every frame with camera movement
+    // 2. Minecraft's rendering pipeline already optimizes frustum culling
+    // 3. The previous implementation was incomplete and added unnecessary overhead
 
     /**
      * Initialize per-frame tracking before rendering starts.
+     * Updates the shared RenderFrameCache with camera position and render settings.
      */
     @Inject(
         method = "renderLevel",
@@ -90,6 +68,18 @@ public class LevelRendererMixin {
         Camera camera = minecraft.gameRenderer.getMainCamera();
         if (camera != null) {
             mcopt$cameraPosition = camera.getPosition();
+
+            // Update shared frame cache for RenderSectionMixin to use
+            double renderDistance = minecraft.options.renderDistance().get() * 16.0;
+            double verticalStretch = MCOPTConfig.VERTICAL_RENDER_STRETCH.get();
+            double horizontalStretch = MCOPTConfig.HORIZONTAL_RENDER_STRETCH.get();
+
+            RenderFrameCache.updateForFrame(
+                mcopt$cameraPosition,
+                renderDistance,
+                verticalStretch,
+                horizontalStretch
+            );
         }
     }
 

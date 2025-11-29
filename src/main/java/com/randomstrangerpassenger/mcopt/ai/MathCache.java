@@ -9,14 +9,20 @@ import com.randomstrangerpassenger.mcopt.MCOPT;
  * to avoid expensive runtime calculations during entity AI tick processing.
  *
  * Inspired by AI-Improvements mod's FastTrig, but with extended functionality:
- * - atan2 caching (original from AI-Improvements concept)
- * - sin/cos caching (additional optimization)
+ * - atan2 caching (original from AI-Improvements concept) - Most effective
+ * - sin/cos caching (additional optimization) - May need benchmarking
  * - Higher precision options
  *
  * Performance impact:
- * - Minecraft 1.7-1.9: Significant FPS improvement (10-20%)
- * - Minecraft 1.10+: Small improvement (2-5%), but still worthwhile
+ * - atan2 caching: Consistently beneficial across all versions
+ * - sin/cos caching: Effectiveness varies by Java version and CPU
+ *   - Minecraft 1.7-1.9: Significant FPS improvement (10-20%)
+ *   - Minecraft 1.10+: Small improvement (2-5%)
+ *   - Java 21+ with modern CPUs: Marginal benefit, needs benchmarking
  * - Memory cost: ~16KB for all tables combined
+ *
+ * TODO: Benchmark sin/cos caching effectiveness on Java 21 with modern CPUs
+ *       Consider making sin/cos caching optional via config if not beneficial
  */
 public class MathCache {
 
@@ -36,32 +42,43 @@ public class MathCache {
     private static final float DEG_TO_INDEX = TRIG_SIZE / 360.0f;
     private static final float RAD_TO_INDEX = TRIG_SIZE / (2.0f * (float) Math.PI);
 
-    private static boolean initialized = false;
+    // Thread-safe initialization flag
+    // volatile ensures visibility across threads without requiring synchronization on reads
+    private static volatile boolean initialized = false;
 
     /**
      * Initialize all math lookup tables.
      * Must be called during mod initialization before any AI processing.
+     * Thread-safe using double-checked locking pattern.
      */
     public static void init() {
+        // Double-checked locking for thread-safe initialization
         if (initialized) {
             MCOPT.LOGGER.warn("MathCache already initialized, skipping");
             return;
         }
 
-        long startTime = System.nanoTime();
+        synchronized (MathCache.class) {
+            // Check again inside synchronized block
+            if (initialized) {
+                return;
+            }
 
-        // Pre-compute atan2 table
-        initAtan2Table();
+            long startTime = System.nanoTime();
 
-        // Pre-compute sin/cos tables
-        initTrigTables();
+            // Pre-compute atan2 table
+            initAtan2Table();
 
-        long endTime = System.nanoTime();
-        double elapsedMs = (endTime - startTime) / 1_000_000.0;
+            // Pre-compute sin/cos tables
+            initTrigTables();
 
-        initialized = true;
-        MCOPT.LOGGER.info("MathCache initialized in {:.2f}ms (atan2: {} entries, sin/cos: {} entries each)",
-                elapsedMs, ATAN2_TABLE.length, SIN_TABLE.length);
+            long endTime = System.nanoTime();
+            double elapsedMs = (endTime - startTime) / 1_000_000.0;
+
+            initialized = true;
+            MCOPT.LOGGER.info("MathCache initialized in {:.2f}ms (atan2: {} entries, sin/cos: {} entries each)",
+                    elapsedMs, ATAN2_TABLE.length, SIN_TABLE.length);
+        }
     }
 
     /**

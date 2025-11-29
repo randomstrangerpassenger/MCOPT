@@ -6,7 +6,8 @@
   "refmap": "mcopt.refmap.json",
   "mixins": [
     "ExperienceOrbMixin",
-    "MobAIMixin"
+    "MobAIMixin",
+    "SnowLayerBlockMixin"
   ],
   "client": [
     "ChunkRenderDispatcherMixin",

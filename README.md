@@ -30,6 +30,10 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Probabilistic Spawn Reduction**: Maintains visual quality while reducing particle count
 - **Distance-Based Particle Culling**: Skips particles that are too far from the camera
 
+#### Snow Accumulation Optimization ⭐ NEW
+- **Simple Snowy Fix 스타일**: 눈 층이 늘어날 때 불필요한 이웃 알림을 줄여 눈보라 시 청크 리빌드 스파이크 감소
+- **Vanilla 호환**: 눈 쌓이는 방식은 그대로 유지하면서 업데이트 플래그만 최소화
+
 #### Experience Orb Merging Optimization ⭐ NEW
 - **Automatic Orb Merging**: Combines nearby experience orbs into single entities
 - **Configurable Merge Radius**: Adjust how aggressively orbs merge
@@ -128,6 +132,13 @@ enableParticleOptimizations = true
 maxParticlesPerFrame = 500
 # Reduce particle spawn rate (0.0-0.9, default: 0.25 = 25% reduction)
 particleSpawnReduction = 0.25
+```
+
+#### Weather & Snow
+```toml
+[general.weather]
+# 눈 층이 쌓일 때 불필요한 이웃 알림을 줄여 렌더링 스파이크 완화
+enableSnowAccumulationFix = true
 ```
 
 #### Memory Management

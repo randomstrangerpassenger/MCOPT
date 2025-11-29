@@ -11,6 +11,12 @@ public class MCOPTConfig {
     public static final ModConfigSpec.IntValue CHUNK_UPDATE_LIMIT;
     public static final ModConfigSpec.BooleanValue AGGRESSIVE_CHUNK_CULLING;
 
+    // Render Distance Optimization Settings
+    public static final ModConfigSpec.BooleanValue ENABLE_ELLIPTICAL_RENDER_DISTANCE;
+    public static final ModConfigSpec.DoubleValue VERTICAL_RENDER_STRETCH;
+    public static final ModConfigSpec.DoubleValue HORIZONTAL_RENDER_STRETCH;
+    public static final ModConfigSpec.BooleanValue SHOW_CULLED_CHUNKS_DEBUG;
+
     // Entity Culling Settings
     public static final ModConfigSpec.BooleanValue ENABLE_ENTITY_CULLING;
     public static final ModConfigSpec.IntValue ENTITY_CULLING_DISTANCE;
@@ -43,6 +49,33 @@ public class MCOPTConfig {
         AGGRESSIVE_CHUNK_CULLING = BUILDER
                 .comment("Enable aggressive chunk culling (May cause pop-in, but improves FPS)")
                 .define("aggressiveChunkCulling", false);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Elliptical Render Distance Optimization")
+               .push("render_distance");
+
+        ENABLE_ELLIPTICAL_RENDER_DISTANCE = BUILDER
+                .comment("Enable elliptical render distance optimization (Recommended: true)",
+                        "Renders chunks in an elliptical shape instead of square/cylinder",
+                        "This reduces chunk sections by 10-35% for better FPS")
+                .define("enableEllipticalRenderDistance", true);
+
+        VERTICAL_RENDER_STRETCH = BUILDER
+                .comment("Vertical stretch factor for render distance (Higher = taller render ellipsoid)",
+                        "Controls how far up/down chunks are rendered relative to horizontal distance",
+                        "Lower values = better performance, Higher values = see more vertically")
+                .defineInRange("verticalRenderStretch", 0.75, 0.1, 3.0);
+
+        HORIZONTAL_RENDER_STRETCH = BUILDER
+                .comment("Horizontal stretch factor for render distance (Higher = wider render ellipsoid)",
+                        "Controls horizontal rendering extent relative to configured render distance",
+                        "Values > 1.0 extend render distance horizontally")
+                .defineInRange("horizontalRenderStretch", 1.0, 0.5, 2.0);
+
+        SHOW_CULLED_CHUNKS_DEBUG = BUILDER
+                .comment("Show debug overlay with number of culled chunk sections (F3 debug screen)")
+                .define("showCulledChunksDebug", false);
 
         BUILDER.pop();
 

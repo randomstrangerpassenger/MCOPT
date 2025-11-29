@@ -8,7 +8,8 @@
     "ChunkRenderDispatcherMixin",
     "EntityRenderDispatcherMixin",
     "ParticleEngineMixin",
-    "LevelRendererMixin"
+    "LevelRendererMixin",
+    "RenderSectionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

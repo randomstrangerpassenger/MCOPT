@@ -40,6 +40,11 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Performance Boost**: Significantly reduces lag during mob farming or mining
 - **Fully Compatible**: Works seamlessly with vanilla gameplay mechanics
 
+#### Iron Golem Spawn 안정화 ⭐ NEW
+- **Villager 소환 보정**: 마을 주민이 소환하는 철 골렘의 스폰 위치를 주변 지면으로 부드럽게 내림
+- **지붕/장식물 우회**: 높이맵 때문에 지붕 위나 장식 블록에 걸려 스폰이 무산되는 문제 완화
+- **검색 깊이 조절**: 설정을 통해 얼마나 아래로 안전한 지면을 찾을지 선택 가능
+
 #### Dynamic Memory Management ⭐ NEW
 - **GC Spike Prevention**: Object pooling for Vec3 and BlockPos to reduce garbage collection pressure
 - **Smart Resource Cleanup**: Automatic cleanup of unused assets on world unload/disconnect
@@ -139,6 +144,15 @@ particleSpawnReduction = 0.25
 [general.weather]
 # 눈 층이 쌓일 때 불필요한 이웃 알림을 줄여 렌더링 스파이크 완화
 enableSnowAccumulationFix = true
+```
+
+#### Village
+```toml
+[general.villages]
+# 마을 주민이 소환한 철 골렘을 주변 안전 지면으로 스냅해 실패율 감소
+enableGolemSpawnFix = true
+# 골렘 스폰 위치를 아래로 최대 몇 블록까지 검색할지 (1-32)
+golemSpawnSearchRange = 6
 ```
 
 #### Memory Management

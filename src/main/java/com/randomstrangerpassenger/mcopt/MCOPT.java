@@ -2,12 +2,14 @@ package com.randomstrangerpassenger.mcopt;
 
 import com.randomstrangerpassenger.mcopt.ai.AIOptimizationSystem;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.golem.GolemSpawnFixHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.MinecraftForge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,9 @@ public class MCOPT {
 
         // Register configuration
         modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.SPEC);
+
+        // Event handlers
+        MinecraftForge.EVENT_BUS.register(new GolemSpawnFixHandler());
 
         // Register setup handlers
         modEventBus.addListener(this::commonSetup);

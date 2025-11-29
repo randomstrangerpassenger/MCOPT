@@ -77,6 +77,10 @@ public class MCOPTConfig {
     // Weather Optimizations
     public static final ModConfigSpec.BooleanValue ENABLE_SNOW_ACCUMULATION_FIX;
 
+    // Village Safety
+    public static final ModConfigSpec.BooleanValue ENABLE_GOLEM_SPAWN_FIX;
+    public static final ModConfigSpec.IntValue GOLEM_SPAWN_SEARCH_RANGE;
+
     static {
         BUILDER.comment("MCOPT Client-Side Performance Configuration")
                .push("general");
@@ -215,6 +219,21 @@ public class MCOPTConfig {
                 .comment("Skip redundant neighbor notifications when snow layers thicken during precipitation",
                         "Reduces chunk rebuild spam during heavy snowfall while keeping visuals identical")
                 .define("enableSnowAccumulationFix", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Village guard reliability")
+               .push("villages");
+
+        ENABLE_GOLEM_SPAWN_FIX = BUILDER
+                .comment("Gently slides villager-summoned iron golems downward to the nearest safe block",
+                        "Prevents golems from getting stuck on roofs or decorations when villagers trigger spawns")
+                .define("enableGolemSpawnFix", true);
+
+        GOLEM_SPAWN_SEARCH_RANGE = BUILDER
+                .comment("How many blocks downward to search for a safe golem spawn surface",
+                        "Smaller values stay closer to vanilla behavior; larger values help sky-platform farms")
+                .defineInRange("golemSpawnSearchRange", 6, 1, 32);
 
         BUILDER.pop();
 

@@ -6,6 +6,12 @@
 
 MCOPT is a performance optimization mod for Minecraft designed to improve client-side performance in singleplayer and multiplayer environments. It focuses on reducing lag through intelligent chunk rendering, entity culling, and particle system optimizations while maintaining full compatibility with other mods.
 
+## 최근 변경점 (1.21.10 실험 빌드)
+- **Idle Boost 유휴 감지 추가**: 입력이 일정 시간 없을 때 FPS와 렌더 거리를 낮춰 발열과 소음을 줄입니다.
+- **파티클 거리/폭주 제한**: 카메라와 멀리 떨어진 파티클을 즉시 건너뛰고, 한 틱에 생성할 수 있는 파티클 양을 제한해 급격한 스파이크를 방지합니다.
+- **꿀벌 복귀 안정화**: 둥지 주변에서 길을 잃은 벌이 오래 맴돌면 목표를 초기화해 경로 탐색 렉을 줄입니다.
+- **아이템 데이터 무결성 보강**: `ItemStack.copy()` 시 NBT를 강제로 깊은 복사하여 포탈 이동·전송 중 데이터 손상 확률을 낮춥니다.
+
 ## Features
 
 ### 🎮 Client-Side Optimizations

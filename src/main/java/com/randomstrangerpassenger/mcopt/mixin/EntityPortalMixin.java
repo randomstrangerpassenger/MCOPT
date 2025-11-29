@@ -1,51 +1,21 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
-import com.randomstrangerpassenger.mcopt.portal.PortalMemoryTracker;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Ensures passengers travel through dimensional portals together with their vehicle.
- * Vanilla sometimes updates portal logic only for the root vehicle, leaving riders behind.
- * This mixin mirrors the portal entry handling to all passengers so they follow the mount.
- */
-@Mixin(Entity.class)
+@Mixin(ItemStack.class)
 public abstract class EntityPortalMixin {
-
-    @Inject(method = "handleInsidePortal", at = @At("TAIL"))
-    private void mcopt$syncPassengerPortals(BlockPos portalPos, CallbackInfo ci) {
-        if (!MCOPTConfig.ENABLE_PASSENGER_PORTAL_FIX.get() && !MCOPTConfig.ENABLE_PORTAL_REDIRECT.get()) {
-            return;
-        }
-
-        Entity entity = (Entity) (Object) this;
-
-        if (entity.level().isClientSide) {
-            return;
-        }
-
-        if (MCOPTConfig.ENABLE_PORTAL_REDIRECT.get() && entity instanceof ServerPlayer serverPlayer && !serverPlayer.isSpectator()) {
-            PortalMemoryTracker.rememberPortal(serverPlayer, portalPos);
-        }
-
-        if (!MCOPTConfig.ENABLE_PASSENGER_PORTAL_FIX.get()) {
-            return;
-        }
-
-        if (entity.getPassengers().isEmpty()) {
-            return;
-        }
-
-        for (Entity passenger : entity.getPassengers()) {
-            if (!passenger.isRemoved() && passenger.level() == entity.level()) {
-                passenger.handleInsidePortal(portalPos);
-            }
+    @Inject(method = "copy", at = @At("RETURN"), cancellable = true)
+    private void mcopt$preserveData(CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack self = (ItemStack) (Object) this;
+        ItemStack result = cir.getReturnValue();
+        CompoundTag tag = self.getTag();
+        if (tag != null) {
+            result.setTag(tag.copy());
         }
     }
 }

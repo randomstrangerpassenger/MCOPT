@@ -6,6 +6,7 @@ import com.randomstrangerpassenger.mcopt.golem.GolemSpawnFixHandler;
 import com.randomstrangerpassenger.mcopt.client.dynamicfps.DynamicFpsManager;
 import com.randomstrangerpassenger.mcopt.client.bucket.BucketPreviewHandler;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
+import com.randomstrangerpassenger.mcopt.clearlag.ClearLagManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -33,6 +34,7 @@ public class MCOPT {
 
         // Event handlers
         MinecraftForge.EVENT_BUS.register(new GolemSpawnFixHandler());
+        MinecraftForge.EVENT_BUS.register(new ClearLagManager());
 
         // Register setup handlers
         modEventBus.addListener(this::commonSetup);

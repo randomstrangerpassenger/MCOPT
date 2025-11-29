@@ -58,6 +58,12 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Performance Boost**: Significantly reduces lag during mob farming or mining
 - **충돌 회피**: Clumps 모드 감지 시 자동으로 비활성화해 중복 병합을 방지
 
+#### 맞춤 Clear Lag 스케줄러 ⭐ NEW
+- **주기적 지상 엔티티 정리**: 일정 시간마다 아이템/경험치/투사체를 정리해 버려진 엔티티로 인한 렉을 완화
+- **경고 브로드캐스트**: 정리 직전에 알림을 보내 플레이어가 소지품을 회수할 시간을 제공
+- **화이트리스트/보호 옵션**: 이름표가 붙은 아이템이나 지정한 엔티티 ID는 건드리지 않도록 설정 가능
+- **온화한 기본값**: 기본적으로 꺼져 있으며, 필요할 때만 활성화하도록 설계
+
 #### Iron Golem Spawn 안정화 ⭐ NEW
 - **Villager 소환 보정**: 마을 주민이 소환하는 철 골렘의 스폰 위치를 주변 지면으로 부드럽게 내림
 - **지붕/장식물 우회**: 높이맵 때문에 지붕 위나 장식 블록에 걸려 스폰이 무산되는 문제 완화
@@ -311,6 +317,30 @@ xpOrbMergeRadius = 1.5
 # Merge check delay in ticks (1-40, default: 10)
 # Lower = more frequent merging, higher = less CPU usage
 xpOrbMergeDelay = 10
+```
+
+#### Clear Lag 스케줄러
+```toml
+[general.clear_lag]
+# 주기적으로 지상에 남은 엔티티(아이템/경험치/투사체)를 정리합니다
+enableClearLag = false
+
+# 정리 주기 (틱). 20틱 = 1초, 기본값 6000틱(5분)
+clearLagIntervalTicks = 6000
+
+# 정리 직전 경고를 보낼 시점 (틱). 0이면 경고를 생략합니다
+clearLagWarningTicks = 200
+
+# 제거 범위 설정
+clearLagRemoveItems = true
+clearLagRemoveXpOrbs = true
+clearLagRemoveProjectiles = true
+
+# 이름표가 붙은 아이템은 보호합니다
+clearLagSkipNamedItems = true
+
+# 제거 대상에서 제외할 엔티티 ID 리스트
+clearLagEntityWhitelist = ["minecraft:armor_stand"]
 ```
 
 #### Entity AI Optimization

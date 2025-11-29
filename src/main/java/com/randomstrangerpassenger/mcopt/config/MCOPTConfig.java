@@ -1,6 +1,7 @@
 package com.randomstrangerpassenger.mcopt.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
+import java.util.List;
 
 public class MCOPTConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -105,6 +106,16 @@ public class MCOPTConfig {
 
     // Enchanting Fixes
     public static final ModConfigSpec.BooleanValue FIX_ENCHANTMENT_RNG;
+
+    // Clear Lag
+    public static final ModConfigSpec.BooleanValue ENABLE_CLEAR_LAG;
+    public static final ModConfigSpec.IntValue CLEAR_LAG_INTERVAL_TICKS;
+    public static final ModConfigSpec.IntValue CLEAR_LAG_WARNING_TICKS;
+    public static final ModConfigSpec.BooleanValue CLEAR_LAG_REMOVE_ITEMS;
+    public static final ModConfigSpec.BooleanValue CLEAR_LAG_REMOVE_XP_ORBS;
+    public static final ModConfigSpec.BooleanValue CLEAR_LAG_REMOVE_PROJECTILES;
+    public static final ModConfigSpec.BooleanValue CLEAR_LAG_SKIP_NAMED_ITEMS;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> CLEAR_LAG_ENTITY_WHITELIST;
 
     static {
         BUILDER.comment("MCOPT Client-Side Performance Configuration")
@@ -389,6 +400,45 @@ public class MCOPTConfig {
                         "Lower = more frequent merging, Higher = less CPU usage",
                         "20 ticks = 1 second")
                 .defineInRange("xpOrbMergeDelay", 10, 1, 40);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Custom clear-lag scheduler")
+               .push("clear_lag");
+
+        ENABLE_CLEAR_LAG = BUILDER
+                .comment("지상에 남은 아이템/투사체/경험치를 주기적으로 정리해 서버 부하를 줄입니다.",
+                        "기본적으로 비활성화되어 있으며, 필요한 경우에만 켭니다.")
+                .define("enableClearLag", false);
+
+        CLEAR_LAG_INTERVAL_TICKS = BUILDER
+                .comment("정리 주기 (틱 단위). 20틱 = 1초",
+                        "값이 낮을수록 자주 정리하지만 빈번한 메시지로 인해 체감 부하가 있을 수 있습니다.")
+                .defineInRange("clearLagIntervalTicks", 6_000, 200, 72_000);
+
+        CLEAR_LAG_WARNING_TICKS = BUILDER
+                .comment("정리 직전 경고를 보낼 남은 시간 (틱). 0으로 두면 경고를 보내지 않습니다.")
+                .defineInRange("clearLagWarningTicks", 200, 0, 6_000);
+
+        CLEAR_LAG_REMOVE_ITEMS = BUILDER
+                .comment("바닥에 떨어진 아이템 엔티티를 제거합니다.")
+                .define("clearLagRemoveItems", true);
+
+        CLEAR_LAG_REMOVE_XP_ORBS = BUILDER
+                .comment("경험치 오브를 제거합니다.")
+                .define("clearLagRemoveXpOrbs", true);
+
+        CLEAR_LAG_REMOVE_PROJECTILES = BUILDER
+                .comment("화살/삼지창/눈덩이 등 투사체를 제거합니다.")
+                .define("clearLagRemoveProjectiles", true);
+
+        CLEAR_LAG_SKIP_NAMED_ITEMS = BUILDER
+                .comment("이름표가 붙은 아이템 엔티티는 보호합니다.")
+                .define("clearLagSkipNamedItems", true);
+
+        CLEAR_LAG_ENTITY_WHITELIST = BUILDER
+                .comment("제거 대상에서 제외할 엔티티 ID 목록 (예: minecraft:armor_stand)")
+                .defineListAllowEmpty("clearLagEntityWhitelist", List::of, entry -> entry instanceof String);
 
         BUILDER.pop();
 

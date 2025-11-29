@@ -18,6 +18,9 @@ public class MCOPTConfig {
     public static final ModConfigSpec.IntValue MENU_FRAME_RATE_LIMIT;
     public static final ModConfigSpec.IntValue UNFOCUSED_FRAME_RATE_LIMIT;
     public static final ModConfigSpec.IntValue MINIMIZED_FRAME_RATE_LIMIT;
+    public static final ModConfigSpec.BooleanValue ENABLE_IDLE_BOOST;
+    public static final ModConfigSpec.IntValue IDLE_BOOST_INACTIVITY_SECONDS;
+    public static final ModConfigSpec.IntValue IDLE_FRAME_RATE_LIMIT;
 
     // Render Distance Optimization Settings
     public static final ModConfigSpec.BooleanValue ENABLE_ELLIPTICAL_RENDER_DISTANCE;
@@ -145,6 +148,18 @@ public class MCOPTConfig {
         MINIMIZED_FRAME_RATE_LIMIT = BUILDER
                 .comment("FPS limit while the Minecraft window is minimized")
                 .defineInRange("minimizedFrameRateLimit", 1, 0, 60);
+
+        ENABLE_IDLE_BOOST = BUILDER
+                .comment("게임 플레이 중 입력이 없을 때 프레임레이트를 낮춰 자원 사용을 줄입니다")
+                .define("enableIdleBoost", true);
+
+        IDLE_BOOST_INACTIVITY_SECONDS = BUILDER
+                .comment("얼마 동안 입력이 없으면 유휴 상태로 간주할지 설정합니다")
+                .defineInRange("idleInactivitySeconds", 20, 5, 120);
+
+        IDLE_FRAME_RATE_LIMIT = BUILDER
+                .comment("유휴 상태로 전환되었을 때 적용할 FPS 제한 (0은 무제한)")
+                .defineInRange("idleFrameRateLimit", 10, 0, 120);
 
         BUILDER.pop();
 

@@ -31,6 +31,10 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **완전 독립 구현**: 렌더 스레드의 프레임 한도만 건드려 다른 모드/루프와 충돌 최소화
 - **백그라운드 스로틀링 토글**: `enableBackgroundThrottling`으로 녹화/방송 시 백그라운드에서도 풀 프레임 유지 가능
 - **중복 기능 자동 비활성화**: `dynamic_fps` 또는 `fps_reducer` 모드 감지 시 내장 컨트롤러를 자동으로 끔
+- **유휴 입력 감지 (Idle Boost)** ⭐ NEW: 입력이 일정 시간 없을 때 FPS를 낮춰 발열과 소음을 줄임
+  - 기본 20초 무입력 시 발동, 다시 조작하면 즉시 원래 한도로 복구
+  - 게임 내 화면에서만 동작해 메뉴 탐색이나 백그라운드 작업과 충돌하지 않음
+  - `idleInactivitySeconds`와 `idleFrameRateLimit`로 민감도/제한값을 자유롭게 조절
 
 #### Particle System Optimization
 - **Per-Frame Particle Limiting**: Prevents FPS drops from particle explosions
@@ -160,6 +164,15 @@ unfocusedFrameRateLimit = 15
 
 # 창이 최소화되었을 때의 FPS 제한 (0은 무제한)
 minimizedFrameRateLimit = 1
+
+# 일정 시간 입력이 없을 때 FPS를 낮춰 배터리/발열을 줄입니다
+enableIdleBoost = true
+
+# 몇 초 동안 입력이 없으면 유휴 상태로 간주할지 설정합니다
+idleInactivitySeconds = 20
+
+# 유휴 상태일 때 적용할 FPS 제한 (0은 무제한)
+idleFrameRateLimit = 10
 ```
 
 #### Chunk Rendering

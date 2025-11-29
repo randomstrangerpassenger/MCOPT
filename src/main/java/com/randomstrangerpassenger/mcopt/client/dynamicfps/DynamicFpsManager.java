@@ -3,11 +3,14 @@ package com.randomstrangerpassenger.mcopt.client.dynamicfps;
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.event.TickEvent;
 
 /**
@@ -23,12 +26,35 @@ public final class DynamicFpsManager {
     private DynamicFpsState activeState;
     private int userDefinedFramerate;
     private int appliedFramerate;
+    private long lastInteractionMillis;
 
     public DynamicFpsManager() {
         this.minecraft = Minecraft.getInstance();
         this.userDefinedFramerate = readUserFramerateLimit();
         this.appliedFramerate = this.userDefinedFramerate;
         this.activeState = DynamicFpsState.IN_GAME;
+        this.lastInteractionMillis = Util.getMillis();
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onKeyInput(InputEvent.Key event) {
+        if (event.getAction() != 0) {
+            markInteraction();
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onMouseButton(InputEvent.MouseButton.Pre event) {
+        if (event.getAction() != 0) {
+            markInteraction();
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+        if (event.getScrollDelta() != 0.0) {
+            markInteraction();
+        }
     }
 
     @SubscribeEvent
@@ -73,6 +99,10 @@ public final class DynamicFpsManager {
             return DynamicFpsState.MENU;
         }
 
+        if (isIdleBoostActive()) {
+            return DynamicFpsState.IDLE;
+        }
+
         return DynamicFpsState.IN_GAME;
     }
 
@@ -86,6 +116,7 @@ public final class DynamicFpsManager {
             case MINIMIZED -> MCOPTConfig.MINIMIZED_FRAME_RATE_LIMIT.get();
             case UNFOCUSED -> MCOPTConfig.UNFOCUSED_FRAME_RATE_LIMIT.get();
             case MENU -> MCOPTConfig.MENU_FRAME_RATE_LIMIT.get();
+            case IDLE -> MCOPTConfig.IDLE_FRAME_RATE_LIMIT.get();
             case IN_GAME -> userDefinedFramerate;
         };
     }
@@ -114,6 +145,34 @@ public final class DynamicFpsManager {
             }
         }
         return Math.max(0, minecraft.getWindow().getFramerateLimit());
+    }
+
+    private boolean isIdleBoostActive() {
+        if (!MCOPTConfig.ENABLE_IDLE_BOOST.get()) {
+            return false;
+        }
+
+        if (!minecraft.isWindowActive() || minecraft.getWindow().isMinimized()) {
+            return false;
+        }
+
+        if (minecraft.screen != null) {
+            return false;
+        }
+
+        long idleDurationMillis = Util.getMillis() - lastInteractionMillis;
+        long idleThresholdMillis = MCOPTConfig.IDLE_BOOST_INACTIVITY_SECONDS.get() * 1000L;
+        return idleDurationMillis >= idleThresholdMillis;
+    }
+
+    private void markInteraction() {
+        lastInteractionMillis = Util.getMillis();
+
+        if (activeState == DynamicFpsState.IDLE) {
+            DynamicFpsState detectedState = detectState();
+            int targetLimit = resolveTargetLimit(detectedState);
+            applyLimit(targetLimit, detectedState);
+        }
     }
 
     private boolean isForegroundGameplay() {

@@ -83,6 +83,11 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **로그인/차원 이동 보호**: 추가 하트가 있는 플레이어가 10하트로 초기화되는 문제 방지
 - **버프 만료 완충**: 임시 버프가 끝나도 갑작스런 대미지 없이 체력을 부드럽게 조정
 
+#### 속성 한도 확장 (AttributeFix 스타일) ⭐ NEW
+- **상한 해제형 클램프**: 바닐라 1024 상한을 10억으로 확장해 대형 모드팩의 장비/스탯이 잘리지 않음
+- **보고 값 일치**: 속성의 최대치 조회 시에도 확장된 값이 반환되어 UI/호환 모드가 올바른 범위를 인식
+- **토글 가능**: 다른 모드가 고정 상한을 필요로 할 경우 설정에서 즉시 끌 수 있음
+
 #### Entity AI Optimization ⭐ NEW
 - **Math Function Caching**: Pre-computed atan2, sin, cos lookup tables for AI calculations
 - **Optimized LookControl**: Replaces mob LookControl with cached math version
@@ -245,6 +250,15 @@ leakMemoryAlertCooldownSeconds = 15
 [general.health]
 # MAX_HEALTH가 변할 때 현재 체력 비율을 그대로 유지
 enableMaxHealthStability = true
+```
+
+#### 속성 한도 확장
+```toml
+[general.attributes]
+# 바닐라 1024 상한 대신 더 높은 값으로 클램프 (AttributeFix 스타일)
+enableAttributeRangeExpansion = true
+# 클램프 상한 (기본: 1,000,000,000)
+attributeMaxLimit = 1000000000
 ```
 
 #### Experience Orb Merging

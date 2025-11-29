@@ -8,7 +8,8 @@
     "ExperienceOrbMixin",
     "EntityPortalMixin",
     "MobAIMixin",
-    "SnowLayerBlockMixin"
+    "SnowLayerBlockMixin",
+    "RangedAttributeMixin"
   ],
   "client": [
     "ChunkRenderDispatcherMixin",

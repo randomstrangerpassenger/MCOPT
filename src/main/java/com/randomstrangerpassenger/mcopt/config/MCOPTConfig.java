@@ -100,6 +100,7 @@ public class MCOPTConfig {
 
     // Portal Reliability
     public static final ModConfigSpec.BooleanValue ENABLE_PASSENGER_PORTAL_FIX;
+    public static final ModConfigSpec.BooleanValue ENABLE_PORTAL_REDIRECT;
 
     // Bucket Introspection
     public static final ModConfigSpec.BooleanValue ENABLE_BUCKET_PREVIEW;
@@ -330,6 +331,13 @@ public class MCOPTConfig {
                 .comment("Carry passengers through Nether/End portals together with their vehicle",
                         "Prevents riders from being stranded when the mount or vehicle enters a portal first")
                 .define("enablePassengerPortalFix", true);
+
+        ENABLE_PORTAL_REDIRECT = BUILDER
+                .comment(
+                        "Remember the last used portal in each dimension and redirect returns to it to avoid unwanted portal swapping",
+                        "Lightweight MCOPT implementation inspired by Redirected's reliability goal"
+                )
+                .define("enablePortalRedirect", true);
 
         BUILDER.pop();
 

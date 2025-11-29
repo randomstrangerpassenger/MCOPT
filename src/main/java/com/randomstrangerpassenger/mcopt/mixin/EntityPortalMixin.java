@@ -1,8 +1,10 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.portal.PortalMemoryTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,13 +20,25 @@ public abstract class EntityPortalMixin {
 
     @Inject(method = "handleInsidePortal", at = @At("TAIL"))
     private void mcopt$syncPassengerPortals(BlockPos portalPos, CallbackInfo ci) {
-        if (!MCOPTConfig.ENABLE_PASSENGER_PORTAL_FIX.get()) {
+        if (!MCOPTConfig.ENABLE_PASSENGER_PORTAL_FIX.get() && !MCOPTConfig.ENABLE_PORTAL_REDIRECT.get()) {
             return;
         }
 
         Entity entity = (Entity) (Object) this;
 
-        if (entity.level().isClientSide || entity.getPassengers().isEmpty()) {
+        if (entity.level().isClientSide) {
+            return;
+        }
+
+        if (MCOPTConfig.ENABLE_PORTAL_REDIRECT.get() && entity instanceof ServerPlayer serverPlayer && !serverPlayer.isSpectator()) {
+            PortalMemoryTracker.rememberPortal(serverPlayer, portalPos);
+        }
+
+        if (!MCOPTConfig.ENABLE_PASSENGER_PORTAL_FIX.get()) {
+            return;
+        }
+
+        if (entity.getPassengers().isEmpty()) {
             return;
         }
 

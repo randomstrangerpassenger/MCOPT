@@ -2,8 +2,6 @@ package com.randomstrangerpassenger.mcopt.client;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
-import com.randomstrangerpassenger.mcopt.memory.BlockPosPool;
-import com.randomstrangerpassenger.mcopt.memory.Vec3Pool;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -55,11 +53,6 @@ public class ResourceCleanupHandler {
     private static void performCleanup() {
         try {
             Minecraft minecraft = Minecraft.getInstance();
-
-            // Clear object pools
-            Vec3Pool.clear();
-            BlockPosPool.clear();
-            MCOPT.LOGGER.debug("Cleared object pools");
 
             // Clear particle engine cache
             if (minecraft.particleEngine != null) {

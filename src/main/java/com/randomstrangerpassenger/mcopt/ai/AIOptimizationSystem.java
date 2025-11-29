@@ -125,28 +125,18 @@ public class AIOptimizationSystem {
                 MCOPTConfig.REMOVE_ANIMAL_STROLL
         ));
 
-        // Apply to all farm animal types
+        // Apply to all farm animal types (except Sheep, which has additional modifiers)
         entityModifiers.put(Cow.class, animalChain);
         entityModifiers.put(Pig.class, animalChain);
         entityModifiers.put(Chicken.class, animalChain);
-        entityModifiers.put(Sheep.class, animalChain);
 
-        // Sheep-specific: Eat block goal
+        // Sheep-specific: Create a chain that includes all animal modifiers plus EatBlock removal
         ModifierChain sheepChain = new ModifierChain();
+        sheepChain.addAll(animalChain);  // Inherit all animal modifiers
         sheepChain.add(new RemoveGoalModifier(
                 GoalFilter.matchNamePattern("EatBlock"),
                 MCOPTConfig.REMOVE_SHEEP_EAT_BLOCK
         ));
-        // Combine with animal modifiers for sheep
-        for (int i = 0; i < animalChain.size(); i++) {
-            ModifierChain finalAnimalChain = animalChain;
-            int index = i;
-            sheepChain.add((mob, goal) -> {
-                ModifierChain chain = new ModifierChain();
-                // This is a workaround - ideally we'd just reuse the chain
-                return goal;
-            });
-        }
 
         entityModifiers.put(Sheep.class, sheepChain);
     }

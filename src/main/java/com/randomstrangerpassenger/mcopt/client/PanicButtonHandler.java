@@ -3,8 +3,6 @@ package com.randomstrangerpassenger.mcopt.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
-import com.randomstrangerpassenger.mcopt.memory.BlockPosPool;
-import com.randomstrangerpassenger.mcopt.memory.Vec3Pool;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -85,10 +83,6 @@ public class PanicButtonHandler {
             // Get memory before cleanup
             Runtime runtime = Runtime.getRuntime();
             long usedBefore = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
-
-            // Clear object pools
-            Vec3Pool.clear();
-            BlockPosPool.clear();
 
             // Suggest garbage collection
             System.gc();

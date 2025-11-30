@@ -5,12 +5,12 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "mcopt.refmap.json",
   "mixins": [
-    "BeeStuckFixMixin",
-    "EntityPortalMixin"
+    "server.BeeStuckFixMixin",
+    "server.EntityPortalMixin"
   ],
   "client": [
-    "ParticleEngineMixin",
-    "ParticleMixin"
+    "client.ParticleEngineMixin",
+    "client.ParticleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

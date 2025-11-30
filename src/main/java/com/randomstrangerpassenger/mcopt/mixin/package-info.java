@@ -7,16 +7,16 @@
  *
  * <h2>Rendering Mixins</h2>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.LevelRendererMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.client.LevelRendererMixin}</h3>
  * <p>Implements elliptical render distance culling:</p>
  * <ul>
  *   <li>Injects into {@code renderLevel()} to initialize per-frame tracking</li>
  *   <li>Calculates elliptical distance with configurable vertical/horizontal stretch</li>
- *   <li>Updates {@link com.randomstrangerpassenger.mcopt.client.RenderFrameCache} once per frame</li>
+ *   <li>Updates {@link com.randomstrangerpassenger.mcopt.client.rendering.RenderFrameCache} once per frame</li>
  *   <li>Reduces rendered chunk sections by 10-35% with minimal visual difference</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.RenderSectionMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.client.RenderSectionMixin}</h3>
  * <p>Per-chunk culling decision point:</p>
  * <ul>
  *   <li>Injects into {@code hasAllNeighbors()} to intercept chunk visibility checks</li>
@@ -24,7 +24,7 @@
  *   <li>Calculates chunk center once and checks against ellipsoid bounds</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.ChunkRenderDispatcherMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.client.ChunkRenderDispatcherMixin}</h3>
  * <p>Chunk update rate limiting:</p>
  * <ul>
  *   <li>Limits chunk rebuilds per frame (configurable 1-20, default 6)</li>
@@ -32,7 +32,7 @@
  *   <li>Automatically resets counter each frame</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.EntityRenderDispatcherMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.client.EntityRenderDispatcherMixin}</h3>
  * <p>Entity culling optimizations:</p>
  * <ul>
  *   <li>Distance-based culling (configurable max distance)</li>
@@ -40,7 +40,7 @@
  *   <li>Never culls vehicles or passengers for gameplay correctness</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.ParticleEngineMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.client.ParticleEngineMixin}</h3>
  * <p>Particle system optimizations:</p>
  * <ul>
  *   <li>Limits maximum particles per frame (configurable)</li>
@@ -50,7 +50,7 @@
  *
  * <h2>Entity/Gameplay Mixins</h2>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.ExperienceOrbMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.server.ExperienceOrbMixin}</h3>
  * <p>XP orb merging system:</p>
  * <ul>
  *   <li>Merges nearby XP orbs to reduce entity count</li>
@@ -59,11 +59,11 @@
  *   <li>Significantly improves performance in mob grinders</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.MobAIMixin}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.mixin.server.MobAIMixin}</h3>
  * <p>AI goal processing hook:</p>
  * <ul>
  *   <li>Injects into mob AI initialization</li>
- *   <li>Allows {@link com.randomstrangerpassenger.mcopt.ai.AIOptimizationSystem} to process goals</li>
+ *   <li>Allows {@link com.randomstrangerpassenger.mcopt.server.ai.AIOptimizationSystem} to process goals</li>
  *   <li>Removes configured goals and replaces controllers</li>
  * </ul>
  *

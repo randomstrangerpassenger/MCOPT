@@ -18,7 +18,7 @@
  * <h2>Architecture</h2>
  * <p>The mod is organized into several key packages:</p>
  * <ul>
- *   <li>{@link com.randomstrangerpassenger.mcopt.ai} - AI optimization system with math caching</li>
+ *   <li>{@link com.randomstrangerpassenger.mcopt.server.ai} - AI optimization system with math caching</li>
  *   <li>{@link com.randomstrangerpassenger.mcopt.client} - Client-side rendering and memory tools</li>
  *   <li>{@link com.randomstrangerpassenger.mcopt.config} - Configuration system with 65+ options</li>
  *   <li>{@link com.randomstrangerpassenger.mcopt.mixin} - Mixin injections for vanilla optimization</li>

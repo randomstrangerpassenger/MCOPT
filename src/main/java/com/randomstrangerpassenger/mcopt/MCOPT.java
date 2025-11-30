@@ -1,12 +1,12 @@
 package com.randomstrangerpassenger.mcopt;
 
-import com.randomstrangerpassenger.mcopt.ai.AIOptimizationSystem;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
-import com.randomstrangerpassenger.mcopt.golem.GolemSpawnFixHandler;
-import com.randomstrangerpassenger.mcopt.client.dynamicfps.DynamicFpsManager;
+import com.randomstrangerpassenger.mcopt.server.ai.AIOptimizationSystem;
+import com.randomstrangerpassenger.mcopt.server.entity.clearlag.ClearLagManager;
+import com.randomstrangerpassenger.mcopt.server.entity.golem.GolemSpawnFixHandler;
+import com.randomstrangerpassenger.mcopt.client.fps.DynamicFpsManager;
 import com.randomstrangerpassenger.mcopt.client.bucket.BucketPreviewHandler;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
-import com.randomstrangerpassenger.mcopt.clearlag.ClearLagManager;
 import com.randomstrangerpassenger.mcopt.safety.ActionGuardHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;

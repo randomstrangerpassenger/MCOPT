@@ -6,7 +6,7 @@
  *
  * <h2>Rendering Optimizations</h2>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.client.RenderFrameCache}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.client.rendering.RenderFrameCache}</h3>
  * <p>Per-frame caching system for render calculations:</p>
  * <ul>
  *   <li>Caches camera position, render distance, and stretch factors once per frame</li>
@@ -17,7 +17,7 @@
  *
  * <h2>Memory Management</h2>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.client.MemoryHudRenderer}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.client.hud.MemoryHudRenderer}</h3>
  * <p>Real-time memory usage display:</p>
  * <ul>
  *   <li>Shows RAM usage in top-left corner (configurable)</li>
@@ -26,7 +26,7 @@
  *   <li>Automatically hides when F3 debug screen is open</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.client.PanicButtonHandler}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.safety.PanicButtonHandler}</h3>
  * <p>Emergency memory cleanup trigger (F8 key by default):</p>
  * <ul>
  *   <li>Suggests garbage collection on demand</li>
@@ -35,7 +35,7 @@
  *   <li>Useful for debugging memory issues or clearing memory spikes</li>
  * </ul>
  *
- * <h3>{@link com.randomstrangerpassenger.mcopt.client.ResourceCleanupHandler}</h3>
+ * <h3>{@link com.randomstrangerpassenger.mcopt.safety.ResourceCleanupHandler}</h3>
  * <p>Automatic cleanup on world change or logout:</p>
  * <ul>
  *   <li>Triggers cleanup when client disconnects from server/world</li>
@@ -59,8 +59,8 @@
  *   <li>{@code ENABLE_RESOURCE_CLEANUP} - Enable automatic cleanup</li>
  * </ul>
  *
- * @see com.randomstrangerpassenger.mcopt.client.RenderFrameCache Frame-level caching
- * @see com.randomstrangerpassenger.mcopt.client.MemoryHudRenderer Memory HUD
+ * @see com.randomstrangerpassenger.mcopt.client.rendering.RenderFrameCache Frame-level caching
+ * @see com.randomstrangerpassenger.mcopt.client.hud.MemoryHudRenderer Memory HUD
  * @see com.randomstrangerpassenger.mcopt.mixin Rendering mixins that use these tools
  */
 package com.randomstrangerpassenger.mcopt.client;

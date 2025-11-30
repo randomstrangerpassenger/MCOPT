@@ -5,7 +5,6 @@ import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import com.randomstrangerpassenger.mcopt.golem.GolemSpawnFixHandler;
 import com.randomstrangerpassenger.mcopt.client.dynamicfps.DynamicFpsManager;
 import com.randomstrangerpassenger.mcopt.client.bucket.BucketPreviewHandler;
-import com.randomstrangerpassenger.mcopt.client.IdleFpsController;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import com.randomstrangerpassenger.mcopt.clearlag.ClearLagManager;
 import com.randomstrangerpassenger.mcopt.safety.ActionGuardHandler;
@@ -29,8 +28,11 @@ public class MCOPT {
     public MCOPT(IEventBus modEventBus, ModContainer modContainer) {
         LOGGER.info("MCOPT initializing - Performance optimization mod for Minecraft");
 
-        // Register configuration
-        modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.SPEC);
+        // Register domain-specific configurations
+        modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.getRenderingSpec(), "mcopt-rendering.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.getPerformanceSpec(), "mcopt-performance.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.getGameplaySpec(), "mcopt-gameplay.toml");
+        modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.getSafetySpec(), "mcopt-safety.toml");
 
         // Resolve feature toggles based on config and mod compatibility
         FeatureToggles.refreshFromConfig();
@@ -43,9 +45,6 @@ public class MCOPT {
         if (FeatureToggles.isActionGuardEnabled()) {
             MinecraftForge.EVENT_BUS.register(new ActionGuardHandler());
         }
-
-        // Client-only initialization
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> IdleFpsController::register);
 
         // Register setup handlers
         modEventBus.addListener(this::commonSetup);

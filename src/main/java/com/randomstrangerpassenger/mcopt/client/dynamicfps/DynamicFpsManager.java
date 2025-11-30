@@ -22,11 +22,16 @@ import net.neoforged.neoforge.event.TickEvent;
  */
 public final class DynamicFpsManager {
 
+    private static final int MIN_RENDER_DISTANCE = 4;
+    private static final int RENDER_DISTANCE_REDUCTION = 4;
+
     private final Minecraft minecraft;
     private DynamicFpsState activeState;
     private int userDefinedFramerate;
     private int appliedFramerate;
     private long lastInteractionMillis;
+    private int previousRenderDistance;
+    private boolean renderDistanceReduced;
 
     public DynamicFpsManager() {
         this.minecraft = Minecraft.getInstance();
@@ -34,6 +39,8 @@ public final class DynamicFpsManager {
         this.appliedFramerate = this.userDefinedFramerate;
         this.activeState = DynamicFpsState.IN_GAME;
         this.lastInteractionMillis = Util.getMillis();
+        this.previousRenderDistance = -1;
+        this.renderDistanceReduced = false;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -124,8 +131,38 @@ public final class DynamicFpsManager {
     private void applyLimit(int targetLimit, DynamicFpsState detectedState) {
         minecraft.getWindow().setFramerateLimit(Math.max(0, targetLimit));
         appliedFramerate = targetLimit;
+
+        // Apply render distance reduction when entering idle state
+        if (detectedState == DynamicFpsState.IDLE && !renderDistanceReduced) {
+            applyRenderDistanceReduction();
+        } else if (detectedState != DynamicFpsState.IDLE && renderDistanceReduced) {
+            restoreRenderDistance();
+        }
+
         activeState = detectedState;
         MCOPT.LOGGER.debug("Dynamic FPS state: {} (FPS cap set to {})", detectedState, targetLimit);
+    }
+
+    private void applyRenderDistanceReduction() {
+        Options options = minecraft.options;
+        if (options != null) {
+            previousRenderDistance = options.renderDistance().get();
+            int newRenderDistance = Math.max(MIN_RENDER_DISTANCE, previousRenderDistance - RENDER_DISTANCE_REDUCTION);
+            options.renderDistance().set(newRenderDistance);
+            renderDistanceReduced = true;
+            MCOPT.LOGGER.debug("[DynamicFPS] Idle state: reduced render distance {} -> {}", previousRenderDistance, newRenderDistance);
+        }
+    }
+
+    private void restoreRenderDistance() {
+        if (previousRenderDistance > 0) {
+            Options options = minecraft.options;
+            if (options != null) {
+                options.renderDistance().set(previousRenderDistance);
+                renderDistanceReduced = false;
+                MCOPT.LOGGER.debug("[DynamicFPS] Restored render distance to {}", previousRenderDistance);
+            }
+        }
     }
 
     private void restoreUserLimitIfNeeded() {

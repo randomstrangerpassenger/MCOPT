@@ -2,14 +2,12 @@ package com.randomstrangerpassenger.mcopt.mixin;
 
 import com.randomstrangerpassenger.mcopt.client.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.rendering.RenderHandler;
 import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,11 +16,12 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Optimizes level rendering by implementing elliptical render distance.
  * This reduces chunk sections rendered by 10-35% compared to vanilla's square/cylindrical rendering.
+ * <p>
+ * Business logic is delegated to {@link RenderHandler} for better maintainability.
  *
  * Key features:
  * - Elliptical 3D render distance instead of square/cylinder
@@ -96,55 +95,21 @@ public class LevelRendererMixin {
 
         mcopt$totalChunksThisFrame++;
 
-        // Get chunk section position
-        SectionPos sectionPos = renderSection.getOrigin();
-
-        // Calculate chunk center position (in world coordinates)
-        double chunkCenterX = sectionPos.getX() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
-        double chunkCenterY = sectionPos.getY() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
-        double chunkCenterZ = sectionPos.getZ() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE + MCOPTConstants.Minecraft.CHUNK_CENTER_OFFSET;
-
-        // Calculate elliptical distance
+        // Calculate render distance
         double renderDistance = minecraft.options.renderDistance().get() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
-        boolean shouldCull = mcopt$isOutsideEllipsoid(
-            mcopt$cameraPosition.x, mcopt$cameraPosition.y, mcopt$cameraPosition.z,
-            chunkCenterX, chunkCenterY, chunkCenterZ,
-            renderDistance
+
+        // Delegate culling logic to handler
+        boolean shouldRender = RenderHandler.shouldRenderChunkSection(
+                renderSection,
+                mcopt$cameraPosition,
+                renderDistance
         );
 
-        if (shouldCull) {
+        if (!shouldRender) {
             mcopt$culledChunksThisFrame++;
-            return false;
         }
 
-        return true;
-    }
-
-    /**
-     * Calculates if a position is outside the render ellipsoid.
-     * Uses configurable vertical and horizontal stretch factors.
-     */
-    @Unique
-    private boolean mcopt$isOutsideEllipsoid(
-        double camX, double camY, double camZ,
-        double chunkX, double chunkY, double chunkZ,
-        double baseRenderDistance
-    ) {
-        // Get stretch configuration
-        double verticalStretch = MCOPTConfig.VERTICAL_RENDER_STRETCH.get();
-        double horizontalStretch = MCOPTConfig.HORIZONTAL_RENDER_STRETCH.get();
-
-        // Calculate distance components
-        double dx = (camX - chunkX) * horizontalStretch;
-        double dy = (camY - chunkY) * verticalStretch;
-        double dz = (camZ - chunkZ) * horizontalStretch;
-
-        // Calculate squared distance in ellipsoid space
-        double distanceSquared = dx * dx + dy * dy + dz * dz;
-        double renderDistanceSquared = baseRenderDistance * baseRenderDistance;
-
-        // If distance is greater than render distance, cull this chunk
-        return distanceSquared > renderDistanceSquared;
+        return shouldRender;
     }
 
     /**

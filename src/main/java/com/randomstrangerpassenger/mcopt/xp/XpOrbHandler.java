@@ -12,8 +12,21 @@ import java.util.List;
  */
 public final class XpOrbHandler {
 
+    // Cache config values to avoid repeated .get() calls
+    private static double cachedMergeRadius = MCOPTConfig.XP_ORB_MERGE_RADIUS.get();
+    private static int cachedMergeDelay = MCOPTConfig.XP_ORB_MERGE_DELAY.get();
+
     private XpOrbHandler() {
         // Utility class
+    }
+
+    /**
+     * Refreshes cached config values.
+     * Call this when config is reloaded.
+     */
+    public static void refreshConfigCache() {
+        cachedMergeRadius = MCOPTConfig.XP_ORB_MERGE_RADIUS.get();
+        cachedMergeDelay = MCOPTConfig.XP_ORB_MERGE_DELAY.get();
     }
 
     /**
@@ -28,11 +41,8 @@ public final class XpOrbHandler {
             return 0;
         }
 
-        // Get merge radius from config
-        double mergeRadius = MCOPTConfig.XP_ORB_MERGE_RADIUS.get();
-
-        // Create bounding box for searching nearby orbs
-        AABB searchBox = targetOrb.getBoundingBox().inflate(mergeRadius);
+        // Create bounding box for searching nearby orbs using cached radius
+        AABB searchBox = targetOrb.getBoundingBox().inflate(cachedMergeRadius);
 
         // Find nearby experience orbs
         List<ExperienceOrb> nearbyOrbs = targetOrb.level().getEntitiesOfClass(
@@ -69,6 +79,6 @@ public final class XpOrbHandler {
      * @return The number of ticks to wait between merge checks
      */
     public static int getMergeCheckDelay() {
-        return MCOPTConfig.XP_ORB_MERGE_DELAY.get();
+        return cachedMergeDelay;
     }
 }

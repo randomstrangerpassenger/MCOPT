@@ -29,13 +29,16 @@ public class HealthStabilityHandler {
     private static final Map<UUID, Double> LAST_MAX_HEALTH = new HashMap<>();
     private static final double EPSILON = 0.0001D;
 
+    // Cache config value to avoid repeated .get() calls every tick
+    private static boolean enableMaxHealthStability = MCOPTConfig.ENABLE_MAX_HEALTH_STABILITY.get();
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.CLIENT || event.phase != TickEvent.Phase.END) {
             return;
         }
 
-        if (!MCOPTConfig.ENABLE_MAX_HEALTH_STABILITY.get()) {
+        if (!enableMaxHealthStability) {
             return;
         }
 

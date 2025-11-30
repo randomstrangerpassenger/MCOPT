@@ -3,6 +3,12 @@ plugins {
     id 'idea'
     id 'eclipse'
     id 'net.neoforged.gradle.userdev' version '7.1.4'
+    id 'me.champeau.jmh' version '0.7.2' apply false
+}
+
+// Apply JMH plugin conditionally for benchmarking
+if (project.hasProperty('enableJmh')) {
+    apply plugin: 'me.champeau.jmh'
 }
 
 version = project.mod_version
@@ -54,6 +60,12 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation "net.neoforged:neoforge:${neoforge_version}"
+
+    // JMH dependencies for benchmarking (only when enabled)
+    if (project.hasProperty('enableJmh')) {
+        jmh 'org.openjdk.jmh:jmh-core:1.37'
+        jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {

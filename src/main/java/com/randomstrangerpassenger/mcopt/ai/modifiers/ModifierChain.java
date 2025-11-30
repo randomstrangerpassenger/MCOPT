@@ -5,20 +5,30 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * A chain of goal modifiers that are applied in sequence.
- *
+ * <p>
  * Modifiers are executed in order until one returns null (removes the goal)
  * or all modifiers have been applied.
- *
- * Includes performance optimization through call frequency tracking.
+ * <p>
+ * <b>Simplified Design:</b>
+ * Previous implementation used runtime "bubble up" optimization based on call frequency.
+ * This has been removed because:
+ * <ul>
+ *   <li>Typically only 2-3 modifiers per chain - minimal benefit from reordering</li>
+ *   <li>ArrayList mutations during iteration caused potential thread-safety issues</li>
+ *   <li>Call frequency tracking added unnecessary overhead for small lists</li>
+ * </ul>
+ * <p>
+ * Instead, modifiers should be added in priority order during initialization,
+ * with highest-priority (most likely to modify/remove) modifiers first.
  */
 public class ModifierChain implements GoalModifier {
 
-    private final List<ModifierNode> modifiers = new ArrayList<>();
-    private boolean enableOptimization = true;
+    private final List<GoalModifier> modifiers = new ArrayList<>();
 
     /**
      * Add a modifier to the end of the chain.
@@ -26,7 +36,7 @@ public class ModifierChain implements GoalModifier {
      * @param modifier The modifier to add
      */
     public void add(GoalModifier modifier) {
-        modifiers.add(new ModifierNode(modifier));
+        modifiers.add(modifier);
     }
 
     /**
@@ -36,18 +46,22 @@ public class ModifierChain implements GoalModifier {
      * @param other The chain whose modifiers to add
      */
     public void addAll(ModifierChain other) {
-        for (ModifierNode node : other.modifiers) {
-            modifiers.add(new ModifierNode(node.modifier));
-        }
+        modifiers.addAll(other.modifiers);
     }
 
     /**
-     * Enable or disable automatic optimization (call frequency reordering).
+     * Sort modifiers by a custom comparator.
+     * This should be called during initialization, before the chain is used.
+     * <p>
+     * Example usage:
+     * <pre>
+     * chain.sortBy(Comparator.comparing(modifier -> modifier.getPriority()));
+     * </pre>
      *
-     * @param enable true to enable optimization
+     * @param comparator Comparator to sort modifiers
      */
-    public void setOptimizationEnabled(boolean enable) {
-        this.enableOptimization = enable;
+    public void sortBy(Comparator<GoalModifier> comparator) {
+        modifiers.sort(comparator);
     }
 
     @Nullable
@@ -55,20 +69,9 @@ public class ModifierChain implements GoalModifier {
     public Goal modify(Mob mob, Goal goal) {
         Goal current = goal;
 
-        for (int i = 0; i < modifiers.size(); i++) {
-            ModifierNode node = modifiers.get(i);
-            current = node.modifier.modify(mob, current);
-
-            // Track call frequency for optimization
-            if (enableOptimization) {
-                node.callCount++;
-
-                // Bubble up frequently-called modifiers for better performance
-                if (i > 0 && node.callCount > modifiers.get(i - 1).callCount) {
-                    modifiers.set(i, modifiers.get(i - 1));
-                    modifiers.set(i - 1, node);
-                }
-            }
+        // Apply modifiers in sequence
+        for (GoalModifier modifier : modifiers) {
+            current = modifier.modify(mob, current);
 
             // If goal was removed, stop processing
             if (current == null) {
@@ -89,14 +92,18 @@ public class ModifierChain implements GoalModifier {
     }
 
     /**
-     * Internal node that wraps a modifier with call tracking.
+     * Check if this chain is empty.
+     *
+     * @return true if no modifiers are registered
      */
-    private static class ModifierNode {
-        final GoalModifier modifier;
-        long callCount = 0;
+    public boolean isEmpty() {
+        return modifiers.isEmpty();
+    }
 
-        ModifierNode(GoalModifier modifier) {
-            this.modifier = modifier;
-        }
+    /**
+     * Clear all modifiers from this chain.
+     */
+    public void clear() {
+        modifiers.clear();
     }
 }

@@ -6,10 +6,12 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 
 /**
- * Centralized feature toggle evaluator.
+ * Centralized feature toggle evaluator with data-driven approach.
  * <p>
  * Resolves whether a feature should be active by combining user configuration
  * with compatibility checks against other mods.
@@ -19,81 +21,162 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class FeatureToggles {
 
-    private static final AtomicBoolean xpOrbMergingEnabled = new AtomicBoolean(false);
-    private static final AtomicBoolean aiOptimizationsEnabled = new AtomicBoolean(false);
-    private static final AtomicBoolean leakGuardEnabled = new AtomicBoolean(false);
-    private static final AtomicBoolean dynamicFpsEnabled = new AtomicBoolean(false);
-    private static final AtomicBoolean betterSnowLogicEnabled = new AtomicBoolean(false);
-    private static final AtomicBoolean actionGuardEnabled = new AtomicBoolean(false);
+    private static final Map<String, FeatureToggle> TOGGLES = new LinkedHashMap<>();
+
+    static {
+        // Register all feature toggles with their configuration and incompatible mods
+        register("xpOrbMerging",
+                MCOPTConfig.ENABLE_XP_ORB_MERGING::get,
+                "XP Orb merging",
+                "clumps");
+
+        register("aiOptimizations",
+                MCOPTConfig.ENABLE_AI_OPTIMIZATIONS::get,
+                "AI optimization",
+                "aiimprovements");
+
+        register("leakGuard",
+                MCOPTConfig.ENABLE_LEAK_GUARD::get,
+                "Leak Guard",
+                "alltheleaks", "memoryleakfix");
+
+        register("dynamicFps",
+                MCOPTConfig.ENABLE_DYNAMIC_FPS::get,
+                "Dynamic FPS controller",
+                "dynamic_fps", "fps_reducer");
+
+        register("betterSnowLogic",
+                () -> MCOPTConfig.ENABLE_SNOW_ACCUMULATION_FIX.get() && MCOPTConfig.ENABLE_BETTER_SNOW_LOGIC.get(),
+                "Better Snow Logic");
+
+        register("actionGuard",
+                MCOPTConfig.ENABLE_ACTION_GUARD::get,
+                "Action Guard",
+                "dontdothat");
+    }
 
     private FeatureToggles() {
     }
 
+    /**
+     * Register a feature toggle.
+     *
+     * @param key Unique identifier for the feature
+     * @param configSupplier Supplier that returns the config value
+     * @param displayName Human-readable name for logging
+     * @param incompatibleMods Mod IDs that conflict with this feature
+     */
+    private static void register(String key, BooleanSupplier configSupplier, String displayName, String... incompatibleMods) {
+        TOGGLES.put(key, new FeatureToggle(configSupplier, displayName, incompatibleMods));
+    }
+
+    /**
+     * Refresh all feature toggles based on current configuration and loaded mods.
+     * Called during initialization and when configuration is reloaded.
+     */
     public static void refreshFromConfig() {
         ModList modList = ModList.get();
 
-        boolean clumpsLoaded = modList.isLoaded("clumps");
-        xpOrbMergingEnabled.set(MCOPTConfig.ENABLE_XP_ORB_MERGING.get() && !clumpsLoaded);
-        if (clumpsLoaded && MCOPTConfig.ENABLE_XP_ORB_MERGING.get()) {
-            MCOPT.LOGGER.info("Clumps가 감지되었습니다. 충돌 방지를 위해 내장된 경험치 최적화 기능을 비활성화합니다.");
-        }
+        for (Map.Entry<String, FeatureToggle> entry : TOGGLES.entrySet()) {
+            String key = entry.getKey();
+            FeatureToggle toggle = entry.getValue();
 
-        boolean aiImprovementsLoaded = modList.isLoaded("aiimprovements");
-        aiOptimizationsEnabled.set(MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get() && !aiImprovementsLoaded);
-        if (aiImprovementsLoaded && MCOPTConfig.ENABLE_AI_OPTIMIZATIONS.get()) {
-            MCOPT.LOGGER.info("AI-Improvements가 감지되었습니다. 중복 적용을 피하기 위해 AI 최적화 기능을 비활성화합니다.");
-        }
+            boolean configEnabled = toggle.configSupplier.getAsBoolean();
+            boolean hasIncompatibleMod = toggle.hasIncompatibleMod(modList);
 
-        boolean leakModLoaded = modList.isLoaded("alltheleaks") || modList.isLoaded("memoryleakfix");
-        leakGuardEnabled.set(MCOPTConfig.ENABLE_LEAK_GUARD.get() && !leakModLoaded);
-        if (leakModLoaded && MCOPTConfig.ENABLE_LEAK_GUARD.get()) {
-            MCOPT.LOGGER.info("AllTheLeaks/MemoryLeakFix 모드가 감지되었습니다. 충돌을 피하기 위해 Leak Guard를 비활성화합니다.");
-        }
+            toggle.enabled.set(configEnabled && !hasIncompatibleMod);
 
-        boolean dynamicFpsModLoaded = modList.isLoaded("dynamic_fps") || modList.isLoaded("fps_reducer");
-        dynamicFpsEnabled.set(MCOPTConfig.ENABLE_DYNAMIC_FPS.get() && !dynamicFpsModLoaded);
-        if (dynamicFpsModLoaded && MCOPTConfig.ENABLE_DYNAMIC_FPS.get()) {
-            MCOPT.LOGGER.info("Dynamic FPS/FPS Reducer 모드가 감지되었습니다. 내장 동적 FPS 컨트롤러를 비활성화합니다.");
-        }
-
-        betterSnowLogicEnabled.set(MCOPTConfig.ENABLE_SNOW_ACCUMULATION_FIX.get()
-                && MCOPTConfig.ENABLE_BETTER_SNOW_LOGIC.get());
-
-        boolean dontDoThatLoaded = modList.isLoaded("dontdothat");
-        actionGuardEnabled.set(MCOPTConfig.ENABLE_ACTION_GUARD.get() && !dontDoThatLoaded);
-        if (dontDoThatLoaded && MCOPTConfig.ENABLE_ACTION_GUARD.get()) {
-            MCOPT.LOGGER.info("dontDoThat 모드가 감지되었습니다. 중복 적용을 피하기 위해 MCOPT 액션 가드를 비활성화합니다.");
+            // Log when feature is disabled due to mod conflict
+            if (configEnabled && hasIncompatibleMod) {
+                String conflictingMods = String.join(", ", toggle.getLoadedIncompatibleMods(modList));
+                MCOPT.LOGGER.info("{} 모드가 감지되었습니다. 충돌 방지를 위해 {}을(를) 비활성화합니다.",
+                        conflictingMods, toggle.displayName);
+            }
         }
     }
 
+    // Public getters for backward compatibility
+
     public static boolean isXpOrbMergingEnabled() {
-        return xpOrbMergingEnabled.get();
+        return isEnabled("xpOrbMerging");
     }
 
     public static boolean isAiOptimizationsEnabled() {
-        return aiOptimizationsEnabled.get();
+        return isEnabled("aiOptimizations");
     }
 
     public static boolean isLeakGuardEnabled() {
-        return leakGuardEnabled.get();
+        return isEnabled("leakGuard");
     }
 
     public static boolean isDynamicFpsEnabled() {
-        return dynamicFpsEnabled.get();
+        return isEnabled("dynamicFps");
     }
 
     public static boolean isBetterSnowLogicEnabled() {
-        return betterSnowLogicEnabled.get();
+        return isEnabled("betterSnowLogic");
     }
 
     public static boolean isActionGuardEnabled() {
-        return actionGuardEnabled.get();
+        return isEnabled("actionGuard");
+    }
+
+    /**
+     * Check if a feature is enabled by its key.
+     *
+     * @param key Feature key
+     * @return true if the feature is enabled, false otherwise
+     */
+    private static boolean isEnabled(String key) {
+        FeatureToggle toggle = TOGGLES.get(key);
+        return toggle != null && toggle.enabled.get();
     }
 
     public static void onModConfigReloaded(ModConfigEvent event) {
         ModConfig config = event.getConfig();
         if (config.getModId().equals(MCOPT.MOD_ID)) {
             refreshFromConfig();
+        }
+    }
+
+    /**
+     * Represents a single feature toggle with its configuration and compatibility rules.
+     */
+    private static class FeatureToggle {
+        private final BooleanSupplier configSupplier;
+        private final String displayName;
+        private final Set<String> incompatibleMods;
+        private final AtomicBoolean enabled;
+
+        FeatureToggle(BooleanSupplier configSupplier, String displayName, String... incompatibleMods) {
+            this.configSupplier = configSupplier;
+            this.displayName = displayName;
+            this.incompatibleMods = incompatibleMods.length > 0
+                    ? Set.of(incompatibleMods)
+                    : Collections.emptySet();
+            this.enabled = new AtomicBoolean(false);
+        }
+
+        /**
+         * Check if any incompatible mod is loaded.
+         *
+         * @param modList The mod list to check against
+         * @return true if at least one incompatible mod is loaded
+         */
+        boolean hasIncompatibleMod(ModList modList) {
+            return incompatibleMods.stream().anyMatch(modList::isLoaded);
+        }
+
+        /**
+         * Get list of loaded incompatible mods.
+         *
+         * @param modList The mod list to check against
+         * @return List of loaded incompatible mod IDs
+         */
+        List<String> getLoadedIncompatibleMods(ModList modList) {
+            return incompatibleMods.stream()
+                    .filter(modList::isLoaded)
+                    .toList();
         }
     }
 }

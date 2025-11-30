@@ -1,5 +1,6 @@
 package com.randomstrangerpassenger.mcopt.golem;
 
+import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.eventbus.api.Event;
 
@@ -22,10 +24,11 @@ import java.util.Optional;
  * This handler gently snaps MOB_SUMMONED golems downward to the nearest safe ground so they can
  * actually appear inside the intended spawn zone without changing villager logic.
  */
+@EventBusSubscriber(modid = MCOPT.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public final class GolemSpawnFixHandler {
 
     @SubscribeEvent
-    public void onGolemCheckSpawn(MobSpawnEvent.CheckSpawn event) {
+    public static void onGolemCheckSpawn(MobSpawnEvent.CheckSpawn event) {
         if (!MCOPTConfig.ENABLE_GOLEM_SPAWN_FIX.get()) {
             return;
         }
@@ -46,7 +49,7 @@ public final class GolemSpawnFixHandler {
         });
     }
 
-    private Optional<BlockPos> findStableSpawnBelow(LevelReader level, BlockPos start, IronGolem golem) {
+    private static Optional<BlockPos> findStableSpawnBelow(LevelReader level, BlockPos start, IronGolem golem) {
         BlockPos.MutableBlockPos cursor = start.mutable();
         int searchDepth = MCOPTConfig.GOLEM_SPAWN_SEARCH_RANGE.get();
         for (int i = 0; i <= searchDepth; i++) {
@@ -61,7 +64,7 @@ public final class GolemSpawnFixHandler {
         return Optional.empty();
     }
 
-    private boolean isSpawnableSurface(LevelReader level, BlockPos pos, IronGolem golem) {
+    private static boolean isSpawnableSurface(LevelReader level, BlockPos pos, IronGolem golem) {
         if (!level.isEmptyBlock(pos) || !level.isEmptyBlock(pos.above())) {
             return false; // Need two blocks of air for the golem's head
         }

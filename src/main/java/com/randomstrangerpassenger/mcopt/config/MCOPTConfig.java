@@ -97,6 +97,11 @@ public class MCOPTConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_SNOW_ACCUMULATION_FIX;
     public static final ModConfigSpec.BooleanValue ENABLE_BETTER_SNOW_LOGIC;
 
+    // Bee Pathfinding Stability
+    public static final ModConfigSpec.BooleanValue ENABLE_BEE_STUCK_FIX;
+    public static final ModConfigSpec.IntValue BEE_STUCK_TIMEOUT_TICKS;
+    public static final ModConfigSpec.IntValue BEE_RELINK_COOLDOWN_TICKS;
+
     // Village Safety
     public static final ModConfigSpec.BooleanValue ENABLE_GOLEM_SPAWN_FIX;
     public static final ModConfigSpec.IntValue GOLEM_SPAWN_SEARCH_RANGE;
@@ -331,6 +336,24 @@ public class MCOPTConfig {
         ENABLE_BETTER_SNOW_LOGIC = BUILDER
                 .comment("Enable MCOPT's improved snow accumulation logic (disable for vanilla behaviour)")
                 .define("enableBetterSnowLogic", true);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Bee pathfinding stability improvements")
+               .push("bee_stability");
+
+        ENABLE_BEE_STUCK_FIX = BUILDER
+                .comment("Automatically detect and recover bees stuck trying to path to unreachable hives",
+                        "Prevents bees from indefinitely attempting to reach blocked or invalid hive positions")
+                .define("enableBeeStuckFix", true);
+
+        BEE_STUCK_TIMEOUT_TICKS = BUILDER
+                .comment("Number of consecutive ticks with failed pathfinding before considering the bee stuck")
+                .defineInRange("beeStuckTimeoutTicks", 200, 40, 1200);
+
+        BEE_RELINK_COOLDOWN_TICKS = BUILDER
+                .comment("Cooldown period in ticks before a bee can attempt to find a new hive after clearing a stuck target")
+                .defineInRange("beeRelinkCooldownTicks", 200, 0, 600);
 
         BUILDER.pop();
 

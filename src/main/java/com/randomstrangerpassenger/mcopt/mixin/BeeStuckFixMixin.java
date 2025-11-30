@@ -1,6 +1,7 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
-import com.randomstrangerpassenger.mcopt.MCOpt;
+import com.randomstrangerpassenger.mcopt.MCOPT;
+import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -16,6 +17,10 @@ public abstract class BeeStuckFixMixin {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void mcopt$stabilityGuard(CallbackInfo ci) {
+        if (!MCOPTConfig.ENABLE_BEE_STUCK_FIX.get()) {
+            return;
+        }
+
         Bee self = (Bee) (Object) this;
         if (self.level().isClientSide) {
             return;
@@ -30,11 +35,13 @@ public abstract class BeeStuckFixMixin {
                 mcopt$pathingFailTicks = 0;
             }
 
-            if (mcopt$pathingFailTicks > 200) {
+            int timeout = MCOPTConfig.BEE_STUCK_TIMEOUT_TICKS.get();
+            if (mcopt$pathingFailTicks > timeout) {
+                int cooldown = MCOPTConfig.BEE_RELINK_COOLDOWN_TICKS.get();
                 self.setHivePos(null);
-                self.setStayOutOfHiveCountdown(200);
+                self.setStayOutOfHiveCountdown(cooldown);
                 mcopt$pathingFailTicks = 0;
-                MCOpt.LOGGER.debug("[BeeGuard] Cleared stalled hive target to prevent runaway pathing.");
+                MCOPT.LOGGER.debug("[BeeGuard] Cleared stalled hive target after {} ticks to prevent runaway pathing", timeout);
             }
         }
     }

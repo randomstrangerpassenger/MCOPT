@@ -5,10 +5,13 @@ import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
 import com.randomstrangerpassenger.mcopt.golem.GolemSpawnFixHandler;
 import com.randomstrangerpassenger.mcopt.client.dynamicfps.DynamicFpsManager;
 import com.randomstrangerpassenger.mcopt.client.bucket.BucketPreviewHandler;
+import com.randomstrangerpassenger.mcopt.client.IdleFpsController;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
 import com.randomstrangerpassenger.mcopt.clearlag.ClearLagManager;
 import com.randomstrangerpassenger.mcopt.safety.ActionGuardHandler;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -40,6 +43,9 @@ public class MCOPT {
         if (FeatureToggles.isActionGuardEnabled()) {
             MinecraftForge.EVENT_BUS.register(new ActionGuardHandler());
         }
+
+        // Client-only initialization
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> IdleFpsController::register);
 
         // Register setup handlers
         modEventBus.addListener(this::commonSetup);

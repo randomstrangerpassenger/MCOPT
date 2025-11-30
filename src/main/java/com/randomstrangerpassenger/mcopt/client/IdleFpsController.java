@@ -1,6 +1,6 @@
 package com.randomstrangerpassenger.mcopt.client;
 
-import com.randomstrangerpassenger.mcopt.MCOpt;
+import com.randomstrangerpassenger.mcopt.MCOPT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.TickEvent;
  * 유휴 입력 감지를 통해 FPS, 렌더 거리 등을 자동으로 조정하여
  * 백그라운드/무입력 상태에서 자원 사용량을 줄인다.
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MCOpt.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = MCOPT.MOD_ID)
 public final class IdleFpsController {
     private static final long IDLE_THRESHOLD_MS = 5_000L;
     private static final int REDUCED_FPS = 30;
@@ -79,7 +79,7 @@ public final class IdleFpsController {
         minecraft.options.framerateLimit().set(REDUCED_FPS);
         int newRenderDistance = Mth.clamp(previousRenderDistance - 4, MIN_RENDER_DISTANCE, previousRenderDistance);
         minecraft.options.renderDistance().set(newRenderDistance);
-        MCOpt.LOGGER.debug("[IdleBoost] Idle state detected: FPS {} -> {}, RenderDistance {} -> {}", previousFpsLimit, REDUCED_FPS, previousRenderDistance, newRenderDistance);
+        MCOPT.LOGGER.debug("[IdleBoost] Idle state detected: FPS {} -> {}, RenderDistance {} -> {}", previousFpsLimit, REDUCED_FPS, previousRenderDistance, newRenderDistance);
     }
 
     private static void restoreClientSettings() {
@@ -95,6 +95,6 @@ public final class IdleFpsController {
         if (previousRenderDistance > 0) {
             minecraft.options.renderDistance().set(previousRenderDistance);
         }
-        MCOpt.LOGGER.debug("[IdleBoost] Interaction detected: restored FPS and render distance.");
+        MCOPT.LOGGER.debug("[IdleBoost] Interaction detected: restored FPS and render distance.");
     }
 }

@@ -1,6 +1,6 @@
 package com.randomstrangerpassenger.mcopt.mixin;
 
-import com.randomstrangerpassenger.mcopt.MCOpt;
+import com.randomstrangerpassenger.mcopt.MCOPT;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
@@ -38,7 +38,7 @@ public abstract class ParticleEngineMixin {
         mcopt$spawnedThisTick++;
         if (mcopt$spawnedThisTick > PER_TICK_SPAWN_LIMIT) {
             ci.cancel();
-            MCOpt.LOGGER.debug("[ParticleCull] Throttled particle spawn at tick {} ({} > {})", tick, mcopt$spawnedThisTick, PER_TICK_SPAWN_LIMIT);
+            MCOPT.LOGGER.debug("[ParticleCull] Throttled particle spawn at tick {} ({} > {})", tick, mcopt$spawnedThisTick, PER_TICK_SPAWN_LIMIT);
             return;
         }
 

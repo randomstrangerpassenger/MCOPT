@@ -543,6 +543,32 @@ The compiled mod will be located in `build/libs/mcopt-1.0.0.jar`
 ./gradlew genVSCodeRuns
 ```
 
+### Running Benchmarks
+
+MCOPT includes JMH (Java Microbenchmark Harness) benchmarks to verify the effectiveness of optimizations like MathCache on different Java versions and CPU architectures.
+
+```bash
+# Run all benchmarks
+./gradlew jmh -PenableJmh
+
+# Run specific benchmark
+./gradlew jmh -PenableJmh -Pjmh.includes='MathCacheBenchmark'
+```
+
+**Interpreting Benchmark Results:**
+
+For `MathCacheBenchmark`:
+- Compare `baselineAtan2_JavaMath` vs `optimizedAtan2_MathCache`
+- Compare `baselineSin_JavaMath` vs `optimizedSin_MathCache`
+- Check `realWorldScenario_*` benchmarks for actual AI usage patterns
+
+**Decision Criteria:**
+- If MathCache.atan2 is > 50% faster: Keep atan2 caching ✅
+- If MathCache.sin/cos is < 20% faster: Consider removing (Java 21+ has fast native impl) ⚠️
+- Check memory footprint: sin/cos tables use 32KB combined 💾
+
+**Note:** Modern CPUs (2020+) with Java 21+ may show minimal benefit from sin/cos caching due to hardware-accelerated Math functions. The atan2 cache typically remains beneficial across all platforms.
+
 ## Technical Details
 
 ### Architecture

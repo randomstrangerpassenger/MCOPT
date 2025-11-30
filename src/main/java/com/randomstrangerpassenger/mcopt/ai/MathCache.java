@@ -4,25 +4,52 @@ import com.randomstrangerpassenger.mcopt.MCOPT;
 
 /**
  * High-performance math function caching system for AI calculations.
- *
+ * <p>
  * This class pre-computes and caches commonly used math functions (atan2, sin, cos)
  * to avoid expensive runtime calculations during entity AI tick processing.
+ * <p>
+ * <b>Inspiration:</b> Based on AI-Improvements mod's FastTrig concept, with extended functionality
+ * <p>
+ * <b>Current Usage:</b>
+ * <ul>
+ *   <li>atan2: Used in {@link OptimizedLookControl} for mob rotation calculations</li>
+ *   <li>sin/cos: Currently UNUSED - candidate for removal</li>
+ * </ul>
+ * <p>
+ * <b>Performance Analysis:</b>
+ * <table border="1">
+ *   <tr><th>Function</th><th>Minecraft 1.7-1.9</th><th>Minecraft 1.10+</th><th>Java 21+ / Modern CPU</th></tr>
+ *   <tr><td>atan2 cache</td><td>Very beneficial</td><td>Beneficial</td><td>Needs benchmarking</td></tr>
+ *   <tr><td>sin/cos cache</td><td>10-20% FPS gain</td><td>2-5% FPS gain</td><td>Likely negligible</td></tr>
+ * </table>
+ * <p>
+ * <b>Trade-offs:</b>
+ * <ul>
+ *   <li>Memory: ~16KB (atan2: 1KB, sin: 16KB, cos: 16KB)</li>
+ *   <li>CPU Cache: May cause L1/L2 cache pressure, pushing out more frequently used data</li>
+ *   <li>Precision: Slight loss due to table interpolation vs hardware FPU</li>
+ *   <li>Modern CPUs: Hardware-accelerated Math functions may outperform table lookups</li>
+ * </ul>
+ * <p>
+ * <b>Benchmark Instructions:</b>
+ * <pre>
+ * # Run JMH benchmarks to verify effectiveness on your system
+ * ./gradlew jmh -PenableJmh
  *
- * Inspired by AI-Improvements mod's FastTrig, but with extended functionality:
- * - atan2 caching (original from AI-Improvements concept) - Most effective
- * - sin/cos caching (additional optimization) - May need benchmarking
- * - Higher precision options
+ * # Interpret results:
+ * - If atan2 cache is > 50% faster: Keep atan2 caching
+ * - If sin/cos cache is < 20% faster: Consider removing (Java 21 has fast native impl)
+ * - Check "realWorldScenario" benchmarks for actual usage patterns
+ * </pre>
+ * <p>
+ * <b>Removal Candidates:</b>
+ * <ul>
+ *   <li>sin/cos tables: Currently unused, occupying 32KB memory</li>
+ *   <li>If benchmarks show < 20% improvement, remove to reduce memory footprint</li>
+ * </ul>
  *
- * Performance impact:
- * - atan2 caching: Consistently beneficial across all versions
- * - sin/cos caching: Effectiveness varies by Java version and CPU
- *   - Minecraft 1.7-1.9: Significant FPS improvement (10-20%)
- *   - Minecraft 1.10+: Small improvement (2-5%)
- *   - Java 21+ with modern CPUs: Marginal benefit, needs benchmarking
- * - Memory cost: ~16KB for all tables combined
- *
- * TODO: Benchmark sin/cos caching effectiveness on Java 21 with modern CPUs
- *       Consider making sin/cos caching optional via config if not beneficial
+ * @see OptimizedLookControl
+ * @see com.randomstrangerpassenger.mcopt.benchmark.MathCacheBenchmark
  */
 public class MathCache {
 

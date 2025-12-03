@@ -53,7 +53,14 @@ public enum FeatureKey {
      * Damage tilt fix
      * Fixes incorrect camera tilt direction when taking damage
      */
-    DAMAGE_TILT_FIX("damageTiltFix", "Damage Tilt Fix");
+    DAMAGE_TILT_FIX("damageTiltFix", "Damage Tilt Fix"),
+
+    /**
+     * Smart leaves culling
+     * Removes rendering of inner leaf blocks hidden by outer leaves
+     * OptiLeaves-style optimization for forest biomes
+     */
+    SMART_LEAVES("smartLeaves", "Smart Leaves Culling");
 
     private final String key;
     private final String displayName;

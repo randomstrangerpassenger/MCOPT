@@ -21,6 +21,7 @@
     "client.ParticleEngineMixin",
     "client.RenderSectionMixin",
     "client.ParticleMixin",
+    "client.LeavesBlockMixin",
     "accessor.RenderSectionAccessor"
   ],
   "injectors": {

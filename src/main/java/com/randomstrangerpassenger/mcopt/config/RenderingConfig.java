@@ -34,6 +34,10 @@ public class RenderingConfig {
     public static final ModConfigSpec.IntValue PARTICLE_OCCLUSION_CHECK_INTERVAL;
     public static final ModConfigSpec.DoubleValue PARTICLE_CULLING_RANGE;
 
+    // Smart Leaves Settings
+    public static final ModConfigSpec.BooleanValue ENABLE_SMART_LEAVES;
+    public static final ModConfigSpec.IntValue LEAVES_CULLING_DEPTH;
+
     static {
         BUILDER.comment("MCOPT Rendering Optimizations Configuration")
                .push("rendering");
@@ -128,6 +132,26 @@ public class RenderingConfig {
                         "Particles beyond this range skip occlusion tests to reduce overhead."
                 )
                 .defineInRange("particleCullingRange", 48.0, 8.0, 160.0);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Smart Leaves Optimization")
+               .push("smart_leaves");
+
+        ENABLE_SMART_LEAVES = BUILDER
+                .comment("Enable smart leaves culling (OptiLeaves-style optimization)",
+                        "Removes rendering of inner leaf blocks that are hidden by outer leaves",
+                        "Significantly improves FPS in forest biomes without visible quality loss",
+                        "Auto-disables if cull-leaves, moreculling, optileaves, or cull-less-leaves is detected")
+                .define("enableSmartLeaves", true);
+
+        LEAVES_CULLING_DEPTH = BUILDER
+                .comment("Minimum depth of leaves before culling is applied",
+                        "Higher values = more aggressive culling but may make trees look hollow",
+                        "0 = cull all adjacent same-type leaves (most aggressive)",
+                        "2 = only cull leaves 2+ blocks deep from surface (recommended, Cull Less Leaves style)",
+                        "Set to 0 for maximum performance in dense forests")
+                .defineInRange("leavesCullingDepth", 2, 0, 5);
 
         BUILDER.pop();
         BUILDER.pop();

@@ -112,10 +112,13 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **희귀 변이 식별**: 열대어 패턴/색상 조합, 아홀로틀 변종 색상을 바로 보여 레어 물고기나 파란 아홀로틀을 놓치지 않음
 - **완전 클라이언트 사이드**: 시각 정보만 추가하므로 서버 권한 없이도 안전하게 사용 가능, 다른 모드 버킷에도 대응
 
-#### 마법 부여 난수 리롤 ⭐ NEW
+#### 마법 부여 시드 동기화 강화 (Enchanter Fix 스타일) ⭐ NEW
 - **진짜 무작위화**: 테이블 슬롯(재료/라피스)이 바뀔 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
+- **즉시 동기화**: 시드 변경 직후 `broadcastChanges()`를 호출하여 클라이언트가 항상 올바른 마법 부여 옵션을 표시하도록 보장
+- **바닐라 버그 수정**: 클라이언트에 오래된 마법 부여 옵션이 표시되는 바닐라 동기화 문제 해결
 - **간단한 설정 토글**: `fixEnchantmentRNG` 옵션으로 기존 바닐라식(플레이어 고정 시드)과 자유롭게 전환
-- **비침습적 구현**: UI/요구 레벨 등 원본 동작은 그대로 유지한 채 난수만 교체해 다른 모드와의 충돌을 최소화
+- **완전 독립 구현**: Enchanter Fix 모드의 문제 해결 방식에서 영감을 받았지만, MCOPT만의 독자적인 Mixin 패턴으로 구현
+- **비침습적 구현**: UI/요구 레벨 등 원본 동작은 그대로 유지한 채 난수와 동기화만 개선해 다른 모드와의 충돌을 최소화
 
 #### Dynamic Memory Management ⭐ NEW
 - **GC Spike Prevention**: Object pooling for Vec3 and BlockPos to reduce garbage collection pressure
@@ -336,10 +339,14 @@ allowSneakBypass = true
 enableBucketPreview = true
 ```
 
-#### Enchanting
+#### Enchanting (Enchanter Fix 스타일)
 ```toml
 [general.enchanting]
-# 테이블 슬롯이 변할 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
+# 테이블 슬롯이 변할 때마다 마법 부여 시드를 새로 뽑고 즉시 클라이언트에 동기화합니다
+# Enchanter Fix 모드와 유사한 기능이지만 MCOPT 자체 구현입니다
+# - 시드가 변경될 때마다 broadcastChanges()를 호출하여 클라이언트 동기화 보장
+# - 바닐라의 "오래된 마법 부여 옵션 표시" 버그를 수정
+# - 플레이어 고정 시드 대신 진정한 무작위 시드를 사용하여 예측을 어렵게 만듭니다
 fixEnchantmentRNG = true
 ```
 
@@ -678,10 +685,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Inspired by optimization strategies from:
+- Inspired by optimization strategies and bug fixes from:
   - **Sodium, Lithium, Embeddium**: Rendering and logic optimizations
   - **AI-Improvements**: Entity AI optimization concepts
   - **FerriteCore**: Memory optimization approaches
+  - **Enchanter Fix**: Enchantment seed synchronization fix approach
+  - **NeoBeeFix**: Bee pathfinding stability improvements
+  - **AllTheLeaks**: Memory leak detection patterns
+  - **AttributeFix**: Attribute range expansion concepts
+  - **dontDoThat**: Safety guard inspiration
+  - **Simple Snowy Fix**: Snow accumulation optimization
+  - **OptiLeaves**: Smart leaves culling techniques
+  - **Clumps**: Experience orb merging inspiration
+  - **Dynamic FPS / FPS Reducer**: FPS throttling concepts
+  - **Fishing Rod Fix**: Fishing bobber cleanup patterns
+  - **Redirected**: Portal redirect mechanism inspiration
 - All implementations are original and independent
 - Thanks to the NeoForge team for the excellent modding platform
 

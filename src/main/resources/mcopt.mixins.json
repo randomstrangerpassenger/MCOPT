@@ -11,6 +11,7 @@
     "server.EntityPortalMixin",
     "server.EnchantmentMenuMixin",
     "server.ExperienceOrbMixin",
+    "server.ServerLoginPacketListenerMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
     "accessor.EnchantmentMenuAccessor"
@@ -18,6 +19,7 @@
   "client": [
     "client.LocalPlayerMixin",
     "client.EntityRenderDispatcherMixin",
+    "client.BlockEntityRenderDispatcherMixin",
     "client.ParticleEngineMixin",
     "client.RenderSectionMixin",
     "client.ParticleMixin",

@@ -1,11 +1,7 @@
 package com.randomstrangerpassenger.mcopt.server.ai.strategy;
 
 import com.randomstrangerpassenger.mcopt.MCOPTEntityTypeTags;
-<<<<<<< HEAD
 import com.randomstrangerpassenger.mcopt.config.PerformanceConfig;
-=======
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import com.randomstrangerpassenger.mcopt.server.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.RemoveGoalModifier;
@@ -53,22 +49,12 @@ public class FishStrategy implements OptimizationStrategy {
         // Random swimming goal - fish swim around randomly
         chain.add(new RemoveGoalModifier(
                 GoalFilter.matchClassHierarchy(RandomSwimmingGoal.class),
-<<<<<<< HEAD
                 PerformanceConfig.REMOVE_FISH_SWIM));
-=======
-                MCOPTConfig.REMOVE_FISH_SWIM
-        ));
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
         // Panic goal - fish flee when taking damage
         chain.add(new RemoveGoalModifier(
                 GoalFilter.matchClassHierarchy(PanicGoal.class),
-<<<<<<< HEAD
                 PerformanceConfig.REMOVE_FISH_PANIC));
-=======
-                MCOPTConfig.REMOVE_FISH_PANIC
-        ));
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
         return chain;
     }

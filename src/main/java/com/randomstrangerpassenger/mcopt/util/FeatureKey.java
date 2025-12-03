@@ -41,7 +41,19 @@ public enum FeatureKey {
      * Action guard
      * Prevents dangerous player actions
      */
-    ACTION_GUARD("actionGuard", "Action Guard");
+    ACTION_GUARD("actionGuard", "Action Guard"),
+
+    /**
+     * Item NBT sanitizer
+     * Fixes item stacking issues by removing empty NBT tags
+     */
+    ITEM_NBT_SANITIZER("itemNbtSanitizer", "Item NBT Sanitizer"),
+
+    /**
+     * Damage tilt fix
+     * Fixes incorrect camera tilt direction when taking damage
+     */
+    DAMAGE_TILT_FIX("damageTiltFix", "Damage Tilt Fix");
 
     private final String key;
     private final String displayName;

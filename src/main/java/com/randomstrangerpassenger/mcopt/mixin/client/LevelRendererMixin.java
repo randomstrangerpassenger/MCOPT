@@ -2,11 +2,7 @@ package com.randomstrangerpassenger.mcopt.mixin.client;
 
 import com.randomstrangerpassenger.mcopt.client.rendering.RenderFrameCache;
 import com.randomstrangerpassenger.mcopt.client.rendering.RenderHandler;
-<<<<<<< HEAD
 import com.randomstrangerpassenger.mcopt.config.RenderingConfig;
-=======
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -23,17 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Optimizes level rendering by implementing elliptical render distance.
-<<<<<<< HEAD
  * This reduces chunk sections rendered by 10-35% compared to vanilla's
  * square/cylindrical rendering.
  * <p>
  * Business logic is delegated to {@link RenderHandler} for better
  * maintainability.
-=======
- * This reduces chunk sections rendered by 10-35% compared to vanilla's square/cylindrical rendering.
- * <p>
- * Business logic is delegated to {@link RenderHandler} for better maintainability.
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
  *
  * Key features:
  * - Elliptical 3D render distance instead of square/cylinder
@@ -64,18 +54,9 @@ public class LevelRendererMixin {
      * Initialize per-frame tracking before rendering starts.
      * Updates the shared RenderFrameCache with camera position and render settings.
      */
-<<<<<<< HEAD
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void initializeFrameTracking(CallbackInfo ci) {
         if (!RenderingConfig.ENABLE_ELLIPTICAL_RENDER_DISTANCE.get()) {
-=======
-    @Inject(
-        method = "renderLevel",
-        at = @At("HEAD")
-    )
-    private void initializeFrameTracking(CallbackInfo ci) {
-        if (!MCOPTConfig.ENABLE_ELLIPTICAL_RENDER_DISTANCE.get()) {
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
             return;
         }
 
@@ -88,7 +69,6 @@ public class LevelRendererMixin {
             mcopt$cameraPosition = camera.getPosition();
 
             // Update shared frame cache for RenderSectionMixin to use
-<<<<<<< HEAD
             double renderDistance = minecraft.options.renderDistance().get()
                     * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
             double verticalStretch = RenderingConfig.VERTICAL_RENDER_STRETCH.get();
@@ -99,18 +79,6 @@ public class LevelRendererMixin {
                     renderDistance,
                     verticalStretch,
                     horizontalStretch);
-=======
-            double renderDistance = minecraft.options.renderDistance().get() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
-            double verticalStretch = MCOPTConfig.VERTICAL_RENDER_STRETCH.get();
-            double horizontalStretch = MCOPTConfig.HORIZONTAL_RENDER_STRETCH.get();
-
-            RenderFrameCache.updateForFrame(
-                mcopt$cameraPosition,
-                renderDistance,
-                verticalStretch,
-                horizontalStretch
-            );
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
         }
     }
 
@@ -120,34 +88,21 @@ public class LevelRendererMixin {
      */
     @Unique
     private boolean mcopt$shouldRenderChunkSection(SectionRenderDispatcher.RenderSection renderSection) {
-<<<<<<< HEAD
         if (!RenderingConfig.ENABLE_ELLIPTICAL_RENDER_DISTANCE.get() || mcopt$cameraPosition == null) {
-=======
-        if (!MCOPTConfig.ENABLE_ELLIPTICAL_RENDER_DISTANCE.get() || mcopt$cameraPosition == null) {
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
             return true;
         }
 
         mcopt$totalChunksThisFrame++;
 
         // Calculate render distance
-<<<<<<< HEAD
         double renderDistance = minecraft.options.renderDistance().get()
                 * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
-=======
-        double renderDistance = minecraft.options.renderDistance().get() * MCOPTConstants.Minecraft.CHUNK_SECTION_SIZE_DOUBLE;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
         // Delegate culling logic to handler
         boolean shouldRender = RenderHandler.shouldRenderChunkSection(
                 renderSection,
                 mcopt$cameraPosition,
-<<<<<<< HEAD
                 renderDistance);
-=======
-                renderDistance
-        );
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
         if (!shouldRender) {
             mcopt$culledChunksThisFrame++;

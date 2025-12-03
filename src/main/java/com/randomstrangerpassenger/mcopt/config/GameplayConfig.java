@@ -4,165 +4,202 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Configuration options for gameplay improvements and fixes.
- * Includes XP orb merging, weather, entity behaviors, portals, and quality-of-life features.
+ * Includes XP orb merging, weather, entity behaviors, portals, and
+ * quality-of-life features.
  */
 public class GameplayConfig {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-    public static final ModConfigSpec SPEC;
+        private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+        public static final ModConfigSpec SPEC;
 
-    // Experience Orb Merging Settings
-    public static final ModConfigSpec.BooleanValue ENABLE_XP_ORB_MERGING;
-    public static final ModConfigSpec.DoubleValue XP_ORB_MERGE_RADIUS;
-    public static final ModConfigSpec.IntValue XP_ORB_MERGE_DELAY;
+        // Experience Orb Merging Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_XP_ORB_MERGING;
+        public static final ModConfigSpec.DoubleValue XP_ORB_MERGE_RADIUS;
+        public static final ModConfigSpec.IntValue XP_ORB_MERGE_DELAY;
 
-    // Weather Optimizations
-    public static final ModConfigSpec.BooleanValue ENABLE_SNOW_ACCUMULATION_FIX;
-    public static final ModConfigSpec.BooleanValue ENABLE_BETTER_SNOW_LOGIC;
+        // Weather Optimizations
+        public static final ModConfigSpec.BooleanValue ENABLE_SNOW_ACCUMULATION_FIX;
+        public static final ModConfigSpec.BooleanValue ENABLE_BETTER_SNOW_LOGIC;
 
-    // Bee Pathfinding Stability
-    public static final ModConfigSpec.BooleanValue ENABLE_BEE_STUCK_FIX;
-    public static final ModConfigSpec.IntValue BEE_STUCK_TIMEOUT_TICKS;
-    public static final ModConfigSpec.IntValue BEE_RELINK_COOLDOWN_TICKS;
+        // Bee Pathfinding Stability
+        public static final ModConfigSpec.BooleanValue ENABLE_BEE_STUCK_FIX;
+        public static final ModConfigSpec.IntValue BEE_STUCK_TIMEOUT_TICKS;
+        public static final ModConfigSpec.IntValue BEE_RELINK_COOLDOWN_TICKS;
 
-    // Village Safety
-    public static final ModConfigSpec.BooleanValue ENABLE_GOLEM_SPAWN_FIX;
-    public static final ModConfigSpec.IntValue GOLEM_SPAWN_SEARCH_RANGE;
+        // Village Safety
+        public static final ModConfigSpec.BooleanValue ENABLE_GOLEM_SPAWN_FIX;
+        public static final ModConfigSpec.IntValue GOLEM_SPAWN_SEARCH_RANGE;
 
-    // Portal Reliability
-    public static final ModConfigSpec.BooleanValue ENABLE_PASSENGER_PORTAL_FIX;
-    public static final ModConfigSpec.BooleanValue ENABLE_PORTAL_REDIRECT;
+        // Portal Reliability
+        public static final ModConfigSpec.BooleanValue ENABLE_PASSENGER_PORTAL_FIX;
+        public static final ModConfigSpec.BooleanValue ENABLE_PORTAL_REDIRECT;
 
-    // Bucket Introspection
-    public static final ModConfigSpec.BooleanValue ENABLE_BUCKET_PREVIEW;
+        // Bucket Introspection
+        public static final ModConfigSpec.BooleanValue ENABLE_BUCKET_PREVIEW;
 
-    // Fishing Reliability
-    public static final ModConfigSpec.BooleanValue ENABLE_FISHING_ROD_FIX;
+        // Fishing Reliability
+        public static final ModConfigSpec.BooleanValue ENABLE_FISHING_ROD_FIX;
 
-    // Enchanting Fixes
-    public static final ModConfigSpec.BooleanValue FIX_ENCHANTMENT_RNG;
+        // Enchanting Fixes
+        public static final ModConfigSpec.BooleanValue FIX_ENCHANTMENT_RNG;
 
-    static {
-        BUILDER.comment("MCOPT Gameplay Improvements and Fixes Configuration")
-               .push("gameplay");
+        // Item Data Sanitizer
+        public static final ModConfigSpec.BooleanValue ENABLE_ITEM_NBT_SANITIZER;
+        public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> ITEM_NBT_SANITIZER_BLACKLIST;
 
-        BUILDER.comment("Experience Orb Merging Optimization")
-               .push("xp_orb_merging");
+        // Damage Tilt Fix
+        public static final ModConfigSpec.BooleanValue ENABLE_DAMAGE_TILT_FIX;
 
-        ENABLE_XP_ORB_MERGING = BUILDER
-                .comment("Enable experience orb merging (Recommended: true)",
-                        "Merges nearby experience orbs into single entities to reduce lag",
-                        "Especially helpful when fighting mobs or breaking ore blocks")
-                .define("enableXpOrbMerging", true);
+        static {
+                BUILDER.comment("MCOPT Gameplay Improvements and Fixes Configuration")
+                                .push("gameplay");
 
-        XP_ORB_MERGE_RADIUS = BUILDER
-                .comment("Radius within which experience orbs will merge (in blocks)",
-                        "Larger radius = more aggressive merging, better performance")
-                .defineInRange("xpOrbMergeRadius", 1.5, 0.5, 5.0);
+                BUILDER.comment("Experience Orb Merging Optimization")
+                                .push("xp_orb_merging");
 
-        XP_ORB_MERGE_DELAY = BUILDER
-                .comment("How often to check for nearby orbs to merge (in ticks)",
-                        "Lower = more frequent merging, Higher = less CPU usage",
-                        "20 ticks = 1 second")
-                .defineInRange("xpOrbMergeDelay", 10, 1, 40);
+                ENABLE_XP_ORB_MERGING = BUILDER
+                                .comment("Enable experience orb merging (Recommended: true)",
+                                                "Merges nearby experience orbs into single entities to reduce lag",
+                                                "Especially helpful when fighting mobs or breaking ore blocks")
+                                .define("enableXpOrbMerging", true);
 
-        BUILDER.pop();
+                XP_ORB_MERGE_RADIUS = BUILDER
+                                .comment("Radius within which experience orbs will merge (in blocks)",
+                                                "Larger radius = more aggressive merging, better performance")
+                                .defineInRange("xpOrbMergeRadius", 1.5, 0.5, 5.0);
 
-        BUILDER.comment("Weather & Snow Optimizations")
-               .push("weather");
+                XP_ORB_MERGE_DELAY = BUILDER
+                                .comment("How often to check for nearby orbs to merge (in ticks)",
+                                                "Lower = more frequent merging, Higher = less CPU usage",
+                                                "20 ticks = 1 second")
+                                .defineInRange("xpOrbMergeDelay", 10, 1, 40);
 
-        ENABLE_SNOW_ACCUMULATION_FIX = BUILDER
-                .comment("Skip redundant neighbor notifications when snow layers thicken during precipitation",
-                        "Reduces chunk rebuild spam during heavy snowfall while keeping visuals identical")
-                .define("enableSnowAccumulationFix", true);
+                BUILDER.pop();
 
-        ENABLE_BETTER_SNOW_LOGIC = BUILDER
-                .comment("Enable MCOPT's improved snow accumulation logic (disable for vanilla behaviour)")
-                .define("enableBetterSnowLogic", true);
+                BUILDER.comment("Weather & Snow Optimizations")
+                                .push("weather");
 
-        BUILDER.pop();
+                ENABLE_SNOW_ACCUMULATION_FIX = BUILDER
+                                .comment("Skip redundant neighbor notifications when snow layers thicken during precipitation",
+                                                "Reduces chunk rebuild spam during heavy snowfall while keeping visuals identical")
+                                .define("enableSnowAccumulationFix", true);
 
-        BUILDER.comment("Bee pathfinding stability improvements")
-               .push("bee_stability");
+                ENABLE_BETTER_SNOW_LOGIC = BUILDER
+                                .comment("Enable MCOPT's improved snow accumulation logic (disable for vanilla behaviour)")
+                                .define("enableBetterSnowLogic", true);
 
-        ENABLE_BEE_STUCK_FIX = BUILDER
-                .comment("Automatically detect and recover bees stuck trying to path to unreachable hives",
-                        "Prevents bees from indefinitely attempting to reach blocked or invalid hive positions")
-                .define("enableBeeStuckFix", true);
+                BUILDER.pop();
 
-        BEE_STUCK_TIMEOUT_TICKS = BUILDER
-                .comment("Number of consecutive ticks with failed pathfinding before considering the bee stuck")
-                .defineInRange("beeStuckTimeoutTicks", 200, 40, 1200);
+                BUILDER.comment("Bee pathfinding stability improvements")
+                                .push("bee_stability");
 
-        BEE_RELINK_COOLDOWN_TICKS = BUILDER
-                .comment("Cooldown period in ticks before a bee can attempt to find a new hive after clearing a stuck target")
-                .defineInRange("beeRelinkCooldownTicks", 200, 0, 600);
+                ENABLE_BEE_STUCK_FIX = BUILDER
+                                .comment("Automatically detect and recover bees stuck trying to path to unreachable hives",
+                                                "Prevents bees from indefinitely attempting to reach blocked or invalid hive positions")
+                                .define("enableBeeStuckFix", true);
 
-        BUILDER.pop();
+                BEE_STUCK_TIMEOUT_TICKS = BUILDER
+                                .comment("Number of consecutive ticks with failed pathfinding before considering the bee stuck")
+                                .defineInRange("beeStuckTimeoutTicks", 200, 40, 1200);
 
-        BUILDER.comment("Village guard reliability")
-               .push("villages");
+                BEE_RELINK_COOLDOWN_TICKS = BUILDER
+                                .comment("Cooldown period in ticks before a bee can attempt to find a new hive after clearing a stuck target")
+                                .defineInRange("beeRelinkCooldownTicks", 200, 0, 600);
 
-        ENABLE_GOLEM_SPAWN_FIX = BUILDER
-                .comment("Gently slides villager-summoned iron golems downward to the nearest safe block",
-                        "Prevents golems from getting stuck on roofs or decorations when villagers trigger spawns")
-                .define("enableGolemSpawnFix", true);
+                BUILDER.pop();
 
-        GOLEM_SPAWN_SEARCH_RANGE = BUILDER
-                .comment("How many blocks downward to search for a safe golem spawn surface",
-                        "Smaller values stay closer to vanilla behavior; larger values help sky-platform farms")
-                .defineInRange("golemSpawnSearchRange", 6, 1, 32);
+                BUILDER.comment("Village guard reliability")
+                                .push("villages");
 
-        BUILDER.pop();
+                ENABLE_GOLEM_SPAWN_FIX = BUILDER
+                                .comment("Gently slides villager-summoned iron golems downward to the nearest safe block",
+                                                "Prevents golems from getting stuck on roofs or decorations when villagers trigger spawns")
+                                .define("enableGolemSpawnFix", true);
 
-        BUILDER.comment("Portal behavior reliability")
-               .push("portals");
+                GOLEM_SPAWN_SEARCH_RANGE = BUILDER
+                                .comment("How many blocks downward to search for a safe golem spawn surface",
+                                                "Smaller values stay closer to vanilla behavior; larger values help sky-platform farms")
+                                .defineInRange("golemSpawnSearchRange", 6, 1, 32);
 
-        ENABLE_PASSENGER_PORTAL_FIX = BUILDER
-                .comment("Carry passengers through Nether/End portals together with their vehicle",
-                        "Prevents riders from being stranded when the mount or vehicle enters a portal first")
-                .define("enablePassengerPortalFix", true);
+                BUILDER.pop();
 
-        ENABLE_PORTAL_REDIRECT = BUILDER
-                .comment(
-                        "Remember the last used portal in each dimension and redirect returns to it to avoid unwanted portal swapping",
-                        "Lightweight MCOPT implementation inspired by Redirected's reliability goal"
-                )
-                .define("enablePortalRedirect", true);
+                BUILDER.comment("Portal behavior reliability")
+                                .push("portals");
 
-        BUILDER.pop();
+                ENABLE_PASSENGER_PORTAL_FIX = BUILDER
+                                .comment("Carry passengers through Nether/End portals together with their vehicle",
+                                                "Prevents riders from being stranded when the mount or vehicle enters a portal first")
+                                .define("enablePassengerPortalFix", true);
 
-        BUILDER.comment("Bucket content introspection")
-               .push("buckets");
+                ENABLE_PORTAL_REDIRECT = BUILDER
+                                .comment(
+                                                "Remember the last used portal in each dimension and redirect returns to it to avoid unwanted portal swapping",
+                                                "Lightweight MCOPT implementation inspired by Redirected's reliability goal")
+                                .define("enablePortalRedirect", true);
 
-        ENABLE_BUCKET_PREVIEW = BUILDER
-                .comment("Show detailed tooltips for buckets to reveal stored fluids or entities",
-                        "Helps identify tropical fish variants, axolotl colors, and modded fluids",
-                        "Purely client-side and compatible with other mods")
-                .define("enableBucketPreview", true);
+                BUILDER.pop();
 
-        BUILDER.pop();
+                BUILDER.comment("Bucket content introspection")
+                                .push("buckets");
 
-        BUILDER.comment("Fishing rod reliability")
-               .push("fishing");
+                ENABLE_BUCKET_PREVIEW = BUILDER
+                                .comment("Show detailed tooltips for buckets to reveal stored fluids or entities",
+                                                "Helps identify tropical fish variants, axolotl colors, and modded fluids",
+                                                "Purely client-side and compatible with other mods")
+                                .define("enableBucketPreview", true);
 
-        ENABLE_FISHING_ROD_FIX = BUILDER
-                .comment("낚싯찌 참조가 어긋나 낚싯대가 먹통이 되는 상황을 자동으로 정리합니다.",
-                        "플레이어가 차원을 이동하거나 낚싯대를 치웠을 때 남아 있는 찌를 안전하게 제거합니다.")
-                .define("enableFishingRodFix", true);
+                BUILDER.pop();
 
-        BUILDER.pop();
+                BUILDER.comment("Fishing rod reliability")
+                                .push("fishing");
 
-        BUILDER.comment("Enchanting behavior fixes")
-               .push("enchanting");
+                ENABLE_FISHING_ROD_FIX = BUILDER
+                                .comment("낚싯찌 참조가 어긋나 낚싯대가 먹통이 되는 상황을 자동으로 정리합니다.",
+                                                "플레이어가 차원을 이동하거나 낚싯대를 치웠을 때 남아 있는 찌를 안전하게 제거합니다.")
+                                .define("enableFishingRodFix", true);
 
-        FIX_ENCHANTMENT_RNG = BUILDER
-                .comment("재료나 라피스가 바뀔 때마다 마법 부여 테이블의 난수 시드를 갱신합니다",
-                        "플레이어 고유 시드로 고정된 기존 방식보다 실제 무작위에 가깝게 만들어 예측을 어렵게 합니다")
-                .define("fixEnchantmentRNG", true);
+                BUILDER.pop();
 
-        BUILDER.pop();
-        BUILDER.pop();
+                BUILDER.comment("Enchanting behavior fixes")
+                                .push("enchanting");
 
-        SPEC = BUILDER.build();
-    }
+                FIX_ENCHANTMENT_RNG = BUILDER
+                                .comment("재료나 라피스가 바뀔 때마다 마법 부여 테이블의 난수 시드를 갱신합니다",
+                                                "플레이어 고유 시드로 고정된 기존 방식보다 실제 무작위에 가깝게 만들어 예측을 어렵게 합니다")
+                                .define("fixEnchantmentRNG", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Item stack merging fixes")
+                                .push("item_data_sanitizer");
+
+                ENABLE_ITEM_NBT_SANITIZER = BUILDER
+                                .comment("빈 NBT 태그를 자동으로 null로 정리하여 아이템 병합 버그를 수정합니다",
+                                                "빈 태그({})를 가진 아이템과 태그가 없는 아이템이 병합되지 않는 문제를 해결합니다",
+                                                "Fixes item stacking issues caused by empty NBT tags")
+                                .define("enableItemNbtSanitizer", true);
+
+                ITEM_NBT_SANITIZER_BLACKLIST = BUILDER
+                                .comment("빈 NBT 태그 정리에서 제외할 아이템 ID 목록",
+                                                "일부 아이템은 빈 태그가 식별자로 필요할 수 있습니다",
+                                                "예: minecraft:player_head",
+                                                "List of item IDs to exclude from empty NBT tag sanitization")
+                                .define("itemBlacklist", java.util.List.of(),
+                                                obj -> obj instanceof String);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Damage tilt camera direction fix")
+                                .push("damage_tilt");
+
+                ENABLE_DAMAGE_TILT_FIX = BUILDER
+                                .comment("피격 시 카메라 틸트 방향을 수정합니다",
+                                                "유효하지 않은 방향 정보(Yaw=0 또는 NaN)를 감지하고 올바른 방향으로 수정합니다",
+                                                "Fixes incorrect camera tilt direction when taking damage")
+                                .define("enableDamageTiltFix", true);
+
+                BUILDER.pop();
+                BUILDER.pop();
+
+                SPEC = BUILDER.build();
+        }
 }

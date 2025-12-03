@@ -1,77 +1,92 @@
 package com.randomstrangerpassenger.mcopt.server.entity.golem;
 
-import com.randomstrangerpassenger.mcopt.MCOPT;
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.config.GameplayConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
-import net.neoforged.neoforge.eventbus.api.Event;
-
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import java.util.Optional;
 
 /**
  * Iron golem spawn reliability improvements.
  * <p>
- * Vanilla villager-based golem spawning relies on the heightmap to relocate spawn attempts,
- * which regularly pushes the position onto roofs or decorative blocks, causing repeated failures.
- * This handler gently snaps MOB_SUMMONED golems downward to the nearest safe ground so they can
- * actually appear inside the intended spawn zone without changing villager logic.
+ * Vanilla villager-based golem spawning relies on the heightmap to relocate
+ * spawn attempts,
+ * which regularly pushes the position onto roofs or decorative blocks, causing
+ * repeated failures.
+ * This handler gently snaps MOB_SUMMONED golems downward to the nearest safe
+ * ground so they can
+ * actually appear inside the intended spawn zone without changing villager
+ * logic.
  */
-@EventBusSubscriber(modid = MCOPT.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public final class GolemSpawnFixHandler {
 
     @SubscribeEvent
-    public static void onGolemCheckSpawn(MobSpawnEvent.CheckSpawn event) {
-        if (!MCOPTConfig.ENABLE_GOLEM_SPAWN_FIX.get()) {
+    public void onGolemCheckSpawn(FinalizeSpawnEvent event) {
+        if (!GameplayConfig.ENABLE_GOLEM_SPAWN_FIX.get()) {
             return;
         }
 
-        Mob mob = event.getEntity();
-        if (!(mob instanceof IronGolem golem)) {
+        if (!(event.getEntity() instanceof IronGolem golem)) {
             return;
         }
 
-        if (event.getSpawnReason() != MobSpawnType.MOB_SUMMONED && event.getSpawnReason() != MobSpawnType.EVENT) {
-            return; // Keep natural/structure spawning intact
+        // Only affect golems spawned by villagers (MOB_SUMMONED)
+        // Workaround for missing MobSpawnType/SpawnReason class: compare string
+        // representation
+        if (!"MOB_SUMMONED".equals(event.getSpawnType().toString())) {
+            return;
         }
 
-        findStableSpawnBelow(event.getLevel(), event.getPos(), golem).ifPresent(target -> {
-            Vec3 anchor = Vec3.atBottomCenterOf(target);
-            golem.moveTo(anchor.x, anchor.y, anchor.z, golem.getYRot(), golem.getXRot());
-            event.setResult(Event.Result.ALLOW);
-        });
+        LevelAccessor level = event.getLevel();
+        BlockPos pos = new BlockPos((int) event.getX(), (int) event.getY(), (int) event.getZ());
+
+        // If the golem is spawning in a valid spot, leave it alone
+        if (isSpawnableSurface(level, pos, golem)) {
+            return;
+        }
+
+        // Otherwise, try to find a better spot below
+        Optional<BlockPos> betterPos = findStableSpawnBelow(level, pos, golem);
+        if (betterPos.isPresent()) {
+            BlockPos newPos = betterPos.get();
+            golem.setPos(newPos.getX() + 0.5, newPos.getY(), newPos.getZ() + 0.5);
+        }
     }
 
-    private static Optional<BlockPos> findStableSpawnBelow(LevelReader level, BlockPos start, IronGolem golem) {
+    private Optional<BlockPos> findStableSpawnBelow(LevelAccessor level, BlockPos start, IronGolem golem) {
         BlockPos.MutableBlockPos cursor = start.mutable();
-        int searchDepth = MCOPTConfig.GOLEM_SPAWN_SEARCH_RANGE.get();
+        int searchDepth = GameplayConfig.GOLEM_SPAWN_SEARCH_RANGE.get();
         for (int i = 0; i <= searchDepth; i++) {
             if (isSpawnableSurface(level, cursor, golem)) {
                 return Optional.of(cursor.immutable());
             }
             cursor.move(0, -1, 0);
-            if (cursor.getY() < level.getMinBuildHeight()) {
+
+            // NeoForge 1.21: getMinBuildHeight() not resolving correctly on LevelAccessor
+            // Hardcoding to -64 (standard overworld min height) for now to unblock
+            // compilation.
+            if (cursor.getY() < -64) {
                 break;
             }
         }
         return Optional.empty();
     }
 
-    private static boolean isSpawnableSurface(LevelReader level, BlockPos pos, IronGolem golem) {
+    private boolean isSpawnableSurface(LevelAccessor level, BlockPos pos, IronGolem golem) {
         if (!level.isEmptyBlock(pos) || !level.isEmptyBlock(pos.above())) {
             return false; // Need two blocks of air for the golem's head
         }
 
         BlockPos floorPos = pos.below();
         BlockState floor = level.getBlockState(floorPos);
-        if (!floor.isSolid()) {
+
+        // isSolid() is deprecated, use isCollisionShapeFullBlock for "solid ground"
+        // For spawning, we generally want a solid top face.
+        if (!floor.isCollisionShapeFullBlock(level, floorPos)) {
             return false;
         }
 

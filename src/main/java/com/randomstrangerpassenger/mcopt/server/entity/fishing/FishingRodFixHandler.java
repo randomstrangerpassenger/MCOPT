@@ -1,11 +1,7 @@
 package com.randomstrangerpassenger.mcopt.server.entity.fishing;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
-<<<<<<< HEAD
 import com.randomstrangerpassenger.mcopt.config.GameplayConfig;
-=======
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -14,11 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-<<<<<<< HEAD
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-=======
-import net.neoforged.neoforge.event.TickEvent;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
 /**
  * 안정적인 낚싯대 사용을 위해 플레이어와 낚싯찌의 상태를 주기적으로 점검합니다.
@@ -27,18 +19,13 @@ import net.neoforged.neoforge.event.TickEvent;
  * 무시되는 문제가 발생할 수 있습니다. 이 핸들러는 그런 고아 상태의 낚싯찌를 감지해
  * 안전하게 정리함으로써 재투척이 즉시 가능하도록 만듭니다.
  */
-<<<<<<< HEAD
 @EventBusSubscriber(modid = MCOPT.MOD_ID)
-=======
-@EventBusSubscriber(modid = MCOPT.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 public final class FishingRodFixHandler {
 
     private FishingRodFixHandler() {
     }
 
     @SubscribeEvent
-<<<<<<< HEAD
     public static void onPlayerTick(PlayerTickEvent.Post event) {
 
         if (!(event.getEntity() instanceof ServerPlayer player)) {
@@ -46,18 +33,6 @@ public final class FishingRodFixHandler {
         }
 
         if (!GameplayConfig.ENABLE_FISHING_ROD_FIX.get()) {
-=======
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
-
-        if (!(event.player instanceof ServerPlayer player)) {
-            return;
-        }
-
-        if (!MCOPTConfig.ENABLE_FISHING_ROD_FIX.get()) {
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
             return;
         }
 
@@ -89,7 +64,7 @@ public final class FishingRodFixHandler {
         }
 
         // Hook in unloaded chunk becomes uncontrollable, so remove it safely
-        if (!hook.level().hasChunkAt(hook.blockPosition())) {
+        if (!hook.level().isLoaded(hook.blockPosition())) {
             return true;
         }
 
@@ -98,14 +73,15 @@ public final class FishingRodFixHandler {
     }
 
     private static boolean isHoldingFishingRod(Player player) {
-        ItemStack main = player.getMainHandItem();
-        ItemStack off = player.getOffhandItem();
-        return main.is(Items.FISHING_ROD) || off.is(Items.FISHING_ROD);
+        ItemStack mainHand = player.getMainHandItem();
+        ItemStack offHand = player.getOffhandItem();
+
+        return mainHand.is(Items.FISHING_ROD) || offHand.is(Items.FISHING_ROD);
     }
 
     private static void discardOrphanedHook(ServerPlayer player, FishingHook hook) {
+        MCOPT.LOGGER.debug("Removing orphaned fishing hook for player {}", player.getName().getString());
         hook.discard();
         player.fishing = null;
-        player.stopUsingItem();
     }
 }

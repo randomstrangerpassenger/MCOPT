@@ -2,11 +2,14 @@ package com.randomstrangerpassenger.mcopt.server.ai.modifiers;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A chain of goal modifiers that are applied in sequence.
@@ -15,12 +18,15 @@ import java.util.List;
  * or all modifiers have been applied.
  * <p>
  * <b>Simplified Design:</b>
- * Previous implementation used runtime "bubble up" optimization based on call frequency.
+ * Previous implementation used runtime "bubble up" optimization based on call
+ * frequency.
  * This has been removed because:
  * <ul>
- *   <li>Typically only 2-3 modifiers per chain - minimal benefit from reordering</li>
- *   <li>ArrayList mutations during iteration caused potential thread-safety issues</li>
- *   <li>Call frequency tracking added unnecessary overhead for small lists</li>
+ * <li>Typically only 2-3 modifiers per chain - minimal benefit from
+ * reordering</li>
+ * <li>ArrayList mutations during iteration caused potential thread-safety
+ * issues</li>
+ * <li>Call frequency tracking added unnecessary overhead for small lists</li>
  * </ul>
  * <p>
  * Instead, modifiers should be added in priority order during initialization,
@@ -50,10 +56,20 @@ public class ModifierChain implements GoalModifier {
     }
 
     /**
+     * Merge another chain into this one. Alias for addAll.
+     *
+     * @param other The chain to merge
+     */
+    public void merge(ModifierChain other) {
+        addAll(other);
+    }
+
+    /**
      * Sort modifiers by a custom comparator.
      * This should be called during initialization, before the chain is used.
      * <p>
      * Example usage:
+     * 
      * <pre>
      * chain.sortBy(Comparator.comparing(modifier -> modifier.getPriority()));
      * </pre>
@@ -80,6 +96,33 @@ public class ModifierChain implements GoalModifier {
         }
 
         return current;
+    }
+
+    /**
+     * Apply this chain to all goals in the mob's goal selectors.
+     * Iterates over both goalSelector and targetSelector.
+     *
+     * @param mob The mob to optimize
+     */
+    public void apply(Mob mob) {
+        if (isEmpty()) {
+            return;
+        }
+
+        applyToSelector(mob, mob.goalSelector.getAvailableGoals());
+        applyToSelector(mob, mob.targetSelector.getAvailableGoals());
+    }
+
+    private void applyToSelector(Mob mob, Set<WrappedGoal> goals) {
+        // Collect goals to remove to avoid concurrent modification
+        List<WrappedGoal> toRemove = goals.stream()
+                .filter(wrappedGoal -> modify(mob, wrappedGoal.getGoal()) == null)
+                .collect(Collectors.toList());
+
+        // Remove the goals
+        for (WrappedGoal wrappedGoal : toRemove) {
+            goals.remove(wrappedGoal);
+        }
     }
 
     /**

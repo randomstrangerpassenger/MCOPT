@@ -18,13 +18,8 @@
   "text.mcopt.panic_button.failed": "Cleanup failed: %s",
   "mcopt.safety.pet_guard": "That creature is tamed! Sneak to attack anyway.",
   "mcopt.safety.villager_guard": "%s looks harmless. Sneak to swing if you're sure.",
-<<<<<<< HEAD
   "mcopt.safety.decoration_guard": "Decoration protected. Sneak to break intentionally.",
   "mcopt.clearlag.warning": "[MCOPT] Entity cleanup in %s seconds. Collect dropped items!",
   "mcopt.clearlag.summary": "[MCOPT] Cleanup complete: %s items, %s XP orbs, %s projectiles removed",
   "mcopt.incompatible_mod.detected": "%s mod detected. Disabling %s to prevent conflicts"
 }
-=======
-  "mcopt.safety.decoration_guard": "Decoration protected. Sneak to break intentionally."
-}
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0

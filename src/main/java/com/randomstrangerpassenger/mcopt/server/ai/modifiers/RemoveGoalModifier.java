@@ -1,7 +1,7 @@
 package com.randomstrangerpassenger.mcopt.server.ai.modifiers;
 
 import com.randomstrangerpassenger.mcopt.server.ai.filters.GoalFilter;
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -20,7 +20,7 @@ public class RemoveGoalModifier implements GoalModifier {
     /**
      * Create a remove modifier with a config-based enable/disable option.
      *
-     * @param filter The filter to match goals for removal
+     * @param filter      The filter to match goals for removal
      * @param configValue The config value that enables/disables this modifier
      */
     public RemoveGoalModifier(GoalFilter filter, ModConfigSpec.BooleanValue configValue) {
@@ -42,38 +42,40 @@ public class RemoveGoalModifier implements GoalModifier {
     public Goal modify(Mob mob, Goal goal) {
         // Check if this modifier is enabled
         if (configValue != null && !configValue.get()) {
-            return goal;  // Keep goal unchanged
+            return goal; // Keep goal unchanged
         }
 
         // Check if goal matches filter
         if (filter.test(goal)) {
-            return null;  // Remove goal
+            return null; // Remove goal
         }
 
-        return goal;  // Keep goal unchanged
+        return goal; // Keep goal unchanged
     }
 
     /**
-     * Create a modifier that removes goals of a specific class when config is enabled.
+     * Create a modifier that removes goals of a specific class when config is
+     * enabled.
      *
-     * @param goalClass The goal class to remove
+     * @param goalClass   The goal class to remove
      * @param configValue The config value controlling this removal
      * @return Configured RemoveGoalModifier
      */
     public static RemoveGoalModifier forClass(Class<? extends Goal> goalClass,
-                                              ModConfigSpec.BooleanValue configValue) {
+            ModConfigSpec.BooleanValue configValue) {
         return new RemoveGoalModifier(GoalFilter.matchClass(goalClass), configValue);
     }
 
     /**
-     * Create a modifier that removes goals by class hierarchy when config is enabled.
+     * Create a modifier that removes goals by class hierarchy when config is
+     * enabled.
      *
-     * @param goalClass The goal class (including subclasses) to remove
+     * @param goalClass   The goal class (including subclasses) to remove
      * @param configValue The config value controlling this removal
      * @return Configured RemoveGoalModifier
      */
     public static RemoveGoalModifier forClassHierarchy(Class<? extends Goal> goalClass,
-                                                       ModConfigSpec.BooleanValue configValue) {
+            ModConfigSpec.BooleanValue configValue) {
         return new RemoveGoalModifier(GoalFilter.matchClassHierarchy(goalClass), configValue);
     }
 }

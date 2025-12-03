@@ -1,18 +1,19 @@
 package com.randomstrangerpassenger.mcopt.server.ai.strategy;
 
 import com.randomstrangerpassenger.mcopt.MCOPTEntityTypeTags;
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.config.PerformanceConfig;
 import com.randomstrangerpassenger.mcopt.server.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.RemoveGoalModifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.goal.FleeGoal;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 
 /**
  * Optimization strategy for squid-like entities (squid, glow squid).
  * <p>
- * Squid have unique AI that includes inner classes and special movement patterns.
+ * Squid have unique AI that includes inner classes and special movement
+ * patterns.
  * This strategy removes performance-intensive behaviors while preserving
  * basic squid characteristics.
  * <p>
@@ -55,14 +56,12 @@ public class SquidStrategy implements OptimizationStrategy {
         // This matches both "Squid$RandomMovementGoal" and similar patterns
         chain.add(new RemoveGoalModifier(
                 GoalFilter.matchNamePattern("RandomMovement"),
-                MCOPTConfig.REMOVE_SQUID_RANDOM_MOVEMENT
-        ));
+                PerformanceConfig.REMOVE_SQUID_RANDOM_MOVEMENT));
 
         // Flee goal - squid flee from players
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(FleeGoal.class),
-                MCOPTConfig.REMOVE_SQUID_FLEE
-        ));
+        chain.add(RemoveGoalModifier.forClass(
+                AvoidEntityGoal.class,
+                PerformanceConfig.REMOVE_SQUID_FLEE));
 
         return chain;
     }

@@ -1,11 +1,7 @@
 package com.randomstrangerpassenger.mcopt.server.ai.strategy;
 
 import com.randomstrangerpassenger.mcopt.MCOPTEntityTypeTags;
-<<<<<<< HEAD
 import com.randomstrangerpassenger.mcopt.config.PerformanceConfig;
-=======
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import com.randomstrangerpassenger.mcopt.server.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.RemoveGoalModifier;
@@ -40,7 +36,6 @@ import net.minecraft.world.entity.ai.goal.*;
  */
 public class FarmAnimalStrategy implements OptimizationStrategy {
 
-<<<<<<< HEAD
         @Override
         public TagKey<EntityType<?>> getTargetTag() {
                 return MCOPTEntityTypeTags.FARM_ANIMALS;
@@ -100,71 +95,4 @@ public class FarmAnimalStrategy implements OptimizationStrategy {
                 // Normal priority
                 return 0;
         }
-=======
-    @Override
-    public TagKey<EntityType<?>> getTargetTag() {
-        return MCOPTEntityTypeTags.FARM_ANIMALS;
-    }
-
-    @Override
-    public ModifierChain buildModifiers() {
-        ModifierChain chain = new ModifierChain();
-
-        // Float goal - animals check if they're in water
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(FloatGoal.class),
-                MCOPTConfig.REMOVE_ANIMAL_FLOAT
-        ));
-
-        // Panic goal - animals flee when taking damage
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(PanicGoal.class),
-                MCOPTConfig.REMOVE_ANIMAL_PANIC
-        ));
-
-        // Breed goal - animals seek mates when fed
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(BreedGoal.class),
-                MCOPTConfig.REMOVE_ANIMAL_BREED
-        ));
-
-        // Tempt goal - animals follow players holding food
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(TemptGoal.class),
-                MCOPTConfig.REMOVE_ANIMAL_TEMPT
-        ));
-
-        // Follow parent goal - baby animals follow their parents
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(FollowParentGoal.class),
-                MCOPTConfig.REMOVE_ANIMAL_FOLLOW_PARENT
-        ));
-
-        // Random stroll goal - animals wander randomly
-        // This includes WaterAvoidingRandomStrollGoal and subclasses
-        chain.add(new RemoveGoalModifier(
-                GoalFilter.matchClassHierarchy(RandomStrollGoal.class),
-                MCOPTConfig.REMOVE_ANIMAL_STROLL
-        ));
-
-        return chain;
-    }
-
-    @Override
-    public String getName() {
-        return "Farm Animal Optimization";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Removes performance-intensive AI goals from farm animals " +
-                "(cows, pigs, sheep, chickens, etc.) to improve server performance";
-    }
-
-    @Override
-    public int getPriority() {
-        // Normal priority
-        return 0;
-    }
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 }

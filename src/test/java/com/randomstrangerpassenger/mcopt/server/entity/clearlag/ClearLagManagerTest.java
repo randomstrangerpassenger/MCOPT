@@ -3,7 +3,6 @@ package com.randomstrangerpassenger.mcopt.server.entity.clearlag;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.*;
@@ -67,16 +66,14 @@ class ClearLagManagerTest {
             // Verify onServerTick method exists (event handler)
             Method onServerTickMethod = ClearLagManager.class.getMethod(
                     "onServerTick",
-                    net.neoforged.neoforge.event.tick.TickEvent.ServerTickEvent.class
-            );
+                    net.neoforged.neoforge.event.tick.ServerTickEvent.Post.class);
 
             assertThat(onServerTickMethod).isNotNull();
             assertThat(onServerTickMethod.getReturnType()).isEqualTo(void.class);
 
             // Verify it's annotated with @SubscribeEvent
             assertThat(onServerTickMethod.isAnnotationPresent(
-                    net.neoforged.bus.api.SubscribeEvent.class
-            )).isTrue();
+                    net.neoforged.bus.api.SubscribeEvent.class)).isTrue();
         })
                 .as("ClearLagManager should have proper event handler methods")
                 .doesNotThrowAnyException();
@@ -87,12 +84,10 @@ class ClearLagManagerTest {
     void testEventHandlerAnnotation() throws NoSuchMethodException {
         Method onServerTickMethod = ClearLagManager.class.getMethod(
                 "onServerTick",
-                net.neoforged.neoforge.event.tick.TickEvent.ServerTickEvent.class
-        );
+                net.neoforged.neoforge.event.tick.ServerTickEvent.Post.class);
 
         boolean hasSubscribeEvent = onServerTickMethod.isAnnotationPresent(
-                net.neoforged.bus.api.SubscribeEvent.class
-        );
+                net.neoforged.bus.api.SubscribeEvent.class);
 
         assertThat(hasSubscribeEvent)
                 .as("onServerTick should be annotated with @SubscribeEvent")
@@ -154,7 +149,7 @@ class ClearLagManagerTest {
                     .as("RemovalCategory should have expected constants")
                     .hasSize(3);
 
-            String[] expectedNames = {"ITEM", "XP_ORB", "PROJECTILE"};
+            String[] expectedNames = { "ITEM", "XP_ORB", "PROJECTILE" };
             for (String expectedName : expectedNames) {
                 boolean found = false;
                 for (Object constant : enumConstants) {
@@ -271,23 +266,23 @@ class ClearLagManagerTest {
      * 3. Mock MCOPTConfig with test values
      * 4. Mock TickEvent.ServerTickEvent
      * 5. Test the full cleanup cycle:
-     *    - Timer countdown
-     *    - Warning broadcast
-     *    - Entity classification
-     *    - Entity removal
-     *    - Statistics collection
+     * - Timer countdown
+     * - Warning broadcast
+     * - Entity classification
+     * - Entity removal
+     * - Statistics collection
      *
      * Consider using NeoForge's game test framework for these integration tests.
      *
      * Example integration test structure:
      *
      * @GameTest
-     * public void testClearLagRemovesItems(GameTestHelper helper) {
-     *     // Spawn test items
-     *     // Run ClearLagManager for configured interval
-     *     // Verify items are removed
-     *     // Verify whitelisted items are preserved
-     * }
+     *           public void testClearLagRemovesItems(GameTestHelper helper) {
+     *           // Spawn test items
+     *           // Run ClearLagManager for configured interval
+     *           // Verify items are removed
+     *           // Verify whitelisted items are preserved
+     *           }
      */
 
     @Test

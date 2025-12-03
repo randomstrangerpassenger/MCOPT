@@ -5,30 +5,25 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "mcopt.refmap.json",
   "mixins": [
+    "common.ItemStackMixin",
+    "common.SnowLayerBlockMixin",
     "server.BeeStuckFixMixin",
-<<<<<<< HEAD
     "server.EntityPortalMixin",
+    "server.EnchantmentMenuMixin",
+    "server.ExperienceOrbMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
     "accessor.EnchantmentMenuAccessor"
   ],
   "client": [
+    "client.LocalPlayerMixin",
+    "client.EntityRenderDispatcherMixin",
     "client.ParticleEngineMixin",
     "client.RenderSectionMixin",
-    "accessor.RenderSectionAccessor",
-=======
-    "server.EntityPortalMixin"
-  ],
-  "client": [
-    "client.ParticleEngineMixin",
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
-    "client.ParticleMixin"
+    "client.ParticleMixin",
+    "accessor.RenderSectionAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0

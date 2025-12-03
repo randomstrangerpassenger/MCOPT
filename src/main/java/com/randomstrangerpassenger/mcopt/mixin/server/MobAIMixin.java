@@ -1,18 +1,11 @@
 package com.randomstrangerpassenger.mcopt.mixin.server;
 
-<<<<<<< HEAD
-=======
 import com.randomstrangerpassenger.mcopt.server.ai.AIOptimizationSystem;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-<<<<<<< HEAD
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-=======
-import org.spongepowered.asm.mixin.callback.CallbackInfo;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
 /**
  * Mixin to inject AI optimization processing after mob AI goals are registered.
@@ -22,12 +15,8 @@ import org.spongepowered.asm.mixin.callback.CallbackInfo;
  * - AI goal filtering and removal
  * - Entity-specific optimizations
  *
-<<<<<<< HEAD
  * Unlike AI-Improvements which used EntityJoinWorldEvent, we use Mixin for
  * better
-=======
- * Unlike AI-Improvements which used EntityJoinWorldEvent, we use Mixin for better
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
  * performance and more precise control over when optimizations are applied.
  */
 @Mixin(Mob.class)
@@ -41,28 +30,13 @@ public class MobAIMixin {
      * - Other mods haven't had a chance to modify goals yet (if they use events)
      * - We can modify the goals before the first AI tick
      */
-<<<<<<< HEAD
     @Inject(method = "registerGoals", at = @At("RETURN"))
-=======
-    @Inject(
-            method = "registerGoals",
-            at = @At("RETURN")
-    )
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
     private void onRegisterGoals(CallbackInfo ci) {
         Mob mob = (Mob) (Object) this;
 
         // Apply AI optimizations if system is initialized
-<<<<<<< HEAD
-        /*
-         * if (AIOptimizationSystem.isInitialized()) {
-         * AIOptimizationSystem.processMobGoals(mob);
-         * }
-         */
-=======
         if (AIOptimizationSystem.isInitialized()) {
             AIOptimizationSystem.processMobGoals(mob);
         }
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
     }
 }

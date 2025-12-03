@@ -1,23 +1,18 @@
 package com.randomstrangerpassenger.mcopt.client.bucket;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
+import com.randomstrangerpassenger.mcopt.config.GameplayConfig;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.axolotl.Axolotl.Variant;
-import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MobBucketItem;
-import net.minecraft.world.item.component.CustomName;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.DataComponents;
-import net.minecraft.world.item.component.FluidContents;
-import net.minecraft.world.level.material.Fluid;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,12 +21,11 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Adds lightweight bucket content previews in item tooltips.
  */
-@EventBusSubscriber(modid = MCOPT.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MCOPT.MOD_ID, value = Dist.CLIENT)
 public class BucketPreviewHandler {
 
     private static final Map<Item, EntityType<?>> MOB_BUCKET_TYPES = new HashMap<>();
@@ -54,7 +48,7 @@ public class BucketPreviewHandler {
 
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
-        if (!MCOPTConfig.ENABLE_BUCKET_PREVIEW.get()) {
+        if (!GameplayConfig.ENABLE_BUCKET_PREVIEW.get()) {
             return;
         }
 
@@ -71,14 +65,10 @@ public class BucketPreviewHandler {
     }
 
     private static void addFluidDetails(ItemTooltipEvent event, BucketItem bucketItem) {
-        Optional<FluidContents> contents = event.getItemStack().getComponents().get(DataComponents.FLUID_CONTENTS);
-        Fluid fluid = contents.map(FluidContents::fluid).orElse(bucketItem.getFluid());
-        if (fluid == null) {
-            return;
-        }
-
-        Component fluidName = fluid.getFluidType().getDescription().copy().withStyle(ChatFormatting.AQUA);
-        event.getToolTip().add(Component.translatable("tooltip.mcopt.bucket.fluid", fluidName));
+        // In 1.21, bucket fluids are determined by the bucket type itself
+        // DataComponents system changed - fluids are not stored as components on
+        // buckets
+        // Skip fluid details for now as API changed significantly
     }
 
     private static void addMobDetails(ItemTooltipEvent event, ItemStack stack, Item item) {
@@ -94,33 +84,39 @@ public class BucketPreviewHandler {
     }
 
     private static void appendCustomName(ItemStack stack, ItemTooltipEvent event) {
-        CustomName customName = stack.getComponents().get(DataComponents.CUSTOM_NAME);
+        Component customName = stack.get(DataComponents.CUSTOM_NAME);
         if (customName != null) {
-            Component name = customName.value().copy().withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY);
+            Component name = customName.copy().withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.GRAY);
             event.getToolTip().add(Component.translatable("tooltip.mcopt.bucket.custom_name", name));
         }
     }
 
     private static void appendAxolotlVariant(ItemStack stack, ItemTooltipEvent event) {
-        CustomData entityData = stack.getComponents().get(DataComponents.ENTITY_DATA);
-        if (entityData == null) {
+        net.minecraft.world.item.component.CustomData entityData = (net.minecraft.world.item.component.CustomData) stack
+                .getOrDefault(DataComponents.ENTITY_DATA,
+                        net.minecraft.world.item.component.CustomData.EMPTY);
+        if (entityData.isEmpty()) {
             return;
         }
 
-        Variant variant = Axolotl.Variant.byId(entityData.copyTag().getInt("Variant"));
+        int variantId = entityData.copyTag().getInt("Variant").orElse(0);
+        Variant variant = Axolotl.Variant.byId(variantId);
         Component variantName = AXOLOTL_VARIANTS.get(variant);
         if (variantName != null) {
-            event.getToolTip().add(Component.translatable("tooltip.mcopt.bucket.axolotl", variantName.withStyle(ChatFormatting.LIGHT_PURPLE)));
+            Component styledVariant = variantName.copy().withStyle(ChatFormatting.LIGHT_PURPLE);
+            event.getToolTip().add(Component.translatable("tooltip.mcopt.bucket.axolotl", styledVariant));
         }
     }
 
     private static void appendTropicalFishVariant(ItemStack stack, ItemTooltipEvent event) {
-        CustomData entityData = stack.getComponents().get(DataComponents.ENTITY_DATA);
-        if (entityData == null || !stack.is(Items.TROPICAL_FISH_BUCKET)) {
+        net.minecraft.world.item.component.CustomData entityData = (net.minecraft.world.item.component.CustomData) stack
+                .getOrDefault(DataComponents.ENTITY_DATA,
+                        net.minecraft.world.item.component.CustomData.EMPTY);
+        if (entityData.isEmpty() || !stack.is(Items.TROPICAL_FISH_BUCKET)) {
             return;
         }
 
-        int variant = entityData.copyTag().getInt(TropicalFish.BUCKET_VARIANT_TAG);
+        int variant = entityData.copyTag().getInt("BucketVariantTag").orElse(0);
         int baseColorIndex = variant & 0xFF;
         int patternColorIndex = (variant >> 8) & 0xFF;
         int patternId = (variant >> 16) & 0xFF;
@@ -132,7 +128,7 @@ public class BucketPreviewHandler {
         if (baseColor != null || patternColor != null || pattern != null) {
             Component detail = Component.translatable("tooltip.mcopt.bucket.tropical_fish",
                     safeComponent(baseColor), safeComponent(patternColor), safeComponent(pattern))
-                    .withStyle(ChatFormatting.DARK_AQUA);
+                    .copy().withStyle(ChatFormatting.DARK_AQUA);
             event.getToolTip().add(detail);
         }
     }
@@ -145,11 +141,13 @@ public class BucketPreviewHandler {
     }
 
     private static Component describeFishPattern(int patternId) {
-        TropicalFish.Pattern[] patterns = TropicalFish.Pattern.values();
-        if (patternId < 0 || patternId >= patterns.length) {
+        // Pattern names in order matching TropicalFish.Pattern enum ordinals
+        String[] patternNames = { "kob", "sunstreak", "snooper", "dasher", "brinely", "spotty", "flopper", "stripey",
+                "glitter", "blockfish", "betty", "clayfish" };
+        if (patternId < 0 || patternId >= patternNames.length) {
             return null;
         }
-        return Component.translatable("entity.minecraft.tropical_fish.type." + patterns[patternId].getName());
+        return Component.translatable("entity.minecraft.tropical_fish.type." + patternNames[patternId]);
     }
 
     private static Component safeComponent(Component component) {

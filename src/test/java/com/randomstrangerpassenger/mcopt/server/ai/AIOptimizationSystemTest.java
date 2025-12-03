@@ -120,8 +120,7 @@ class AIOptimizationSystemTest {
             // Verify processMobGoals() method exists
             Method processMobGoalsMethod = AIOptimizationSystem.class.getMethod(
                     "processMobGoals",
-                    net.minecraft.world.entity.Mob.class
-            );
+                    net.minecraft.world.entity.Mob.class);
             assertThat(processMobGoalsMethod).isNotNull();
             assertThat(processMobGoalsMethod.getReturnType()).isEqualTo(void.class);
         })
@@ -137,8 +136,7 @@ class AIOptimizationSystemTest {
         Method isInitialized = AIOptimizationSystem.class.getMethod("isInitialized");
         Method processMobGoals = AIOptimizationSystem.class.getMethod(
                 "processMobGoals",
-                net.minecraft.world.entity.Mob.class
-        );
+                net.minecraft.world.entity.Mob.class);
 
         // Verify they are static
         assertThat(java.lang.reflect.Modifier.isStatic(init.getModifiers()))
@@ -225,15 +223,15 @@ class AIOptimizationSystemTest {
         // processMobGoals with null should either:
         // 1. Handle gracefully (no-op)
         // 2. Throw IllegalArgumentException (acceptable)
-        assertThatCode(() -> {
+        Throwable thrown = catchThrowable(() -> {
             AIOptimizationSystem.processMobGoals(null);
-        })
-                .as("processMobGoals(null) should either handle gracefully or throw IllegalArgumentException")
-                .satisfiesAnyOf(
-                        code -> code.doesNotThrowAnyException(),
-                        code -> code.isInstanceOf(IllegalArgumentException.class),
-                        code -> code.isInstanceOf(NullPointerException.class)
-                );
+        });
+
+        if (thrown != null) {
+            assertThat(thrown)
+                    .as("processMobGoals(null) should either handle gracefully or throw IllegalArgumentException")
+                    .isInstanceOfAny(IllegalArgumentException.class, NullPointerException.class);
+        }
     }
 
     // ========== Integration with Dependencies ==========
@@ -282,8 +280,7 @@ class AIOptimizationSystemTest {
                         IllegalAccessException.class,
                         InstantiationException.class,
                         java.lang.reflect.InvocationTargetException.class,
-                        NoSuchMethodException.class
-                );
+                        NoSuchMethodException.class);
     }
 
     @Test
@@ -308,47 +305,47 @@ class AIOptimizationSystemTest {
      * To properly test AIOptimizationSystem's full functionality, you would need:
      *
      * 1. Mock Mob entities with:
-     *    - goalSelector and targetSelector
-     *    - lookControl
-     *    - EntityType with tags
+     * - goalSelector and targetSelector
+     * - lookControl
+     * - EntityType with tags
      *
      * 2. Mock Goal instances:
-     *    - LookAtPlayerGoal
-     *    - RandomLookAroundGoal
-     *    - FloatGoal
-     *    - PanicGoal
-     *    - etc.
+     * - LookAtPlayerGoal
+     * - RandomLookAroundGoal
+     * - FloatGoal
+     * - PanicGoal
+     * - etc.
      *
      * 3. Mock MCOPTConfig with test configuration values
      *
      * 4. Mock FeatureToggles to control feature states
      *
      * 5. Test scenarios:
-     *    - Goal removal based on configuration
-     *    - LookControl replacement
-     *    - Tag-based modifier application
-     *    - Boss mob exclusion
-     *    - Villager exclusion
+     * - Goal removal based on configuration
+     * - LookControl replacement
+     * - Tag-based modifier application
+     * - Boss mob exclusion
+     * - Villager exclusion
      *
      * Example integration test structure:
      *
      * @Test
-     * void testGoalRemoval() {
-     *     // Create test mob with known goals
-     *     Mob testMob = createTestMob();
-     *     testMob.goalSelector.addGoal(1, new LookAtPlayerGoal(...));
-     *     testMob.goalSelector.addGoal(2, new RandomLookAroundGoal(...));
+     *       void testGoalRemoval() {
+     *       // Create test mob with known goals
+     *       Mob testMob = createTestMob();
+     *       testMob.goalSelector.addGoal(1, new LookAtPlayerGoal(...));
+     *       testMob.goalSelector.addGoal(2, new RandomLookAroundGoal(...));
      *
-     *     // Configure to remove LookAtPlayerGoal
-     *     MCOPTConfig.REMOVE_LOOK_AT_PLAYER.set(true);
+     *       // Configure to remove LookAtPlayerGoal
+     *       MCOPTConfig.REMOVE_LOOK_AT_PLAYER.set(true);
      *
-     *     // Process mob goals
-     *     AIOptimizationSystem.processMobGoals(testMob);
+     *       // Process mob goals
+     *       AIOptimizationSystem.processMobGoals(testMob);
      *
-     *     // Verify LookAtPlayerGoal was removed
-     *     assertThat(testMob.goalSelector.getAvailableGoals())
-     *         .noneMatch(g -> g.getGoal() instanceof LookAtPlayerGoal);
-     * }
+     *       // Verify LookAtPlayerGoal was removed
+     *       assertThat(testMob.goalSelector.getAvailableGoals())
+     *       .noneMatch(g -> g.getGoal() instanceof LookAtPlayerGoal);
+     *       }
      */
 
     @Test

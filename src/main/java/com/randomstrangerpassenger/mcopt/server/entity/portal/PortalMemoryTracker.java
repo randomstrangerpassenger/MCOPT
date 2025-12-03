@@ -1,15 +1,9 @@
 package com.randomstrangerpassenger.mcopt.server.entity.portal;
 
 import com.randomstrangerpassenger.mcopt.MCOPT;
-import com.randomstrangerpassenger.mcopt.util.MCOPTConstants;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-<<<<<<< HEAD
-
-=======
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,12 +13,8 @@ import net.minecraft.world.level.block.NetherPortalBlock;
 import java.util.Optional;
 
 /**
-<<<<<<< HEAD
  * Stores the player's last used nether portal per dimension and redirects
  * future arrivals
-=======
- * Stores the player's last used nether portal per dimension and redirects future arrivals
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
  * to that remembered location to prevent unwanted portal swapping.
  */
 public final class PortalMemoryTracker {
@@ -44,30 +34,26 @@ public final class PortalMemoryTracker {
 
         try {
             CompoundTag mcoptData = ensureMcoptData(player);
-<<<<<<< HEAD
-            CompoundTag memory = mcoptData.get(TAG_PORTAL_MEMORY) instanceof CompoundTag tag ? tag : new CompoundTag();
-=======
-            CompoundTag memory = mcoptData.getCompound(TAG_PORTAL_MEMORY);
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
+            CompoundTag memory;
+            if (mcoptData.contains(TAG_PORTAL_MEMORY)) {
+                memory = getCompoundOrNew(mcoptData, TAG_PORTAL_MEMORY);
+            } else {
+                memory = new CompoundTag();
+            }
 
             String dimensionKey = player.level().dimension().location().toString();
 
             CompoundTag portalTag = new CompoundTag();
-<<<<<<< HEAD
             // Store BlockPos as individual int values
             CompoundTag posTag = new CompoundTag();
             posTag.putInt("X", portalPos.getX());
             posTag.putInt("Y", portalPos.getY());
             posTag.putInt("Z", portalPos.getZ());
             portalTag.put(TAG_POSITION, posTag);
-=======
-            portalTag.put(TAG_POSITION, NbtUtils.writeBlockPos(portalPos));
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
             portalTag.putFloat(TAG_YAW, player.getYRot());
 
             memory.put(dimensionKey, portalTag);
             mcoptData.put(TAG_PORTAL_MEMORY, memory);
-            player.getPersistentData().put(MCOPT.MOD_ID, mcoptData);
 
             MCOPT.LOGGER.debug("Remembered portal at {} for player {} in dimension {}",
                     portalPos, player.getName().getString(), dimensionKey);
@@ -82,12 +68,8 @@ public final class PortalMemoryTracker {
             return;
         }
 
-<<<<<<< HEAD
         ServerLevel level = player.level().getServer() != null ? player.level().getServer().getLevel(destination)
                 : null;
-=======
-        ServerLevel level = player.server.getLevel(destination);
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
         if (level == null) {
             MCOPT.LOGGER.warn("Failed to get destination level for portal redirect: {}", destination.location());
             return;
@@ -98,172 +80,128 @@ public final class PortalMemoryTracker {
 
         // Validate portal position is within world bounds
         if (!isValidPosition(portalPos)) {
-            MCOPT.LOGGER.warn("Invalid portal position stored in memory: {}", portalPos);
+            MCOPT.LOGGER.warn("Remembered portal position is invalid: {}", portalPos);
             return;
         }
 
-        if (!level.isLoaded(portalPos)) {
-            return;
-        }
-
+        // Verify portal block still exists at location
         if (!(level.getBlockState(portalPos).getBlock() instanceof NetherPortalBlock)) {
-            MCOPT.LOGGER.debug("Portal block no longer exists at remembered position: {}", portalPos);
+            MCOPT.LOGGER.debug("Portal block missing at remembered location {}, skipping redirect", portalPos);
             return;
         }
 
-        double x = portalPos.getX() + MCOPTConstants.World.BLOCK_CENTER_OFFSET;
-        double y = portalPos.getY() + MCOPTConstants.World.PORTAL_Y_OFFSET;
-        double z = portalPos.getZ() + MCOPTConstants.World.BLOCK_CENTER_OFFSET;
-
-        // Wrap teleport in try-catch to handle potential errors gracefully
-        try {
-            player.connection.teleport(x, y, z, portalMemory.yaw(), player.getXRot());
-<<<<<<< HEAD
-            MCOPT.LOGGER.debug("Redirected player {} to remembered portal at {}", player.getName().getString(),
-                    portalPos);
-=======
-            MCOPT.LOGGER.debug("Redirected player {} to remembered portal at {}", player.getName().getString(), portalPos);
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
-        } catch (Exception e) {
-            MCOPT.LOGGER.error("Failed to teleport player {} to remembered portal at {}",
-                    player.getName().getString(), portalPos, e);
-        }
+        // Teleport player to remembered portal
+        // NeoForge 1.21: teleportTo signature changed
+        // ServerPlayer.teleportTo(ServerLevel, double, double, double, Set<Relative>,
+        // float, float, boolean)
+        player.teleportTo(level, portalPos.getX() + 0.5, portalPos.getY(), portalPos.getZ() + 0.5,
+                java.util.Collections.emptySet(), portalMemory.yaw(), player.getXRot(), false);
+        MCOPT.LOGGER.info("Redirected player {} to remembered portal at {}", player.getName().getString(), portalPos);
     }
 
-    private static Optional<PortalMemory> getPortalMemory(ServerPlayer player, ResourceKey<Level> destination) {
+    private static Optional<PortalMemory> getPortalMemory(ServerPlayer player, ResourceKey<Level> dimension) {
         try {
-            CompoundTag persistentData = player.getPersistentData();
-<<<<<<< HEAD
-            if (!(persistentData.get(MCOPT.MOD_ID) instanceof CompoundTag mcoptData)) {
+            CompoundTag data = player.getPersistentData();
+            if (!data.contains(MCOPT.MOD_ID)) {
                 return Optional.empty();
             }
 
-            if (!(mcoptData.get(TAG_PORTAL_MEMORY) instanceof CompoundTag memory)) {
+            CompoundTag mcoptData = getCompoundOrNew(data, MCOPT.MOD_ID);
+
+            if (!mcoptData.contains(TAG_PORTAL_MEMORY)) {
                 return Optional.empty();
             }
 
-            String dimensionKey = destination.location().toString();
+            CompoundTag memory = getCompoundOrNew(mcoptData, TAG_PORTAL_MEMORY);
 
-            if (!(memory.get(dimensionKey) instanceof CompoundTag portalTag)) {
+            String dimensionKey = dimension.location().toString();
+
+            if (!memory.contains(dimensionKey)) {
                 return Optional.empty();
             }
 
-            if (!(portalTag.get(TAG_POSITION) instanceof CompoundTag posTag)) {
-                return Optional.empty();
-            }
+            CompoundTag portalTag = getCompoundOrNew(memory, dimensionKey);
+            CompoundTag posTag = getCompoundOrNew(portalTag, TAG_POSITION);
 
-            // Read BlockPos from NBT
-            Object xObj = posTag.get("X");
-            Object yObj = posTag.get("Y");
-            Object zObj = posTag.get("Z");
-            if (!(xObj instanceof Number x) || !(yObj instanceof Number y) || !(zObj instanceof Number z)) {
-                return Optional.empty();
-            }
-            BlockPos portalPos = new BlockPos(x.intValue(), y.intValue(), z.intValue());
-=======
-            if (!persistentData.contains(MCOPT.MOD_ID, Tag.TAG_COMPOUND)) {
-                return Optional.empty();
-            }
+            int x = getIntOrZero(posTag, "X");
+            int y = getIntOrZero(posTag, "Y");
+            int z = getIntOrZero(posTag, "Z");
+            BlockPos pos = new BlockPos(x, y, z);
 
-            CompoundTag mcoptData = persistentData.getCompound(MCOPT.MOD_ID);
-            if (!mcoptData.contains(TAG_PORTAL_MEMORY, Tag.TAG_COMPOUND)) {
-                return Optional.empty();
-            }
+            float yaw = getFloatOrZero(portalTag, TAG_YAW);
 
-            CompoundTag memory = mcoptData.getCompound(TAG_PORTAL_MEMORY);
-            String dimensionKey = destination.location().toString();
-
-            if (!memory.contains(dimensionKey, Tag.TAG_COMPOUND)) {
-                return Optional.empty();
-            }
-
-            CompoundTag portalTag = memory.getCompound(dimensionKey);
-            if (!portalTag.contains(TAG_POSITION, Tag.TAG_COMPOUND)) {
-                return Optional.empty();
-            }
-
-            BlockPos portalPos = NbtUtils.readBlockPos(portalTag.getCompound(TAG_POSITION));
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
-
-            // Validate the read position
-            if (!isValidPosition(portalPos)) {
-                MCOPT.LOGGER.warn("Invalid portal position read from NBT: {}", portalPos);
-                return Optional.empty();
-            }
-
-<<<<<<< HEAD
-            Object yawObj = portalTag.get(TAG_YAW);
-            float yaw = (portalTag.contains(TAG_YAW) && yawObj instanceof Number num) ? num.floatValue()
-                    : player.getYRot();
-=======
-            float yaw = portalTag.contains(TAG_YAW, Tag.TAG_FLOAT) ? portalTag.getFloat(TAG_YAW) : player.getYRot();
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
-
-            // Validate yaw is within expected range
-            if (!Float.isFinite(yaw)) {
-                MCOPT.LOGGER.warn("Invalid yaw value read from NBT: {}", yaw);
-                yaw = player.getYRot();
-            }
-
-            return Optional.of(new PortalMemory(portalPos, yaw));
+            return Optional.of(new PortalMemory(pos, yaw));
         } catch (Exception e) {
-            MCOPT.LOGGER.error("Error reading portal memory from NBT for player {}", player.getName().getString(), e);
+            MCOPT.LOGGER.error("Failed to load portal memory", e);
             return Optional.empty();
         }
     }
 
     private static CompoundTag ensureMcoptData(ServerPlayer player) {
-        CompoundTag persistentData = player.getPersistentData();
-<<<<<<< HEAD
-        if (!(persistentData.get(MCOPT.MOD_ID) instanceof CompoundTag existing)) {
-            CompoundTag newTag = new CompoundTag();
-            persistentData.put(MCOPT.MOD_ID, newTag);
-            return newTag;
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains(MCOPT.MOD_ID)) {
+            data.put(MCOPT.MOD_ID, new CompoundTag());
         }
-        return existing;
-=======
-        if (!persistentData.contains(MCOPT.MOD_ID, Tag.TAG_COMPOUND)) {
-            persistentData.put(MCOPT.MOD_ID, new CompoundTag());
-        }
-
-        return persistentData.getCompound(MCOPT.MOD_ID);
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
+        return getCompoundOrNew(data, MCOPT.MOD_ID);
     }
 
-    /**
-     * Validates that a BlockPos is within reasonable world bounds.
-     * Minecraft's build limits are -64 to 320 for Y, and ±30,000,000 for X/Z.
-     *
-     * @param pos The position to validate
-     * @return true if the position is valid, false otherwise
-     */
+    // Helper methods to handle potential Optional returns from NBT getters
+    @SuppressWarnings("unchecked")
+    private static CompoundTag getCompoundOrNew(CompoundTag tag, String key) {
+        try {
+            Object result = tag.getCompound(key);
+            if (result instanceof Optional) {
+                return ((Optional<CompoundTag>) result).orElse(new CompoundTag());
+            } else if (result instanceof CompoundTag) {
+                return (CompoundTag) result;
+            } else {
+                return new CompoundTag();
+            }
+        } catch (Exception e) {
+            return new CompoundTag();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static int getIntOrZero(CompoundTag tag, String key) {
+        try {
+            Object result = tag.getInt(key);
+            if (result instanceof Optional) {
+                return ((Optional<Integer>) result).orElse(0);
+            } else if (result instanceof Integer) {
+                return (Integer) result;
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static float getFloatOrZero(CompoundTag tag, String key) {
+        try {
+            Object result = tag.getFloat(key);
+            if (result instanceof Optional) {
+                return ((Optional<Float>) result).orElse(0.0f);
+            } else if (result instanceof Float) {
+                return (Float) result;
+            } else {
+                return 0.0f;
+            }
+        } catch (Exception e) {
+            return 0.0f;
+        }
+    }
+
     private static boolean isValidPosition(BlockPos pos) {
-        if (pos == null) {
-            return false;
-        }
-
-        // Check Y coordinate is within build limits
-        if (pos.getY() < MCOPTConstants.World.MIN_WORLD_Y || pos.getY() > MCOPTConstants.World.MAX_WORLD_Y) {
-            return false;
-        }
-
-        // Check X and Z coordinates are within world border limits
-        if (Math.abs(pos.getX()) > MCOPTConstants.World.MAX_WORLD_COORDINATE ||
-<<<<<<< HEAD
-                Math.abs(pos.getZ()) > MCOPTConstants.World.MAX_WORLD_COORDINATE) {
-=======
-            Math.abs(pos.getZ()) > MCOPTConstants.World.MAX_WORLD_COORDINATE) {
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
-            return false;
-        }
-
-        return true;
+        return pos != null &&
+                pos.getY() >= -64 && // Minimum Y for 1.18+
+                pos.getY() <= 320 && // Maximum Y for 1.18+
+                Math.abs(pos.getX()) < 30000000 &&
+                Math.abs(pos.getZ()) < 30000000;
     }
 
     private record PortalMemory(BlockPos pos, float yaw) {
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0

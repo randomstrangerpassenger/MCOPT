@@ -1,11 +1,7 @@
 package com.randomstrangerpassenger.mcopt.server.ai.strategy;
 
 import com.randomstrangerpassenger.mcopt.MCOPTEntityTypeTags;
-<<<<<<< HEAD
 import com.randomstrangerpassenger.mcopt.config.PerformanceConfig;
-=======
-import com.randomstrangerpassenger.mcopt.config.MCOPTConfig;
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 import com.randomstrangerpassenger.mcopt.server.ai.filters.GoalFilter;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.ModifierChain;
 import com.randomstrangerpassenger.mcopt.server.ai.modifiers.RemoveGoalModifier;
@@ -21,13 +17,8 @@ import net.minecraft.world.entity.ai.goal.EatBlockGoal;
  * <p>
  * Additional Optimizations:
  * - Disable grass eating behavior (EatBlockGoal)
-<<<<<<< HEAD
  * - Prevents constant block checks and grass consumption
  * - Wool can still regrow manually (shears + feed wheat)
-=======
- *   - Prevents constant block checks and grass consumption
- *   - Wool can still regrow manually (shears + feed wheat)
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
  * <p>
  * Performance Impact:
  * - Large sheep farms: 15-25% TPS improvement
@@ -55,12 +46,7 @@ public class WoolGrowingStrategy implements OptimizationStrategy {
         // Add wool-specific optimizations
         chain.add(new RemoveGoalModifier(
                 GoalFilter.matchClassHierarchy(EatBlockGoal.class),
-<<<<<<< HEAD
                 PerformanceConfig.REMOVE_SHEEP_EAT_BLOCK));
-=======
-                MCOPTConfig.REMOVE_SHEEP_EAT_BLOCK
-        ));
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
         return chain;
     }

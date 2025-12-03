@@ -3,7 +3,7 @@ package com.randomstrangerpassenger.mcopt.server.ai;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.util.Mth;
-<<<<<<< HEAD
+import com.randomstrangerpassenger.mcopt.mixin.accessor.LookControlAccessor;
 import java.util.Optional;
 
 /**
@@ -18,17 +18,6 @@ import java.util.Optional;
  *
  * Based on concepts from AI-Improvements' FixedLookControl, but adapted for
  * NeoForge 1.21
-=======
-
-/**
- * Optimized LookControl that uses cached math functions for rotation calculations.
- *
- * This class extends vanilla LookControl and overrides rotation calculation methods
- * to use MathCache.atan2() instead of Math.atan2(), providing significant performance
- * improvements when many mobs are calculating look angles simultaneously.
- *
- * Based on concepts from AI-Improvements' FixedLookControl, but adapted for NeoForge 1.21
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
  * and using our own MathCache implementation.
  *
  * Performance benefits:
@@ -49,11 +38,7 @@ public class OptimizedLookControl extends LookControl {
      * Using cached math significantly reduces the performance cost.
      */
     @Override
-<<<<<<< HEAD
     protected Optional<Float> getXRotD() {
-=======
-    protected float getXRotD() {
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
         double dx = this.wantedX - this.mob.getX();
         double dy = this.wantedY - this.mob.getEyeY();
         double dz = this.wantedZ - this.mob.getZ();
@@ -62,11 +47,7 @@ public class OptimizedLookControl extends LookControl {
         // Use cached atan2 instead of Math.atan2
         float pitch = (float) (-(MathCache.atan2(dy, horizontalDist) * (180.0 / Math.PI)));
 
-<<<<<<< HEAD
         return Optional.of(Mth.wrapDegrees(pitch));
-=======
-        return Mth.wrapDegrees(pitch);
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
     }
 
     /**
@@ -76,53 +57,28 @@ public class OptimizedLookControl extends LookControl {
      * Using cached math significantly reduces the performance cost.
      */
     @Override
-<<<<<<< HEAD
     protected Optional<Float> getYRotD() {
-=======
-    protected float getYRotD() {
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
         double dx = this.wantedX - this.mob.getX();
         double dz = this.wantedZ - this.mob.getZ();
 
         // Use cached atan2 instead of Math.atan2
         float yaw = (float) (MathCache.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
 
-<<<<<<< HEAD
         return Optional.of(Mth.wrapDegrees(yaw));
-=======
-        return Mth.wrapDegrees(yaw);
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
     }
 
     /**
      * Factory method to create OptimizedLookControl from existing LookControl.
      * This preserves any custom settings from the original controller.
      *
-<<<<<<< HEAD
-     * @param mob      The mob to create controller for
-=======
-     * @param mob The mob to create controller for
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
-     * @param original The original LookControl (if any)
-     * @return New OptimizedLookControl instance
+     * @param original The original LookControl to replace
+     * @return A new OptimizedLookControl instance
      */
-    public static OptimizedLookControl createFrom(Mob mob, LookControl original) {
-        OptimizedLookControl optimized = new OptimizedLookControl(mob);
-
-        // Copy state from original if it exists and is looking at something
-        if (original != null) {
-            try {
-                // The state will be naturally updated on next tick, so we don't need
-                // to copy internal state. Just return the new controller.
-            } catch (Exception e) {
-                // Ignore exceptions during state copy - controller will work fine anyway
-            }
-        }
-
-        return optimized;
+    public static OptimizedLookControl from(LookControl original) {
+        // We can't easily copy private state from original LookControl
+        // But most state is transient or recalculated every tick
+        // The most important thing is the mob reference
+        // Note: We use reflection or accessors if we need to copy more state
+        return new OptimizedLookControl(((LookControlAccessor) original).getMob());
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0

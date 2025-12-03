@@ -23,10 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * - Extensible - mods can register custom strategies
  * <p>
  * Usage:
-<<<<<<< HEAD
  * 
-=======
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
  * <pre>{@code
  * // Register a strategy (typically during mod initialization)
  * StrategyRegistry.register(new FarmAnimalStrategy());
@@ -47,12 +44,7 @@ public class StrategyRegistry {
      * Key: EntityType tag
      * Value: Pre-built and cached ModifierChain
      */
-<<<<<<< HEAD
     private static final Map<TagKey<EntityType<?>>, ModifierChain> modifierCache = new ConcurrentHashMap<>();
-=======
-    private static final Map<TagKey<EntityType<?>>, ModifierChain> modifierCache =
-            new ConcurrentHashMap<>();
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
     /**
      * Thread-safe initialization flag.
@@ -85,11 +77,7 @@ public class StrategyRegistry {
             register(new FarmAnimalStrategy());
             register(new WoolGrowingStrategy());
             register(new FishStrategy());
-<<<<<<< HEAD
             // register(new SquidStrategy());
-=======
-            register(new SquidStrategy());
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0
 
             // Sort strategies by priority (highest first)
             sortStrategies();
@@ -98,162 +86,88 @@ public class StrategyRegistry {
             MCOPT.LOGGER.info("Strategy Registry initialized with {} strategies", strategies.size());
 
             // Log registered strategies for debugging
-            if (MCOPT.LOGGER.isDebugEnabled()) {
-                for (OptimizationStrategy strategy : strategies) {
-                    MCOPT.LOGGER.debug("  - {} (priority: {}): {}",
-                            strategy.getName(),
-                            strategy.getPriority(),
-                            strategy.getDescription());
-                }
+            for (OptimizationStrategy strategy : strategies) {
+                MCOPT.LOGGER.debug("Registered Strategy: {} (Priority: {})", strategy.getName(),
+                        strategy.getPriority());
             }
         }
     }
 
     /**
      * Register a new optimization strategy.
-     * <p>
-     * Thread-safe. Can be called by other mods to register custom strategies.
      *
-     * @param strategy Strategy to register
+     * @param strategy The strategy to register
      */
     public static void register(OptimizationStrategy strategy) {
         synchronized (LOCK) {
-            if (!strategies.contains(strategy)) {
-                strategies.add(strategy);
-                MCOPT.LOGGER.debug("Registered strategy: {}", strategy.getName());
-
-                // Clear cache when new strategy is added
+            strategies.add(strategy);
+            // If already initialized, re-sort
+            if (initialized) {
+                sortStrategies();
+                // Clear cache as new strategy might affect existing chains
                 modifierCache.clear();
-
-                // Re-sort if already initialized
-                if (initialized) {
-                    sortStrategies();
-                }
-            } else {
-                MCOPT.LOGGER.warn("Strategy already registered: {}", strategy.getName());
             }
         }
     }
 
     /**
-     * Get the modifier chain for a given mob.
-     * <p>
-     * This method finds all applicable strategies based on entity tags,
-     * builds and caches the modifier chains, and returns the combined chain.
+     * Get the combined modifier chain for a specific mob.
      *
-     * @param mob Mob to get modifiers for
-     * @return Combined modifier chain (never null, may be empty)
+     * @param mob The mob to get modifiers for
+     * @return The combined modifier chain, or null if no strategies apply
      */
     public static ModifierChain getModifierChain(Mob mob) {
+        if (!initialized) {
+            return null;
+        }
+
+        EntityType<?> type = mob.getType();
         ModifierChain combinedChain = new ModifierChain();
-        EntityType<?> entityType = mob.getType();
+        boolean foundMatch = false;
 
-        // Find and apply all matching strategies
+        // Iterate through strategies to find applicable ones
         for (OptimizationStrategy strategy : strategies) {
-            // Check if strategy is enabled
-            if (!strategy.isEnabled()) {
-                continue;
+            TagKey<EntityType<?>> targetTag = strategy.getTargetTag();
+
+            // Check if mob type has this tag
+            if (type.is(targetTag)) {
+                // Get or build cached chain for this tag
+                ModifierChain strategyChain = modifierCache.computeIfAbsent(targetTag,
+                        k -> strategy.buildModifiers());
+
+                // Merge into combined chain
+                combinedChain.addAll(strategyChain);
+                foundMatch = true;
             }
-
-            // Check if entity type matches strategy's target tag
-            if (!entityType.is(strategy.getTargetTag())) {
-                continue;
-            }
-
-            // Check if strategy wants to optimize this specific mob
-            if (!strategy.shouldOptimize(mob)) {
-                continue;
-            }
-
-            // Get or build modifier chain for this strategy
-            ModifierChain strategyChain = getOrBuildModifierChain(strategy);
-
-            // Add all modifiers from this strategy to the combined chain
-            combinedChain.addAll(strategyChain);
         }
 
-        return combinedChain;
+        return foundMatch ? combinedChain : null;
     }
 
     /**
-     * Get or build modifier chain for a strategy.
-     * Uses caching to avoid rebuilding chains repeatedly.
-     *
-     * @param strategy Strategy to get chain for
-     * @return Cached or newly built modifier chain
-     */
-    private static ModifierChain getOrBuildModifierChain(OptimizationStrategy strategy) {
-        TagKey<EntityType<?>> tag = strategy.getTargetTag();
-
-        // Check cache first
-        ModifierChain cached = modifierCache.get(tag);
-        if (cached != null) {
-            return cached;
-        }
-
-        // Build new chain
-        ModifierChain chain = strategy.buildModifiers();
-
-        // Cache it
-        modifierCache.put(tag, chain);
-
-        MCOPT.LOGGER.debug("Built and cached modifier chain for strategy: {} (tag: {}, modifiers: {})",
-                strategy.getName(), tag.location(), chain.size());
-
-        return chain;
-    }
-
-    /**
-     * Sort strategies by priority (highest first).
+     * Sort strategies by priority (descending).
      */
     private static void sortStrategies() {
-        strategies.sort((a, b) -> Integer.compare(b.getPriority(), a.getPriority()));
+        strategies.sort(Comparator.comparingInt(OptimizationStrategy::getPriority).reversed());
     }
 
     /**
-     * Clear all cached modifier chains.
-     * Useful when configuration changes or strategies are re-registered.
+     * Clear the registry (useful for testing or reloading).
      */
-    public static void clearCache() {
+    public static void clear() {
         synchronized (LOCK) {
+            strategies.clear();
             modifierCache.clear();
-            MCOPT.LOGGER.debug("Cleared modifier chain cache");
+            initialized = false;
         }
     }
 
     /**
      * Get all registered strategies.
-     * For debugging and testing purposes.
      *
-     * @return Unmodifiable list of strategies
+     * @return Unmodifiable list of registered strategies
      */
     public static List<OptimizationStrategy> getStrategies() {
         return Collections.unmodifiableList(strategies);
     }
-
-    /**
-     * Check if registry has been initialized.
-     *
-     * @return true if initialized
-     */
-    public static boolean isInitialized() {
-        return initialized;
-    }
-
-    /**
-     * Reset the registry (for testing purposes only).
-     * WARNING: This is not thread-safe and should only be used in tests.
-     */
-    public static void reset() {
-        synchronized (LOCK) {
-            strategies.clear();
-            modifierCache.clear();
-            initialized = false;
-            MCOPT.LOGGER.warn("Strategy Registry has been reset (test mode)");
-        }
-    }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 1da28dde83262df0df1d55168e914749d22a9de0

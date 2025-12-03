@@ -60,7 +60,8 @@ public final class ParticleOptimizationHandler {
         MCOptCulledParticle access = (MCOptCulledParticle) particle;
         double distanceSq = access.mcopt$distanceSquared(cameraPosition);
 
-        if (distanceSq > MCOPTConstants.Performance.PARTICLE_CULL_DISTANCE_SQ) {
+        double cullRange = RenderingConfig.PARTICLE_CULLING_RANGE.get();
+        if (distanceSq > cullRange * cullRange) {
             access.mcopt$setCulled(true);
             return true;
         }

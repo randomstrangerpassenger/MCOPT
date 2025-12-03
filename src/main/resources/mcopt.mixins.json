@@ -24,6 +24,7 @@
     "client.LocalPlayerMixin",
     "client.EntityRenderDispatcherMixin",
     "client.BlockEntityRenderDispatcherMixin",
+    "client.LanguageMixin",
     "client.ParticleEngineMixin",
     "client.RenderSectionMixin",
     "client.ParticleMixin",

@@ -168,6 +168,7 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Amplifier Byte Overflow 수정**: 포션 효과 레벨이 128 이상일 때 발생하는 byte overflow 버그 해결
 - **NBT 확장 저장**: 레벨 128 이상의 포션 효과를 int로 저장하여 음수 변환 방지
 - **바닐라 버그 해결**: Haste 128레벨이 블록 채굴을 불가능하게 만들거나, Levitation이 중력을 증가시키는 문제 수정
+- **레벨 표시 개선**: 10 초과 레벨을 로마 숫자 대신 아라비아 숫자로 표시 (예: "Speed II" → "Speed 11")
 - **하위 호환성**: 기존 바닐라 byte 저장 방식과 호환되며, 확장된 레벨만 추가 태그로 저장
 - **모드팩 친화적**: 극한 포션 효과를 사용하는 모드팩에서 안정적으로 작동
 

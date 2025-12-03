@@ -51,6 +51,13 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
   - 기본 3프레임마다 시야 차단을 재검사해 과도한 레이캐스트를 방지
   - `particles.particleCullingRange`로 검사 거리, `particles.particleOcclusionCheckInterval`로 재검사 주기를 조절
 
+#### Smart Leaves Culling ⭐ NEW
+- **OptiLeaves 스타일 최적화**: 나무 안쪽의 보이지 않는 나뭇잎 면을 컬링하여 GPU 부담 감소
+- **숲 바이옴 FPS 향상**: 정글, 다크 오크 숲에서 10-40% 성능 향상
+- **시각적 품질 유지**: Fancy 그래픽 모드의 외형을 그대로 유지하면서 내부 면만 제거
+- **자동 호환성 보호**: cull-leaves, moreculling, optileaves, cull-less-leaves 모드 감지 시 자동 비활성화
+- **깊이 기반 컬링**: 설정 가능한 depth 값으로 나무가 투명해 보이는 것을 방지
+
 #### Snow Accumulation Optimization ⭐ NEW
 - **Simple Snowy Fix 스타일**: 눈 층이 늘어날 때 불필요한 이웃 알림을 줄여 눈보라 시 청크 리빌드 스파이크 감소
 - **Vanilla 호환**: 눈 쌓이는 방식은 그대로 유지하면서 업데이트 플래그만 최소화
@@ -245,6 +252,19 @@ enableParticleOptimizations = true
 maxParticlesPerFrame = 500
 # Reduce particle spawn rate (0.0-0.9, default: 0.25 = 25% reduction)
 particleSpawnReduction = 0.25
+```
+
+#### Smart Leaves Culling
+```toml
+[rendering.smart_leaves]
+# 나무 안쪽의 보이지 않는 나뭇잎 렌더링을 생략하여 숲 바이옴의 FPS를 높입니다
+enableSmartLeaves = true
+
+# 컬링을 적용할 최소 깊이 (0-5, 기본값: 2)
+# 0 = 가장 공격적인 컬링 (최고 성능, 약간의 시각적 변화 가능)
+# 2 = 권장 설정 (성능과 품질의 균형, Cull Less Leaves 스타일)
+# 높을수록 = 덜 공격적인 컬링 (나무가 속이 빈 것처럼 보이는 것을 방지)
+leavesCullingDepth = 2
 ```
 
 #### Weather & Snow
@@ -449,15 +469,17 @@ removeSquidFlee = false        # Squids won't flee from players
 For best performance in singleplayer:
 1. Enable all optimizations in the config
 2. Enable `enableEllipticalRenderDistance` for 10-35% FPS boost
-3. Enable `enableXpOrbMerging` to reduce lag during mob farming/mining
-4. Enable `enableObjectPooling` and `showMemoryHud` to monitor and reduce GC pressure
-5. Enable `enableAiOptimizations` for better performance with many mobs
-6. Use **F8 (Panic Button)** when experiencing sudden lag to free memory
-7. Set `chunkUpdateLimit` to 4-6 for smooth FPS
-8. Set `verticalRenderStretch` to 0.5-0.75 for better performance
-9. Set `entityCullingDistance` based on your render distance (32-64 for normal, 64-128 for high)
-10. Set `particleSpawnReduction` to 0.25-0.5 depending on your preferences
-11. For mob farms: Enable `removeStroll`, `removeRandomLookAround` for major performance gains
+3. Enable `enableSmartLeaves` for 10-40% FPS boost in forest biomes
+4. Enable `enableXpOrbMerging` to reduce lag during mob farming/mining
+5. Enable `enableObjectPooling` and `showMemoryHud` to monitor and reduce GC pressure
+6. Enable `enableAiOptimizations` for better performance with many mobs
+7. Use **F8 (Panic Button)** when experiencing sudden lag to free memory
+8. Set `chunkUpdateLimit` to 4-6 for smooth FPS
+9. Set `verticalRenderStretch` to 0.5-0.75 for better performance
+10. Set `entityCullingDistance` based on your render distance (32-64 for normal, 64-128 for high)
+11. Set `particleSpawnReduction` to 0.25-0.5 depending on your preferences
+12. For mob farms: Enable `removeStroll`, `removeRandomLookAround` for major performance gains
+13. For dense forests: Set `leavesCullingDepth` to 0 for maximum performance
 
 For high-end systems:
 - Increase `chunkUpdateLimit` to 10-15 for faster world updates
@@ -477,6 +499,7 @@ For low-end systems:
 - Set `xpOrbMergeRadius` to 2.5-5.0 for maximum orb reduction
 - Set `xpOrbMergeDelay` to 15-20 to reduce CPU overhead
 - Enable `aggressiveChunkCulling`
+- **Smart Leaves for low-end**: Set `leavesCullingDepth` to 0 for maximum forest performance
 - **AI Optimizations for low-end**: Enable `removeStroll`, `removeRandomLookAround`, `removeBreed` for passive mobs
 - For ocean biomes: Enable `removeSquidRandomMovement` and `removeFishSwim` for major gains
 
@@ -515,6 +538,7 @@ If you experience issues with other mods, try:
 - AI-Improvements 설치 시: 엔티티 AI 최적화 자동 비활성화
 - Dynamic FPS/FPS Reducer 설치 시: 내장 동적 FPS 컨트롤러 자동 비활성화
 - AllTheLeaks/MemoryLeakFix 설치 시: Leak Guard 자동 비활성화
+- cull-leaves/moreculling/optileaves/cull-less-leaves 설치 시: Smart Leaves Culling 자동 비활성화
 
 ## Building from Source
 

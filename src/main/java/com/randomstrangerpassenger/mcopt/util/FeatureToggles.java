@@ -4,6 +4,7 @@ import com.randomstrangerpassenger.mcopt.MCOPT;
 import com.randomstrangerpassenger.mcopt.config.PerformanceConfig;
 import com.randomstrangerpassenger.mcopt.config.GameplayConfig;
 import com.randomstrangerpassenger.mcopt.config.SafetyConfig;
+import com.randomstrangerpassenger.mcopt.config.RenderingConfig;
 import net.neoforged.fml.ModList;
 
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -50,6 +51,10 @@ public final class FeatureToggles {
         register(FeatureKey.ACTION_GUARD,
                 SafetyConfig.ENABLE_ACTION_GUARD::get,
                 "dontdothat");
+
+        register(FeatureKey.SMART_LEAVES,
+                RenderingConfig.ENABLE_SMART_LEAVES::get,
+                "cull-leaves", "moreculling", "optileaves", "cull-less-leaves");
 
         // Add other keys if they were present in incoming but missing here
         // Checked: Incoming had same set.

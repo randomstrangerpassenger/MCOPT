@@ -38,6 +38,11 @@ public class RenderingConfig {
     public static final ModConfigSpec.BooleanValue ENABLE_SMART_LEAVES;
     public static final ModConfigSpec.IntValue LEAVES_CULLING_DEPTH;
 
+    // Block Entity Culling Settings
+    public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_ENTITY_CULLING;
+    public static final ModConfigSpec.IntValue BLOCK_ENTITY_CULLING_DISTANCE;
+    public static final ModConfigSpec.BooleanValue CULL_BLOCK_ENTITIES_BEHIND_WALLS;
+
     static {
         BUILDER.comment("MCOPT Rendering Optimizations Configuration")
                .push("rendering");
@@ -152,6 +157,27 @@ public class RenderingConfig {
                         "2 = only cull leaves 2+ blocks deep from surface (recommended, Cull Less Leaves style)",
                         "Set to 0 for maximum performance in dense forests")
                 .defineInRange("leavesCullingDepth", 2, 0, 5);
+
+        BUILDER.pop();
+
+        BUILDER.comment("Block Entity Culling Optimization")
+               .push("block_entity_culling");
+
+        ENABLE_BLOCK_ENTITY_CULLING = BUILDER
+                .comment("Enable block entity culling (Recommended: true)",
+                        "Skips rendering block entities (chests, signs, heads, etc.) that are not visible",
+                        "Major FPS improvement in warehouses and storage rooms")
+                .define("enableBlockEntityCulling", true);
+
+        BLOCK_ENTITY_CULLING_DISTANCE = BUILDER
+                .comment("Distance at which block entities are culled when not visible (in blocks)",
+                        "Smaller values = better performance, larger values = see block entities from farther")
+                .defineInRange("blockEntityCullingDistance", 64, 16, 256);
+
+        CULL_BLOCK_ENTITIES_BEHIND_WALLS = BUILDER
+                .comment("Skip rendering block entities that are behind walls",
+                        "Helps with large storage rooms where most chests are hidden")
+                .define("cullBlockEntitiesBehindWalls", true);
 
         BUILDER.pop();
         BUILDER.pop();

@@ -31,6 +31,12 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **Behind-Wall Culling**: Optionally culls entities that are completely behind walls
 - **Smart Importance Detection**: Never culls important entities like vehicles or passengers
 
+#### Block Entity Rendering Optimization ⭐ NEW
+- **Distance-Based Block Entity Culling**: Skips rendering distant block entities (chests, signs, skulls)
+- **Behind-Wall Culling**: Optionally culls block entities that are behind walls
+- **Major FPS Boost in Storage Rooms**: Significant performance improvement in large warehouses
+- **Configurable Distance**: Adjust culling distance based on your render distance
+
 #### Dynamic FPS 컨트롤러 ⭐ NEW
 - **창 상태 기반 FPS 캡**: 플레이 화면, 메뉴, 비활성화, 최소화 상태마다 서로 다른 FPS 제한 적용
 - **원본 값 보존**: 사용자가 지정한 최대 FPS를 기억했다가 포커스를 되찾으면 즉시 복원
@@ -81,6 +87,13 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **화이트리스트/보호 옵션**: 이름표가 붙은 아이템이나 지정한 엔티티 ID는 건드리지 않도록 설정 가능
 - **온화한 기본값**: 기본적으로 꺼져 있으며, 필요할 때만 활성화하도록 설계
 
+#### 청크 당 엔티티 제한 (Per-Chunk Entity Limiter) ⭐ NEW
+- **국지적 렉 방지**: 특정 청크에 엔티티가 과도하게 밀집되는 것을 실시간으로 방지
+- **몹 타워 보호**: 몹 농장이나 자동화 시설에서 발생하는 국지적인 FPS 저하를 완화
+- **선택적 제한**: 몬스터, 동물, 아이템 등 엔티티 타입별로 제한 대상 설정 가능
+- **스폰 차단 또는 제거**: 청크가 꽉 찼을 때 새로운 스폰을 막거나 초과분을 제거하는 방식 선택 가능
+- **Clear Lag와 상호 보완**: Clear Lag는 전역 정리, 이 기능은 청크별 실시간 방어
+
 #### Iron Golem Spawn 안정화 ⭐ NEW
 - **Villager 소환 보정**: 마을 주민이 소환하는 철 골렘의 스폰 위치를 주변 지면으로 부드럽게 내림
 - **지붕/장식물 우회**: 높이맵 때문에 지붕 위나 장식 블록에 걸려 스폰이 무산되는 문제 완화
@@ -106,6 +119,12 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **고아 낚싯찌 정리**: 낚싯대가 사라지거나 차원을 이동한 뒤 남아버린 낚싯찌를 자동으로 제거해 "낚싯대 먹통" 상태를 해소
 - **거리/청크 안전 검사**: 플레이어와 1024블록 이상 떨어지거나 언로드된 청크에 남은 낚싯찌를 감지해 줄을 정리
 - **완전 서버 사이드**: 로직을 건드리지 않고 참조만 정리해 다른 낚시 확장 모드와도 충돌 없이 동작
+
+#### 로그인 타임아웃 방지 (Login Timeout Fix) ⭐ NEW
+- **무거운 모드팩 지원**: 클라이언트가 서버에 접속할 때 로딩 시간이 오래 걸려 튕기는 문제 해결
+- **설정 가능한 타임아웃**: 바닐라 30초 대신 최대 600초(10분)까지 설정 가능
+- **권장 설정**: 무거운 모드팩의 경우 120-180초 권장
+- **"Timed Out" 에러 방지**: 모드팩이 많을수록 로딩 시간이 길어지는 문제를 근본적으로 해결
 
 #### 버킷 미리보기 ⭐ NEW
 - **버킷 내용 툴팁**: 버킷에 담긴 액체나 생명체 정보를 툴팁에 표시해 이름만으로는 구분하기 어려운 경우를 해소
@@ -244,6 +263,17 @@ enableEntityCulling = true
 entityCullingDistance = 64
 # Skip rendering entities behind walls
 cullEntitiesBehindWalls = true
+```
+
+#### Block Entity Culling
+```toml
+[rendering.block_entity_culling]
+# Enable block entity culling optimizations (chests, signs, skulls, etc.)
+enableBlockEntityCulling = true
+# Distance at which block entities are culled (16-256 blocks, default: 64)
+blockEntityCullingDistance = 64
+# Skip rendering block entities behind walls
+cullBlockEntitiesBehindWalls = true
 ```
 
 #### Particle System
@@ -395,6 +425,34 @@ enableAttributeRangeExpansion = true
 attributeMaxLimit = 1000000000
 ```
 
+#### 청크 당 엔티티 제한
+```toml
+[safety.per_chunk_entity_limit]
+# 특정 청크에 엔티티가 과도하게 밀집되는 것을 방지합니다
+enablePerChunkEntityLimit = false
+# 청크 당 최대 엔티티 수 (초과 시 오래된 엔티티부터 제거)
+maxEntitiesPerChunk = 50
+# 몬스터를 제한 대상에 포함
+limitMonsters = true
+# 동물을 제한 대상에 포함
+limitAnimals = true
+# 아이템 엔티티를 제한 대상에 포함
+limitItems = true
+# 청크가 꽉 찼을 때 새로운 스폰을 막습니다 (제거 대신 예방)
+preventSpawnWhenFull = false
+```
+
+#### 로그인 타임아웃 방지
+```toml
+[gameplay.login_timeout]
+# 무거운 모드팩에서 로그인 타임아웃을 방지합니다
+enableLoginTimeoutFix = true
+# 로그인 핸드셰이크 타임아웃 시간 (초)
+# 바닐라 기본값: 30초
+# 권장값: 120-180초 (무거운 모드팩의 경우)
+loginTimeoutSeconds = 120
+```
+
 #### Experience Orb Merging
 ```toml
 [general.xp_orb_merging]
@@ -519,6 +577,63 @@ MCOPT adds the following key bindings (configurable in Minecraft's Controls menu
 | **F8** | Memory Panic Button | Triggers emergency memory cleanup (GC + pool clearing) with 5-second cooldown |
 
 The panic button provides instant feedback via chat message showing how much memory was freed.
+
+## Commands
+
+MCOPT provides diagnostic commands to help monitor and troubleshoot performance issues:
+
+### `/mcopt status` (or `/mcopt report`)
+
+Displays a comprehensive status report of MCOPT's current state:
+
+**Memory Usage:**
+- Current RAM usage and percentage
+- Color-coded warnings (green < 75%, yellow < 90%, red ≥ 90%)
+
+**Active Modules:**
+- Lists all enabled optimization features
+- Shows configuration values for key settings
+- Displays which features are currently running
+
+**Performance Statistics:**
+- Entity culling distance
+- Block entity culling distance
+- Per-chunk entity limits
+- Memory optimization status
+
+**Detected Conflicts:**
+- Identifies incompatible mods that are installed
+- Shows which MCOPT features were auto-disabled
+- Helps diagnose mod conflicts (e.g., Clumps, Dynamic FPS, AI Improvements)
+
+**Example Output:**
+```
+═══════════════════════════════════
+           MCOPT Status Report
+═══════════════════════════════════
+
+Memory Usage:
+  Used: 2048MB / 4096MB (50%)
+
+Active Modules:
+  Chunk Optimizations: ON
+  Entity Culling: ON
+  Block Entity Culling: ON
+  Particle Optimizations: ON
+  AI Optimizations: ON
+  Dynamic FPS: ON
+  Per-Chunk Entity Limit: OFF
+
+Configuration:
+  Entity Culling Distance: 64 blocks
+  Block Entity Culling Distance: 64 blocks
+  Memory Optimizations: Active
+
+No Conflicts Detected
+═══════════════════════════════════
+```
+
+**Permissions:** This command is available to all players in singleplayer and to operators on servers.
 
 ## Compatibility
 

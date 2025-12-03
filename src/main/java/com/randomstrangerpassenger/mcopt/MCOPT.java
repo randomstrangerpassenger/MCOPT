@@ -16,9 +16,12 @@ import com.randomstrangerpassenger.mcopt.config.ConfigMigrationHandler;
 
 import com.randomstrangerpassenger.mcopt.server.entity.clearlag.ClearLagManager;
 import com.randomstrangerpassenger.mcopt.server.entity.golem.GolemSpawnFixHandler;
+import com.randomstrangerpassenger.mcopt.server.entity.limiter.PerChunkEntityLimiter;
 import com.randomstrangerpassenger.mcopt.server.ai.AIOptimizationSystem;
+import com.randomstrangerpassenger.mcopt.command.MCOPTStatusCommand;
 
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -54,6 +57,18 @@ public class MCOPT {
         // Register other handlers
         NeoForge.EVENT_BUS.register(new GolemSpawnFixHandler());
         NeoForge.EVENT_BUS.register(new ClearLagManager());
+
+        if (SafetyConfig.ENABLE_PER_CHUNK_ENTITY_LIMIT.get()) {
+            NeoForge.EVENT_BUS.register(new PerChunkEntityLimiter());
+            LOGGER.info("Per-chunk entity limiter: ENABLED (max {} per chunk)",
+                    SafetyConfig.MAX_ENTITIES_PER_CHUNK.get());
+        }
+
+        // Register command
+        NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> {
+            MCOPTStatusCommand.register(event.getDispatcher());
+            LOGGER.info("MCOPT status command registered: /mcopt status");
+        });
 
         // Register config migration handler
         modEventBus.addListener(ConfigMigrationHandler::onConfigLoad);

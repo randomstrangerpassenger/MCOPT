@@ -36,6 +36,14 @@ public class SafetyConfig {
         public static final ModConfigSpec.BooleanValue ENABLE_ATTRIBUTE_RANGE_EXPANSION;
         public static final ModConfigSpec.DoubleValue ATTRIBUTE_MAX_LIMIT;
 
+        // Per-Chunk Entity Limiter
+        public static final ModConfigSpec.BooleanValue ENABLE_PER_CHUNK_ENTITY_LIMIT;
+        public static final ModConfigSpec.IntValue MAX_ENTITIES_PER_CHUNK;
+        public static final ModConfigSpec.BooleanValue LIMIT_MONSTERS;
+        public static final ModConfigSpec.BooleanValue LIMIT_ANIMALS;
+        public static final ModConfigSpec.BooleanValue LIMIT_ITEMS;
+        public static final ModConfigSpec.BooleanValue PREVENT_SPAWN_WHEN_FULL;
+
         static {
                 BUILDER.comment("MCOPT Safety Features and Entity Management Configuration")
                                 .push("safety");
@@ -129,6 +137,40 @@ public class SafetyConfig {
                                                 "Defaults to 1,000,000,000 to cover extreme modded gear while avoiding overflow",
                                                 "Set lower if another mod expects tighter bounds")
                                 .defineInRange("attributeMaxLimit", 1_000_000_000D, 1.0D, Double.MAX_VALUE);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Per-chunk entity limiting to prevent localized lag")
+                                .push("per_chunk_entity_limit");
+
+                ENABLE_PER_CHUNK_ENTITY_LIMIT = BUILDER
+                                .comment("특정 청크에 엔티티가 과도하게 밀집되는 것을 방지합니다",
+                                                "몹 타워나 자동화 공장 등에서 발생하는 국지적인 렉을 줄입니다",
+                                                "Clear Lag와 달리 특정 청크만 실시간으로 보호합니다")
+                                .define("enablePerChunkEntityLimit", false);
+
+                MAX_ENTITIES_PER_CHUNK = BUILDER
+                                .comment("청크 당 최대 엔티티 수 (초과 시 오래된 엔티티부터 제거)",
+                                                "권장값: 50-100 (너무 낮으면 몹 농장이 작동하지 않을 수 있음)")
+                                .defineInRange("maxEntitiesPerChunk", 50, 10, 500);
+
+                LIMIT_MONSTERS = BUILDER
+                                .comment("몬스터(좀비, 크리퍼, 스켈레톤 등)를 제한 대상에 포함")
+                                .define("limitMonsters", true);
+
+                LIMIT_ANIMALS = BUILDER
+                                .comment("동물(소, 돼지, 닭 등)을 제한 대상에 포함")
+                                .define("limitAnimals", true);
+
+                LIMIT_ITEMS = BUILDER
+                                .comment("아이템 엔티티를 제한 대상에 포함")
+                                .define("limitItems", true);
+
+                PREVENT_SPAWN_WHEN_FULL = BUILDER
+                                .comment("청크가 꽉 찼을 때 새로운 스폰을 막습니다 (제거 대신 예방)",
+                                                "true: 스폰 차단 (더 부드럽지만 몹 농장 효율 저하 가능)",
+                                                "false: 초과분 제거 (더 공격적)")
+                                .define("preventSpawnWhenFull", false);
 
                 BUILDER.pop();
                 BUILDER.pop();

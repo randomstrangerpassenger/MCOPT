@@ -6,15 +6,19 @@
   "refmap": "mcopt.refmap.json",
   "mixins": [
     "common.ItemStackMixin",
+    "common.MobEffectInstanceMixin",
+    "common.RangedAttributeMixin",
     "common.SnowLayerBlockMixin",
     "server.BeeStuckFixMixin",
     "server.EntityPortalMixin",
     "server.EnchantmentMenuMixin",
     "server.ExperienceOrbMixin",
+    "server.MobAIMixin",
     "server.ServerLoginPacketListenerMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
-    "accessor.EnchantmentMenuAccessor"
+    "accessor.EnchantmentMenuAccessor",
+    "accessor.LookControlAccessor"
   ],
   "client": [
     "client.LocalPlayerMixin",

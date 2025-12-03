@@ -164,6 +164,13 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **보고 값 일치**: 속성의 최대치 조회 시에도 확장된 값이 반환되어 UI/호환 모드가 올바른 범위를 인식
 - **토글 가능**: 다른 모드가 고정 상한을 필요로 할 경우 설정에서 즉시 끌 수 있음
 
+#### 포션 레벨 제한 해제 (PotionLimitFix 스타일) ⭐ NEW
+- **Amplifier Byte Overflow 수정**: 포션 효과 레벨이 128 이상일 때 발생하는 byte overflow 버그 해결
+- **NBT 확장 저장**: 레벨 128 이상의 포션 효과를 int로 저장하여 음수 변환 방지
+- **바닐라 버그 해결**: Haste 128레벨이 블록 채굴을 불가능하게 만들거나, Levitation이 중력을 증가시키는 문제 수정
+- **하위 호환성**: 기존 바닐라 byte 저장 방식과 호환되며, 확장된 레벨만 추가 태그로 저장
+- **모드팩 친화적**: 극한 포션 효과를 사용하는 모드팩에서 안정적으로 작동
+
 #### Entity AI Optimization ⭐ NEW
 - **Math Function Caching**: Pre-computed atan2, sin, cos lookup tables for AI calculations
 - **Optimized LookControl**: Replaces mob LookControl with cached math version
@@ -423,6 +430,16 @@ enableMaxHealthStability = true
 enableAttributeRangeExpansion = true
 # 클램프 상한 (기본: 1,000,000,000)
 attributeMaxLimit = 1000000000
+```
+
+#### 포션 레벨 제한 해제
+```toml
+[safety.potion_fix]
+# 포션 효과 레벨(Amplifier)이 byte 범위(127)를 초과해도 정상 작동하도록 수정
+# - 바닐라는 내부적으로 int를 사용하지만 NBT 저장 시 byte로 변환되어 128+ 레벨에서 오버플로우 발생
+# - 예: Haste 128레벨이 역효과를 내거나, Levitation이 중력을 증가시키는 버그 방지
+# - 모드로 극한 포션 효과를 사용하는 경우 활성화 권장
+enablePotionLimitFix = true
 ```
 
 #### 청크 당 엔티티 제한
@@ -808,6 +825,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - **NeoBeeFix**: Bee pathfinding stability improvements
   - **AllTheLeaks**: Memory leak detection patterns
   - **AttributeFix**: Attribute range expansion concepts
+  - **PotionLevelFix**: Potion amplifier byte overflow fix concepts
   - **dontDoThat**: Safety guard inspiration
   - **Simple Snowy Fix**: Snow accumulation optimization
   - **OptiLeaves**: Smart leaves culling techniques

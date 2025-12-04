@@ -6,6 +6,7 @@
   "refmap": "mcopt.refmap.json",
   "mixins": [
     "common.ItemStackMixin",
+    "common.ItemFrameSilenceMixin",
     "common.LakeFeatureMixin",
     "common.MobEffectInstanceMixin",
     "common.RangedAttributeMixin",

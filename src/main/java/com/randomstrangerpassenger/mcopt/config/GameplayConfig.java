@@ -63,6 +63,9 @@ public class GameplayConfig {
         // Interaction Fallthrough (RCF-style)
         public static final ModConfigSpec.BooleanValue ENABLE_RIGHT_CLICK_FALLTHROUGH;
 
+        // Item Frame Silence Fix
+        public static final ModConfigSpec.BooleanValue ENABLE_ITEM_FRAME_SILENCE;
+
         static {
                 BUILDER.comment("MCOPT Gameplay Improvements and Fixes Configuration")
                                 .push("gameplay");
@@ -267,6 +270,17 @@ public class GameplayConfig {
                                                 "예: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 사용",
                                                 "When right-hand item use fails (e.g., no space to place), automatically tries using left-hand item")
                                 .define("enableRightClickFallthrough", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Item Frame Silence Fix (BugFixerUpper style)")
+                                .push("item_frame_silence");
+
+                ENABLE_ITEM_FRAME_SILENCE = BUILDER
+                                .comment("청크 로딩/월드 생성 시 아이템 액자가 로드될 때 재생되는 불필요한 소리를 음소거합니다",
+                                                "플레이어가 직접 아이템 액자를 설치할 때는 정상적으로 소리가 재생됩니다",
+                                                "Silences unnecessary placement sounds when item frames are loaded during chunk loading or world generation")
+                                .define("enableItemFrameSilence", true);
 
                 BUILDER.pop();
                 BUILDER.pop();

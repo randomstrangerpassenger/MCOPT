@@ -151,6 +151,12 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **클라이언트/서버 양쪽 지원**: 싱글플레이어와 멀티플레이어 모두에서 동작
 - **완전 독립 구현**: RCF 모드에서 영감을 받았지만 MCOPT 자체 구현
 
+#### 아이템 액자 소음 방지 (BugFixerUpper 스타일) ⭐ NEW
+- **청크 로딩 시 불필요한 소리 제거**: 청크가 로드될 때 아이템 액자가 재생하는 배치 소리를 음소거
+- **플레이어 설치 시 정상 작동**: 플레이어가 직접 아이템 액자를 설치할 때는 정상적으로 소리가 재생됨
+- **탐험 경험 개선**: 아이템 액자가 많은 지역을 탐험할 때 불필요한 소음으로 인한 불편함 해소
+- **완전 독립 구현**: BugFixerUpper 모드에서 영감을 받았지만 MCOPT 자체 구현
+
 #### 마법 부여 시드 동기화 강화 (Enchanter Fix 스타일) ⭐ NEW
 - **진짜 무작위화**: 테이블 슬롯(재료/라피스)이 바뀔 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
 - **즉시 동기화**: 시드 변경 직후 `broadcastChanges()`를 호출하여 클라이언트가 항상 올바른 마법 부여 옵션을 표시하도록 보장
@@ -403,6 +409,14 @@ enableBucketPreview = true
 # 오른손 아이템 사용이 실패했을 때 자동으로 왼손 아이템 사용을 시도합니다
 # 예: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 사용
 enableRightClickFallthrough = true
+```
+
+#### Item Frame Silence (BugFixerUpper 스타일)
+```toml
+[gameplay.item_frame_silence]
+# 청크 로딩/월드 생성 시 아이템 액자가 로드될 때 재생되는 불필요한 소리를 음소거합니다
+# 플레이어가 직접 아이템 액자를 설치할 때는 정상적으로 소리가 재생됩니다
+enableItemFrameSilence = true
 ```
 
 #### Enchanting (Enchanter Fix 스타일)
@@ -877,6 +891,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - **Lake Feature Fix**: Lake generation crash prevention patterns
   - **Basin Generation Fix**: Basin (stone disk) feature restoration
   - **RCF (Right Click Fallthrough)**: Interaction fallthrough mechanism inspiration
+  - **BugFixerUpper**: Item frame silence fix inspiration
 - All implementations are original and independent
 - Thanks to the NeoForge team for the excellent modding platform
 

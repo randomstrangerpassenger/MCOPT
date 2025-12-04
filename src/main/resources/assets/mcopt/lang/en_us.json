@@ -1,6 +1,7 @@
 {
   "key.categories.mcopt": "MCOPT Performance Mod",
   "key.mcopt.memory_panic": "Emergency Memory Cleanup (Panic Button)",
+  "mcopt.interaction.fallthrough": "Right-hand use failed, trying off-hand...",
   "tooltip.mcopt.bucket.fluid": "Fluid: %s",
   "tooltip.mcopt.bucket.entity": "Contained Entity: %s",
   "tooltip.mcopt.bucket.custom_name": "Name: %s",

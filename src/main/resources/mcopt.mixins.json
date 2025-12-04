@@ -6,6 +6,7 @@
   "refmap": "mcopt.refmap.json",
   "mixins": [
     "common.ItemStackMixin",
+    "common.ItemFrameSilenceMixin",
     "common.LakeFeatureMixin",
     "common.MobEffectInstanceMixin",
     "common.RangedAttributeMixin",
@@ -19,6 +20,8 @@
     "server.ServerLoginPacketListenerMixin",
     "server.InstantWakeupFixMixin",
     "server.AllayPersistenceFixMixin",
+    "server.ServerPlayerGameModeMixin",
+    "server.SwimStateFixMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
     "accessor.EnchantmentMenuAccessor",
@@ -35,6 +38,7 @@
     "client.JukeboxFixMixin",
     "client.MouseInputFixMixin",
     "client.LeavesBlockMixin",
+    "client.MultiPlayerGameModeMixin",
     "accessor.RenderSectionAccessor"
   ],
   "injectors": {

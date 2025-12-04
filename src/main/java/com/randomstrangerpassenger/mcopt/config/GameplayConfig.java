@@ -58,6 +58,16 @@ public class GameplayConfig {
 
         // World Generation Fixes
         public static final ModConfigSpec.BooleanValue ENABLE_LAKE_CRASH_FIX;
+        public static final ModConfigSpec.BooleanValue ENABLE_BASIN_FIX;
+
+        // Interaction Fallthrough (RCF-style)
+        public static final ModConfigSpec.BooleanValue ENABLE_RIGHT_CLICK_FALLTHROUGH;
+
+        // Item Frame Silence Fix
+        public static final ModConfigSpec.BooleanValue ENABLE_ITEM_FRAME_SILENCE;
+
+        // Swim State Fix (MC-220390)
+        public static final ModConfigSpec.BooleanValue ENABLE_SWIM_STATE_FIX;
 
         static {
                 BUILDER.comment("MCOPT Gameplay Improvements and Fixes Configuration")
@@ -246,6 +256,46 @@ public class GameplayConfig {
                                                 "로드되지 않은 청크의 바이옴을 확인할 때 발생하는 오류를 안전하게 처리합니다",
                                                 "Prevents crashes caused by lake generation when checking biomes in unloaded chunks")
                                 .define("enableLakeCrashFix", true);
+
+                ENABLE_BASIN_FIX = BUILDER
+                                .comment("오버월드 바이옴에 돌 디스크(Basin) 피처를 복원합니다",
+                                                "Plains, Forest, Savanna 등의 바이옴에서 자연스러운 돌 지형 생성을 활성화합니다",
+                                                "Restores stone disk (Basin) generation in overworld biomes like Plains, Forest, and Savanna")
+                                .define("enableBasinFix", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Interaction Fallthrough (RCF-style)")
+                                .push("interaction_fallthrough");
+
+                ENABLE_RIGHT_CLICK_FALLTHROUGH = BUILDER
+                                .comment("오른손 아이템 사용이 실패(예: 공간 부족)했을 때, 자동으로 왼손 아이템 사용을 시도합니다",
+                                                "예: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 사용",
+                                                "When right-hand item use fails (e.g., no space to place), automatically tries using left-hand item")
+                                .define("enableRightClickFallthrough", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Item Frame Silence Fix (BugFixerUpper style)")
+                                .push("item_frame_silence");
+
+                ENABLE_ITEM_FRAME_SILENCE = BUILDER
+                                .comment("청크 로딩/월드 생성 시 아이템 액자가 로드될 때 재생되는 불필요한 소리를 음소거합니다",
+                                                "플레이어가 직접 아이템 액자를 설치할 때는 정상적으로 소리가 재생됩니다",
+                                                "Silences unnecessary placement sounds when item frames are loaded during chunk loading or world generation")
+                                .define("enableItemFrameSilence", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Swim State Fix (MC-220390)")
+                                .push("swim_state_fix");
+
+                ENABLE_SWIM_STATE_FIX = BUILDER
+                                .comment("물 속에서 수영 중 공격 시 발생하는 수영 상태 동기화 버그를 수정합니다 (MC-220390)",
+                                                "수영 중 엔티티를 공격하면 서버가 수영 상태를 잘못 해제하여 히트박스 불일치가 발생하는 문제를 해결합니다",
+                                                "해저 신전(Ocean Monument)에서 가디언과 싸울 때 특히 유용합니다",
+                                                "Fixes swim state desync when attacking entities while swimming (MC-220390)")
+                                .define("enableSwimStateFix", true);
 
                 BUILDER.pop();
                 BUILDER.pop();

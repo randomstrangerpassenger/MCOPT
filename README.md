@@ -133,10 +133,37 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **모드팩 호환성**: 커스텀 월드 생성 모드와 함께 사용할 때 안정성 향상
 - **완전 독립 구현**: Lake Feature Fix 모드에서 영감을 받았지만 MCOPT 자체 구현
 
+#### Basin 생성 복원 (Basin Generation Fix 스타일) ⭐ NEW
+- **돌 디스크 피처 복원**: Plains, Forest, Savanna 등의 오버월드 바이옴에서 Basin (돌 디스크) 생성을 복원
+- **자연스러운 지형**: 바닐라 Minecraft에서 누락되었던 자연스러운 돌 지형 피처를 재추가
+- **설정 가능**: GameplayConfig에서 enableBasinFix로 쉽게 켜고 끌 수 있음
+- **BiomeModifier 기반**: NeoForge의 BiomeModifier 시스템을 사용한 깔끔한 구현
+- **완전 독립 구현**: Basin Generation Fix 모드에서 영감을 받았지만 MCOPT 자체 구현
+
 #### 버킷 미리보기 ⭐ NEW
 - **버킷 내용 툴팁**: 버킷에 담긴 액체나 생명체 정보를 툴팁에 표시해 이름만으로는 구분하기 어려운 경우를 해소
 - **희귀 변이 식별**: 열대어 패턴/색상 조합, 아홀로틀 변종 색상을 바로 보여 레어 물고기나 파란 아홀로틀을 놓치지 않음
 - **완전 클라이언트 사이드**: 시각 정보만 추가하므로 서버 권한 없이도 안전하게 사용 가능, 다른 모드 버킷에도 대응
+
+#### 상호작용 폴스루 (RCF 스타일) ⭐ NEW
+- **오른손 실패 시 왼손 자동 시도**: 오른손 아이템 사용이 실패(예: 공간 부족)했을 때 자동으로 왼손 아이템 사용을 시도
+- **블록 설치 편의성 향상**: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 자동으로 사용
+- **클라이언트/서버 양쪽 지원**: 싱글플레이어와 멀티플레이어 모두에서 동작
+- **완전 독립 구현**: RCF 모드에서 영감을 받았지만 MCOPT 자체 구현
+
+#### 아이템 액자 소음 방지 (BugFixerUpper 스타일) ⭐ NEW
+- **청크 로딩 시 불필요한 소리 제거**: 청크가 로드될 때 아이템 액자가 재생하는 배치 소리를 음소거
+- **플레이어 설치 시 정상 작동**: 플레이어가 직접 아이템 액자를 설치할 때는 정상적으로 소리가 재생됨
+- **탐험 경험 개선**: 아이템 액자가 많은 지역을 탐험할 때 불필요한 소음으로 인한 불편함 해소
+- **완전 독립 구현**: BugFixerUpper 모드에서 영감을 받았지만 MCOPT 자체 구현
+
+#### 수영 상태 동기화 수정 (Swim Fix 스타일) ⭐ NEW
+- **MC-220390 버그 수정**: 물 속에서 수영 중 공격 시 발생하는 클라이언트-서버 히트박스 불일치 해결
+- **해저 신전 전투 개선**: Ocean Monument에서 가디언과 싸울 때 수영 상태가 풀리는 문제 방지
+- **1x1 공간 글리치 해결**: 수영 중 공격 후 좁은 공간을 통과할 때 발생하던 글리치 수정
+- **자동 상태 복원**: 공격 직후 수영 조건이 충족되면 자동으로 수영 상태를 복원
+- **서버 측 처리**: 서버에서 동기화 문제를 해결하여 멀티플레이어에서도 안정적으로 작동
+- **완전 독립 구현**: Swim Fix 모드에서 영감을 받았지만 MCOPT 자체 구현
 
 #### 마법 부여 시드 동기화 강화 (Enchanter Fix 스타일) ⭐ NEW
 - **진짜 무작위화**: 테이블 슬롯(재료/라피스)이 바뀔 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
@@ -397,6 +424,31 @@ allowSneakBypass = true
 enableBucketPreview = true
 ```
 
+#### Interaction Fallthrough (RCF 스타일)
+```toml
+[gameplay.interaction_fallthrough]
+# 오른손 아이템 사용이 실패했을 때 자동으로 왼손 아이템 사용을 시도합니다
+# 예: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 사용
+enableRightClickFallthrough = true
+```
+
+#### Item Frame Silence (BugFixerUpper 스타일)
+```toml
+[gameplay.item_frame_silence]
+# 청크 로딩/월드 생성 시 아이템 액자가 로드될 때 재생되는 불필요한 소리를 음소거합니다
+# 플레이어가 직접 아이템 액자를 설치할 때는 정상적으로 소리가 재생됩니다
+enableItemFrameSilence = true
+```
+
+#### Swim State Fix (Swim Fix 스타일)
+```toml
+[gameplay.swim_state_fix]
+# 물 속에서 수영 중 공격 시 발생하는 수영 상태 동기화 버그를 수정합니다 (MC-220390)
+# 수영 중 엔티티를 공격하면 서버가 수영 상태를 잘못 해제하여 히트박스 불일치가 발생하는 문제를 해결합니다
+# 해저 신전(Ocean Monument)에서 가디언과 싸울 때 특히 유용합니다
+enableSwimStateFix = true
+```
+
 #### Enchanting (Enchanter Fix 스타일)
 ```toml
 [general.enchanting]
@@ -515,6 +567,10 @@ loginTimeoutSeconds = 120
 # 커스텀 지형 생성 중 호수 기능으로 인한 크래시를 방지합니다
 # 로드되지 않은 청크의 바이옴을 확인할 때 발생하는 오류를 안전하게 처리합니다
 enableLakeCrashFix = true
+
+# 오버월드 바이옴에 돌 디스크(Basin) 피처를 복원합니다
+# Plains, Forest, Savanna 등의 바이옴에서 자연스러운 돌 지형 생성을 활성화합니다
+enableBasinFix = true
 ```
 
 #### Experience Orb Merging
@@ -881,6 +937,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - **Fishing Rod Fix**: Fishing bobber cleanup patterns
   - **Redirected**: Portal redirect mechanism inspiration
   - **Lake Feature Fix**: Lake generation crash prevention patterns
+  - **Basin Generation Fix**: Basin (stone disk) feature restoration
+  - **RCF (Right Click Fallthrough)**: Interaction fallthrough mechanism inspiration
+  - **BugFixerUpper**: Item frame silence fix inspiration
+  - **Swim Fix**: Swimming state desync fix inspiration (MC-220390)
 - All implementations are original and independent
 - Thanks to the NeoForge team for the excellent modding platform
 

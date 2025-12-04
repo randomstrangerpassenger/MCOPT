@@ -19,6 +19,7 @@ import com.randomstrangerpassenger.mcopt.server.entity.golem.GolemSpawnFixHandle
 import com.randomstrangerpassenger.mcopt.server.entity.limiter.PerChunkEntityLimiter;
 import com.randomstrangerpassenger.mcopt.server.ai.AIOptimizationSystem;
 import com.randomstrangerpassenger.mcopt.command.MCOPTStatusCommand;
+import com.randomstrangerpassenger.mcopt.worldgen.MCOPTBiomeModifiers;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -38,6 +39,9 @@ public class MCOPT {
 
     public MCOPT(IEventBus modEventBus, ModContainer modContainer) {
         LOGGER.info("MCOPT initializing - Performance optimization mod for Minecraft");
+
+        // Register worldgen content
+        MCOPTBiomeModifiers.register(modEventBus);
 
         // Register domain-specific configurations
         modContainer.registerConfig(ModConfig.Type.CLIENT, MCOPTConfig.getRenderingSpec(), "mcopt-rendering.toml");

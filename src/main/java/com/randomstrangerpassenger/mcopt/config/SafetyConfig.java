@@ -36,6 +36,9 @@ public class SafetyConfig {
         public static final ModConfigSpec.BooleanValue ENABLE_ATTRIBUTE_RANGE_EXPANSION;
         public static final ModConfigSpec.DoubleValue ATTRIBUTE_MAX_LIMIT;
 
+        // Dragon Fight Stabilizer
+        public static final ModConfigSpec.BooleanValue ENABLE_DRAGON_FIGHT_STABILIZER;
+
         static {
                 BUILDER.comment("MCOPT Safety Features and Entity Management Configuration")
                                 .push("safety");
@@ -129,6 +132,17 @@ public class SafetyConfig {
                                                 "Defaults to 1,000,000,000 to cover extreme modded gear while avoiding overflow",
                                                 "Set lower if another mod expects tighter bounds")
                                 .defineInRange("attributeMaxLimit", 1_000_000_000D, 1.0D, Double.MAX_VALUE);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Dragon Fight stability fixes")
+                                .push("dragon_fight");
+
+                ENABLE_DRAGON_FIGHT_STABILIZER = BUILDER
+                                .comment("엔드 드래곤 리스폰 도중 서버 재시작 시 리스폰이 중단되는 버그를 수정합니다",
+                                                "Fixes End Dragon respawn getting stuck after server restart",
+                                                "드래곤 리스폰 상태를 정확히 저장하고 복구합니다")
+                                .define("enableDragonFightStabilizer", true);
 
                 BUILDER.pop();
                 BUILDER.pop();

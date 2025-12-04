@@ -11,6 +11,7 @@
     "server.EntityPortalMixin",
     "server.EnchantmentMenuMixin",
     "server.ExperienceOrbMixin",
+    "server.DragonFightStabilizerMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
     "accessor.EnchantmentMenuAccessor"
@@ -21,6 +22,8 @@
     "client.ParticleEngineMixin",
     "client.RenderSectionMixin",
     "client.ParticleMixin",
+    "client.JukeboxFixMixin",
+    "client.MouseInputFixMixin",
     "accessor.RenderSectionAccessor"
   ],
   "injectors": {

@@ -20,6 +20,9 @@ public class GameplayConfig {
         public static final ModConfigSpec.BooleanValue ENABLE_SNOW_ACCUMULATION_FIX;
         public static final ModConfigSpec.BooleanValue ENABLE_BETTER_SNOW_LOGIC;
 
+        // Jukebox Fix
+        public static final ModConfigSpec.BooleanValue ENABLE_JUKEBOX_FIX;
+
         // Bee Pathfinding Stability
         public static final ModConfigSpec.BooleanValue ENABLE_BEE_STUCK_FIX;
         public static final ModConfigSpec.IntValue BEE_STUCK_TIMEOUT_TICKS;
@@ -86,6 +89,17 @@ public class GameplayConfig {
                 ENABLE_BETTER_SNOW_LOGIC = BUILDER
                                 .comment("Enable MCOPT's improved snow accumulation logic (disable for vanilla behaviour)")
                                 .define("enableBetterSnowLogic", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Jukebox audio fixes")
+                                .push("jukebox_fix");
+
+                ENABLE_JUKEBOX_FIX = BUILDER
+                                .comment("주크박스 재생 시 클라이언트와 서버의 데이터 불일치로 인해 음악이 끊기는 문제를 수정합니다",
+                                                "리소스팩의 실제 오디오 길이를 사용하여 재생 시간을 보정합니다",
+                                                "Fixes jukebox music stopping abruptly by using actual audio duration from resource packs")
+                                .define("enableJukeboxFix", true);
 
                 BUILDER.pop();
 

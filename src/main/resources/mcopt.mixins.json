@@ -19,6 +19,7 @@
     "server.MobAIMixin",
     "server.ServerLoginPacketListenerMixin",
     "server.ServerPlayerGameModeMixin",
+    "server.SwimStateFixMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
     "accessor.EnchantmentMenuAccessor",

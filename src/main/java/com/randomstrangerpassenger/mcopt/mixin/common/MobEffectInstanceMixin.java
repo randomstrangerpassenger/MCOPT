@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * at level 128+
  * <ul>
  * <li>Level 128+ wraps to negative values (-128 to -1)</li>
- * <li>Causes effects to behave incorrectly (e.g., Haste 128 prevents mining)</li>
+ * <li>Causes effects to behave incorrectly (e.g., Haste 128 prevents
+ * mining)</li>
  * </ul>
  * <p>
  * <b>Solution</b>: Store amplifier as int in NBT instead of byte
@@ -34,11 +35,9 @@ public abstract class MobEffectInstanceMixin {
      * Override NBT save to store amplifier as int instead of byte.
      * This prevents overflow for amplifiers >= 128.
      */
-    @Inject(
-            method = "save",
-            at = @At("RETURN")
-    )
-    private void mcopt$saveAmplifierAsInt(CompoundTag tag, HolderLookup.Provider registries, CallbackInfoReturnable<CompoundTag> cir) {
+    @Inject(method = "save", at = @At("RETURN"))
+    private void mcopt$saveAmplifierAsInt(CompoundTag tag, HolderLookup.Provider registries,
+            CallbackInfoReturnable<CompoundTag> cir) {
         if (!SafetyConfig.ENABLE_POTION_LIMIT_FIX.get()) {
             return;
         }
@@ -54,11 +53,9 @@ public abstract class MobEffectInstanceMixin {
      * Override NBT load to read amplifier as int if present.
      * Falls back to byte for vanilla compatibility.
      */
-    @Inject(
-            method = "load",
-            at = @At("RETURN")
-    )
-    private static void mcopt$loadAmplifierAsInt(CompoundTag tag, HolderLookup.Provider registries, CallbackInfoReturnable<MobEffectInstance> cir) {
+    @Inject(method = "load", at = @At("RETURN"))
+    private static void mcopt$loadAmplifierAsInt(CompoundTag tag, HolderLookup.Provider registries,
+            CallbackInfoReturnable<MobEffectInstance> cir) {
         if (!SafetyConfig.ENABLE_POTION_LIMIT_FIX.get()) {
             return;
         }
@@ -70,9 +67,11 @@ public abstract class MobEffectInstanceMixin {
 
         // Check if we stored an extended int amplifier
         if (tag.contains("mcopt:AmplifierInt")) {
-            int extendedAmplifier = tag.getInt("mcopt:AmplifierInt");
-            // Use accessor or reflection to set the amplifier field
-            ((MobEffectInstanceMixin) (Object) instance).amplifier = extendedAmplifier;
+            // Get the extended amplifier value and set it directly
+            // In NeoForge, getInt() returns Optional<Integer>, so we need to unwrap it
+            tag.getInt("mcopt:AmplifierInt").ifPresent(extendedAmplifier -> {
+                ((MobEffectInstanceMixin) (Object) instance).amplifier = extendedAmplifier;
+            });
         }
     }
 }

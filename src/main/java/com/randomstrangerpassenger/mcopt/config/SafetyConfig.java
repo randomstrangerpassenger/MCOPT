@@ -36,10 +36,9 @@ public class SafetyConfig {
         public static final ModConfigSpec.BooleanValue ENABLE_ATTRIBUTE_RANGE_EXPANSION;
         public static final ModConfigSpec.DoubleValue ATTRIBUTE_MAX_LIMIT;
 
-<<<<<<< HEAD
         // Dragon Fight Stabilizer
         public static final ModConfigSpec.BooleanValue ENABLE_DRAGON_FIGHT_STABILIZER;
-=======
+
         // Potion Limit Fix
         public static final ModConfigSpec.BooleanValue ENABLE_POTION_LIMIT_FIX;
 
@@ -50,7 +49,6 @@ public class SafetyConfig {
         public static final ModConfigSpec.BooleanValue LIMIT_ANIMALS;
         public static final ModConfigSpec.BooleanValue LIMIT_ITEMS;
         public static final ModConfigSpec.BooleanValue PREVENT_SPAWN_WHEN_FULL;
->>>>>>> 2017f93438c7d47f6a99d8f8d41eced04113e870
 
         static {
                 BUILDER.comment("MCOPT Safety Features and Entity Management Configuration")
@@ -148,7 +146,6 @@ public class SafetyConfig {
 
                 BUILDER.pop();
 
-<<<<<<< HEAD
                 BUILDER.comment("Dragon Fight stability fixes")
                                 .push("dragon_fight");
 
@@ -157,7 +154,9 @@ public class SafetyConfig {
                                                 "Fixes End Dragon respawn getting stuck after server restart",
                                                 "드래곤 리스폰 상태를 정확히 저장하고 복구합니다")
                                 .define("enableDragonFightStabilizer", true);
-=======
+
+                BUILDER.pop();
+
                 BUILDER.comment("Potion effect amplifier overflow fix")
                                 .push("potion_fix");
 
@@ -201,9 +200,9 @@ public class SafetyConfig {
                                                 "true: 스폰 차단 (더 부드럽지만 몹 농장 효율 저하 가능)",
                                                 "false: 초과분 제거 (더 공격적)")
                                 .define("preventSpawnWhenFull", false);
->>>>>>> 2017f93438c7d47f6a99d8f8d41eced04113e870
 
                 BUILDER.pop();
+
                 BUILDER.pop();
 
                 SPEC = BUILDER.build();

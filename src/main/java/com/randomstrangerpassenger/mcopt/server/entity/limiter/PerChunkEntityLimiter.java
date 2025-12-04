@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Per-chunk entity limiter that prevents localized lag from entity concentration.
+ * Per-chunk entity limiter that prevents localized lag from entity
+ * concentration.
  * <p>
  * Unlike ClearLagManager which cleans globally on a schedule, this handler
  * monitors each chunk in real-time and enforces per-chunk entity limits.
@@ -60,8 +61,11 @@ public class PerChunkEntityLimiter {
 
         // Count entities of limited types in this chunk
         List<Entity> limitedEntities = new ArrayList<>();
-        for (Entity chunkEntity : chunk.level().getEntitiesOfClass(Entity.class,
-                chunk.getPos().getWorldPosition().expandTowards(16, level.getHeight(), 16))) {
+        net.minecraft.core.BlockPos chunkWorldPos = chunk.getPos().getWorldPosition();
+        net.minecraft.world.phys.AABB chunkBounds = new net.minecraft.world.phys.AABB(
+                chunkWorldPos.getX(), level.getMinY(), chunkWorldPos.getZ(),
+                chunkWorldPos.getX() + 16, level.getMaxY(), chunkWorldPos.getZ() + 16);
+        for (Entity chunkEntity : level.getEntitiesOfClass(Entity.class, chunkBounds)) {
             if (shouldLimitEntityType(chunkEntity) && chunkEntity.isAlive()) {
                 limitedEntities.add(chunkEntity);
             }

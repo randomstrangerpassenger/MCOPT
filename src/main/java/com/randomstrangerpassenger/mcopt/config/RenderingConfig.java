@@ -29,29 +29,23 @@ public class RenderingConfig {
 
         // Particle System Settings
         public static final ModConfigSpec.BooleanValue ENABLE_PARTICLE_OPTIMIZATIONS;
-
-<<<<<<< HEAD
-        // Input Fixes
-        public static final ModConfigSpec.BooleanValue ENABLE_MOUSE_INPUT_FIX;
         public static final ModConfigSpec.IntValue MAX_PARTICLES_PER_FRAME;
         public static final ModConfigSpec.DoubleValue PARTICLE_SPAWN_REDUCTION;
         public static final ModConfigSpec.BooleanValue ENABLE_PARTICLE_CULLING;
         public static final ModConfigSpec.IntValue PARTICLE_OCCLUSION_CHECK_INTERVAL;
         public static final ModConfigSpec.DoubleValue PARTICLE_CULLING_RANGE;
-=======
-    // Smart Leaves Settings
-    public static final ModConfigSpec.BooleanValue ENABLE_SMART_LEAVES;
-    public static final ModConfigSpec.IntValue LEAVES_CULLING_DEPTH;
 
-    // Block Entity Culling Settings
-    public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_ENTITY_CULLING;
-    public static final ModConfigSpec.IntValue BLOCK_ENTITY_CULLING_DISTANCE;
-    public static final ModConfigSpec.BooleanValue CULL_BLOCK_ENTITIES_BEHIND_WALLS;
+        // Smart Leaves Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_SMART_LEAVES;
+        public static final ModConfigSpec.IntValue LEAVES_CULLING_DEPTH;
 
-    static {
-        BUILDER.comment("MCOPT Rendering Optimizations Configuration")
-               .push("rendering");
->>>>>>> 2017f93438c7d47f6a99d8f8d41eced04113e870
+        // Block Entity Culling Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_BLOCK_ENTITY_CULLING;
+        public static final ModConfigSpec.IntValue BLOCK_ENTITY_CULLING_DISTANCE;
+        public static final ModConfigSpec.BooleanValue CULL_BLOCK_ENTITIES_BEHIND_WALLS;
+
+        // Input Fixes
+        public static final ModConfigSpec.BooleanValue ENABLE_MOUSE_INPUT_FIX;
 
         static {
                 BUILDER.comment("MCOPT Rendering Optimizations Configuration")
@@ -141,57 +135,52 @@ public class RenderingConfig {
                                 .comment("How many render calls to wait before re-checking if a particle is occluded")
                                 .defineInRange("particleOcclusionCheckInterval", 3, 1, 10);
 
-<<<<<<< HEAD
                 PARTICLE_CULLING_RANGE = BUILDER
                                 .comment(
                                                 "Maximum distance (in blocks) to run occlusion checks.",
                                                 "Particles beyond this range skip occlusion tests to reduce overhead.")
                                 .defineInRange("particleCullingRange", 48.0, 8.0, 160.0);
-=======
-        BUILDER.pop();
 
-        BUILDER.comment("Smart Leaves Optimization")
-               .push("smart_leaves");
+                BUILDER.pop();
 
-        ENABLE_SMART_LEAVES = BUILDER
-                .comment("Enable smart leaves culling (OptiLeaves-style optimization)",
-                        "Removes rendering of inner leaf blocks that are hidden by outer leaves",
-                        "Significantly improves FPS in forest biomes without visible quality loss",
-                        "Auto-disables if cull-leaves, moreculling, optileaves, or cull-less-leaves is detected")
-                .define("enableSmartLeaves", true);
+                BUILDER.comment("Smart Leaves Optimization")
+                                .push("smart_leaves");
 
-        LEAVES_CULLING_DEPTH = BUILDER
-                .comment("Minimum depth of leaves before culling is applied",
-                        "Higher values = more aggressive culling but may make trees look hollow",
-                        "0 = cull all adjacent same-type leaves (most aggressive)",
-                        "2 = only cull leaves 2+ blocks deep from surface (recommended, Cull Less Leaves style)",
-                        "Set to 0 for maximum performance in dense forests")
-                .defineInRange("leavesCullingDepth", 2, 0, 5);
+                ENABLE_SMART_LEAVES = BUILDER
+                                .comment("Enable smart leaves culling (OptiLeaves-style optimization)",
+                                                "Removes rendering of inner leaf blocks that are hidden by outer leaves",
+                                                "Significantly improves FPS in forest biomes without visible quality loss",
+                                                "Auto-disables if cull-leaves, moreculling, optileaves, or cull-less-leaves is detected")
+                                .define("enableSmartLeaves", true);
 
-        BUILDER.pop();
+                LEAVES_CULLING_DEPTH = BUILDER
+                                .comment("Minimum depth of leaves before culling is applied",
+                                                "Higher values = more aggressive culling but may make trees look hollow",
+                                                "0 = cull all adjacent same-type leaves (most aggressive)",
+                                                "2 = only cull leaves 2+ blocks deep from surface (recommended, Cull Less Leaves style)",
+                                                "Set to 0 for maximum performance in dense forests")
+                                .defineInRange("leavesCullingDepth", 2, 0, 5);
 
-        BUILDER.comment("Block Entity Culling Optimization")
-               .push("block_entity_culling");
+                BUILDER.pop();
 
-        ENABLE_BLOCK_ENTITY_CULLING = BUILDER
-                .comment("Enable block entity culling (Recommended: true)",
-                        "Skips rendering block entities (chests, signs, heads, etc.) that are not visible",
-                        "Major FPS improvement in warehouses and storage rooms")
-                .define("enableBlockEntityCulling", true);
+                BUILDER.comment("Block Entity Culling Optimization")
+                                .push("block_entity_culling");
 
-        BLOCK_ENTITY_CULLING_DISTANCE = BUILDER
-                .comment("Distance at which block entities are culled when not visible (in blocks)",
-                        "Smaller values = better performance, larger values = see block entities from farther")
-                .defineInRange("blockEntityCullingDistance", 64, 16, 256);
+                ENABLE_BLOCK_ENTITY_CULLING = BUILDER
+                                .comment("Enable block entity culling (Recommended: true)",
+                                                "Skips rendering block entities (chests, signs, heads, etc.) that are not visible",
+                                                "Major FPS improvement in warehouses and storage rooms")
+                                .define("enableBlockEntityCulling", true);
 
-        CULL_BLOCK_ENTITIES_BEHIND_WALLS = BUILDER
-                .comment("Skip rendering block entities that are behind walls",
-                        "Helps with large storage rooms where most chests are hidden")
-                .define("cullBlockEntitiesBehindWalls", true);
+                BLOCK_ENTITY_CULLING_DISTANCE = BUILDER
+                                .comment("Distance at which block entities are culled when not visible (in blocks)",
+                                                "Smaller values = better performance, larger values = see block entities from farther")
+                                .defineInRange("blockEntityCullingDistance", 64, 16, 256);
 
-        BUILDER.pop();
-        BUILDER.pop();
->>>>>>> 2017f93438c7d47f6a99d8f8d41eced04113e870
+                CULL_BLOCK_ENTITIES_BEHIND_WALLS = BUILDER
+                                .comment("Skip rendering block entities that are behind walls",
+                                                "Helps with large storage rooms where most chests are hidden")
+                                .define("cullBlockEntitiesBehindWalls", true);
 
                 BUILDER.pop();
 

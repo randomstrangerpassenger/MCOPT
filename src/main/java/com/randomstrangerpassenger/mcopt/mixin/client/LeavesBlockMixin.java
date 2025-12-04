@@ -1,11 +1,8 @@
 package com.randomstrangerpassenger.mcopt.mixin.client;
 
-import com.randomstrangerpassenger.mcopt.config.RenderingConfig;
 import com.randomstrangerpassenger.mcopt.util.FeatureKey;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,18 +13,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Mixin for LeavesBlock to implement smart leaves culling optimization.
  * <p>
- * This optimization removes rendering of inner leaf blocks that are hidden by outer leaves,
+ * This optimization removes rendering of inner leaf blocks that are hidden by
+ * outer leaves,
  * similar to OptiLeaves mod but with independent implementation.
  * <p>
  * Key Features:
  * - Culls faces between adjacent same-type leaf blocks
- * - Optional depth check to prevent trees from looking hollow (Cull Less Leaves style)
- * - Auto-disables if conflicting mods are detected (cull-leaves, moreculling, optileaves, cull-less-leaves)
+ * - Optional depth check to prevent trees from looking hollow (Cull Less Leaves
+ * style)
+ * - Auto-disables if conflicting mods are detected (cull-leaves, moreculling,
+ * optileaves, cull-less-leaves)
  * - Significantly improves FPS in forest biomes without visible quality loss
  * <p>
  * Configuration:
  * - {@code enableSmartLeaves}: Master toggle for this feature
- * - {@code leavesCullingDepth}: Minimum depth before culling (0-5, recommended: 2)
+ * - {@code leavesCullingDepth}: Minimum depth before culling (0-5, recommended:
+ * 2)
  */
 @Mixin(LeavesBlock.class)
 public abstract class LeavesBlockMixin {
@@ -59,8 +60,7 @@ public abstract class LeavesBlockMixin {
             BlockState state,
             BlockState neighborState,
             Direction direction,
-            CallbackInfoReturnable<Boolean> ci
-    ) {
+            CallbackInfoReturnable<Boolean> ci) {
         // Early exit if feature is disabled or conflicting mods are present
         if (!FeatureToggles.isEnabled(FeatureKey.SMART_LEAVES)) {
             return;

@@ -145,6 +145,12 @@ MCOPT is a performance optimization mod for Minecraft designed to improve client
 - **희귀 변이 식별**: 열대어 패턴/색상 조합, 아홀로틀 변종 색상을 바로 보여 레어 물고기나 파란 아홀로틀을 놓치지 않음
 - **완전 클라이언트 사이드**: 시각 정보만 추가하므로 서버 권한 없이도 안전하게 사용 가능, 다른 모드 버킷에도 대응
 
+#### 상호작용 폴스루 (RCF 스타일) ⭐ NEW
+- **오른손 실패 시 왼손 자동 시도**: 오른손 아이템 사용이 실패(예: 공간 부족)했을 때 자동으로 왼손 아이템 사용을 시도
+- **블록 설치 편의성 향상**: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 자동으로 사용
+- **클라이언트/서버 양쪽 지원**: 싱글플레이어와 멀티플레이어 모두에서 동작
+- **완전 독립 구현**: RCF 모드에서 영감을 받았지만 MCOPT 자체 구현
+
 #### 마법 부여 시드 동기화 강화 (Enchanter Fix 스타일) ⭐ NEW
 - **진짜 무작위화**: 테이블 슬롯(재료/라피스)이 바뀔 때마다 마법 부여 시드를 새로 뽑아 예측을 어렵게 만듭니다
 - **즉시 동기화**: 시드 변경 직후 `broadcastChanges()`를 호출하여 클라이언트가 항상 올바른 마법 부여 옵션을 표시하도록 보장
@@ -389,6 +395,14 @@ allowSneakBypass = true
 [general.buckets]
 # 버킷 안의 액체나 엔티티 정보를 툴팁으로 보여줍니다 (클라이언트 전용)
 enableBucketPreview = true
+```
+
+#### Interaction Fallthrough (RCF 스타일)
+```toml
+[gameplay.interaction_fallthrough]
+# 오른손 아이템 사용이 실패했을 때 자동으로 왼손 아이템 사용을 시도합니다
+# 예: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 사용
+enableRightClickFallthrough = true
 ```
 
 #### Enchanting (Enchanter Fix 스타일)
@@ -862,6 +876,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - **Redirected**: Portal redirect mechanism inspiration
   - **Lake Feature Fix**: Lake generation crash prevention patterns
   - **Basin Generation Fix**: Basin (stone disk) feature restoration
+  - **RCF (Right Click Fallthrough)**: Interaction fallthrough mechanism inspiration
 - All implementations are original and independent
 - Thanks to the NeoForge team for the excellent modding platform
 

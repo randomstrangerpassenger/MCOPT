@@ -14,12 +14,10 @@
     "server.EntityPortalMixin",
     "server.EnchantmentMenuMixin",
     "server.ExperienceOrbMixin",
-<<<<<<< HEAD
     "server.DragonFightStabilizerMixin",
-=======
     "server.MobAIMixin",
     "server.ServerLoginPacketListenerMixin",
->>>>>>> 2017f93438c7d47f6a99d8f8d41eced04113e870
+    "server.ServerPlayerGameModeMixin",
     "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
     "accessor.EnchantmentMenuAccessor",
@@ -33,12 +31,10 @@
     "client.ParticleEngineMixin",
     "client.RenderSectionMixin",
     "client.ParticleMixin",
-<<<<<<< HEAD
     "client.JukeboxFixMixin",
     "client.MouseInputFixMixin",
-=======
     "client.LeavesBlockMixin",
->>>>>>> 2017f93438c7d47f6a99d8f8d41eced04113e870
+    "client.MultiPlayerGameModeMixin",
     "accessor.RenderSectionAccessor"
   ],
   "injectors": {

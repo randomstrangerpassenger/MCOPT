@@ -60,6 +60,9 @@ public class GameplayConfig {
         public static final ModConfigSpec.BooleanValue ENABLE_LAKE_CRASH_FIX;
         public static final ModConfigSpec.BooleanValue ENABLE_BASIN_FIX;
 
+        // Interaction Fallthrough (RCF-style)
+        public static final ModConfigSpec.BooleanValue ENABLE_RIGHT_CLICK_FALLTHROUGH;
+
         static {
                 BUILDER.comment("MCOPT Gameplay Improvements and Fixes Configuration")
                                 .push("gameplay");
@@ -253,6 +256,17 @@ public class GameplayConfig {
                                                 "Plains, Forest, Savanna 등의 바이옴에서 자연스러운 돌 지형 생성을 활성화합니다",
                                                 "Restores stone disk (Basin) generation in overworld biomes like Plains, Forest, and Savanna")
                                 .define("enableBasinFix", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Interaction Fallthrough (RCF-style)")
+                                .push("interaction_fallthrough");
+
+                ENABLE_RIGHT_CLICK_FALLTHROUGH = BUILDER
+                                .comment("오른손 아이템 사용이 실패(예: 공간 부족)했을 때, 자동으로 왼손 아이템 사용을 시도합니다",
+                                                "예: 오른손에 블록이 있지만 설치할 공간이 없을 때 왼손의 블록을 사용",
+                                                "When right-hand item use fails (e.g., no space to place), automatically tries using left-hand item")
+                                .define("enableRightClickFallthrough", true);
 
                 BUILDER.pop();
                 BUILDER.pop();

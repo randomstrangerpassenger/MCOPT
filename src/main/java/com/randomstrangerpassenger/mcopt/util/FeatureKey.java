@@ -60,7 +60,13 @@ public enum FeatureKey {
      * Removes rendering of inner leaf blocks hidden by outer leaves
      * OptiLeaves-style optimization for forest biomes
      */
-    SMART_LEAVES("smartLeaves", "Smart Leaves Culling");
+    SMART_LEAVES("smartLeaves", "Smart Leaves Culling"),
+
+    /**
+     * Right-click fallthrough (RCF-style)
+     * When right-hand item use fails, automatically tries using left-hand item
+     */
+    RIGHT_CLICK_FALLTHROUGH("rightClickFallthrough", "Right-Click Fallthrough");
 
     private final String key;
     private final String displayName;

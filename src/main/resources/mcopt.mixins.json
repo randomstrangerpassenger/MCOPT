@@ -14,36 +14,30 @@
     "common.RangedAttributeMixin",
     "common.SnowLayerBlockMixin",
     "common.SplashPotionItemMixin",
+    "common.LookAtPlayerGoalMixin",
     "server.BeeStuckFixMixin",
     "server.EntityPortalMixin",
     "server.EnchantmentMenuMixin",
     "server.ExperienceOrbMixin",
     "server.DragonFightStabilizerMixin",
-    "server.MobAIMixin",
     "server.ServerLoginPacketListenerMixin",
     "server.InstantWakeupFixMixin",
     "server.AllayPersistenceFixMixin",
     "server.SilentLightningFixMixin",
     "server.ServerPlayerGameModeMixin",
     "server.SwimStateFixMixin",
-    "accessor.MobAccessor",
     "accessor.ExperienceOrbAccessor",
-    "accessor.EnchantmentMenuAccessor",
-    "accessor.LookControlAccessor"
+    "accessor.EnchantmentMenuAccessor"
   ],
   "client": [
     "client.LocalPlayerMixin",
-    "client.EntityRenderDispatcherMixin",
-    "client.BlockEntityRenderDispatcherMixin",
     "client.LanguageMixin",
-    "client.ParticleEngineMixin",
-    "client.RenderSectionMixin",
-    "client.ParticleMixin",
     "client.JukeboxFixMixin",
     "client.MouseInputFixMixin",
-    "client.LeavesBlockMixin",
     "client.MultiPlayerGameModeMixin",
-    "accessor.RenderSectionAccessor"
+    "client.SoundEngineMixin",
+    "client.SpriteContentsMixin",
+    "client.ItemEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

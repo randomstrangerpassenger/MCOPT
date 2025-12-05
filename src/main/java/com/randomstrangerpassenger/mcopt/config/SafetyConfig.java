@@ -59,6 +59,12 @@ public class SafetyConfig {
         public static final ModConfigSpec.BooleanValue LIMIT_ITEMS;
         public static final ModConfigSpec.BooleanValue PREVENT_SPAWN_WHEN_FULL;
 
+        // NBT Data Sanitizer
+        public static final ModConfigSpec.BooleanValue ENABLE_NBT_SANITIZER;
+        public static final ModConfigSpec.IntValue MAX_BOOK_PAGES;
+        public static final ModConfigSpec.IntValue MAX_NBT_SIZE_BYTES;
+        public static final ModConfigSpec.BooleanValue STRIP_EXCESSIVE_BOOK_DATA;
+
         static {
                 BUILDER.comment("MCOPT Safety Features and Entity Management Configuration")
                                 .push("safety");
@@ -245,6 +251,34 @@ public class SafetyConfig {
                                                 "true: 스폰 차단 (더 부드럽지만 몹 농장 효율 저하 가능)",
                                                 "false: 초과분 제거 (더 공격적)")
                                 .define("preventSpawnWhenFull", false);
+
+                BUILDER.pop();
+
+                // NBT Data Sanitizer settings
+                BUILDER.comment("NBT Data Sanitizer - prevents server lag from excessive NBT data")
+                                .push("nbt_sanitizer");
+
+                ENABLE_NBT_SANITIZER = BUILDER
+                                .comment("NBT 데이터 정리 기능 활성화",
+                                                "비정상적으로 큰 NBT 데이터를 가진 아이템 처리를 방지합니다")
+                                .define("enableNbtSanitizer", true);
+
+                MAX_BOOK_PAGES = BUILDER
+                                .comment("책 아이템의 최대 페이지 수",
+                                                "복사된 책 테러를 방지하기 위한 제한입니다",
+                                                "바닐라 기본값은 100페이지입니다")
+                                .defineInRange("maxBookPages", 100, 10, 1000);
+
+                MAX_NBT_SIZE_BYTES = BUILDER
+                                .comment("아이템당 최대 NBT 데이터 크기 (바이트)",
+                                                "2MB = 2097152 바이트가 바닐라 제한입니다",
+                                                "서버 보호를 위해 더 낮게 설정할 수 있습니다")
+                                .defineInRange("maxNbtSizeBytes", 2097152, 65536, 8388608);
+
+                STRIP_EXCESSIVE_BOOK_DATA = BUILDER
+                                .comment("초과 페이지를 가진 책 데이터를 자동으로 제거합니다",
+                                                "true: 초과 페이지 제거, false: 아이템 처리 거부")
+                                .define("stripExcessiveBookData", true);
 
                 BUILDER.pop();
 

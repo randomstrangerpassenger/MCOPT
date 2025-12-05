@@ -61,4 +61,22 @@ public class MCOPTConfig {
      public static ModConfigSpec getSafetySpec() {
           return SafetyConfig.SPEC;
      }
+
+     /**
+      * Returns the configuration spec for sound optimizations.
+      *
+      * @return ModConfigSpec for sound settings
+      */
+     public static ModConfigSpec getSoundSpec() {
+          return SoundConfig.SPEC;
+     }
+
+     /**
+      * Returns the configuration spec for entity optimizations.
+      *
+      * @return ModConfigSpec for entity settings
+      */
+     public static ModConfigSpec getEntitySpec() {
+          return EntityConfig.SPEC;
+     }
 }

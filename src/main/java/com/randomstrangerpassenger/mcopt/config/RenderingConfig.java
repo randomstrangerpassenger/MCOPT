@@ -44,6 +44,16 @@ public class RenderingConfig {
         public static final ModConfigSpec.IntValue BLOCK_ENTITY_CULLING_DISTANCE;
         public static final ModConfigSpec.BooleanValue CULL_BLOCK_ENTITIES_BEHIND_WALLS;
 
+        // Smart Animation Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_SMART_ANIMATIONS;
+        public static final ModConfigSpec.IntValue ANIMATION_UPDATE_DISTANCE;
+        public static final ModConfigSpec.IntValue OFFSCREEN_ANIMATION_INTERVAL;
+
+        // Visual Item Merging Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_VISUAL_ITEM_MERGING;
+        public static final ModConfigSpec.DoubleValue ITEM_MERGE_RADIUS;
+        public static final ModConfigSpec.IntValue MAX_ITEMS_PER_BATCH;
+
         // Input Fixes
         public static final ModConfigSpec.BooleanValue ENABLE_MOUSE_INPUT_FIX;
 
@@ -181,6 +191,51 @@ public class RenderingConfig {
                                 .comment("Skip rendering block entities that are behind walls",
                                                 "Helps with large storage rooms where most chests are hidden")
                                 .define("cullBlockEntitiesBehindWalls", true);
+
+                BUILDER.pop();
+
+                BUILDER.comment("Smart Texture Animation Optimization",
+                                "Skips animation updates for textures not visible on screen")
+                                .push("smart_animations");
+
+                ENABLE_SMART_ANIMATIONS = BUILDER
+                                .comment("Enable smart animated texture optimization (Recommended: true)",
+                                                "Pauses animation updates for water, lava, portals, etc. when not visible",
+                                                "Preserves vanilla visuals while reducing CPU overhead")
+                                .define("enableSmartAnimations", true);
+
+                ANIMATION_UPDATE_DISTANCE = BUILDER
+                                .comment("Maximum distance (in blocks) to update animated textures",
+                                                "Animations beyond this distance will update less frequently")
+                                .defineInRange("animationUpdateDistance", 32, 8, 128);
+
+                OFFSCREEN_ANIMATION_INTERVAL = BUILDER
+                                .comment("Tick interval for updating off-screen animations",
+                                                "Higher values = more performance, but animations may appear to 'skip' when coming into view",
+                                                "4 = update every 4 ticks (5 times/sec), 10 = update every 10 ticks (2 times/sec)")
+                                .defineInRange("offscreenAnimationInterval", 8, 2, 20);
+
+                BUILDER.pop();
+
+                // Visual Item Merging settings
+                BUILDER.comment("Visual Item Merging settings - Batch rendering of nearby item entities")
+                                .push("visual_item_merging");
+
+                ENABLE_VISUAL_ITEM_MERGING = BUILDER
+                                .comment("Enable visual item merging optimization (Recommended: true)",
+                                                "Renders nearby item entities as a single batch for better performance",
+                                                "Server logic remains unchanged - only affects visual rendering")
+                                .define("enableVisualItemMerging", true);
+
+                ITEM_MERGE_RADIUS = BUILDER
+                                .comment("Radius (in blocks) to merge nearby items for rendering",
+                                                "Items within this radius will be rendered as a group")
+                                .defineInRange("itemMergeRadius", 1.5, 0.5, 4.0);
+
+                MAX_ITEMS_PER_BATCH = BUILDER
+                                .comment("Maximum number of items to render in a single batch",
+                                                "Higher = more aggressive batching, may affect visual accuracy")
+                                .defineInRange("maxItemsPerBatch", 8, 2, 32);
 
                 BUILDER.pop();
 

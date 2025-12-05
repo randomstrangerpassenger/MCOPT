@@ -14,38 +14,46 @@ import net.neoforged.fml.config.ModConfig;
  */
 public class ConfigRegistrar {
 
-    /**
-     * Register all MCOPT configuration files.
-     * <p>
-     * Registers four separate config files for different domains:
-     * - Rendering optimizations (mcopt-rendering.toml)
-     * - Performance optimizations (mcopt-performance.toml)
-     * - Gameplay modifications (mcopt-gameplay.toml)
-     * - Safety features (mcopt-safety.toml)
-     * </p>
-     *
-     * @param modContainer the mod container to register configs with
-     */
-    public static void registerConfigs(ModContainer modContainer) {
-        MCOPT.LOGGER.info("Registering MCOPT configuration files");
+        /**
+         * Register all MCOPT configuration files.
+         * <p>
+         * Registers four separate config files for different domains:
+         * - Rendering optimizations (mcopt-rendering.toml)
+         * - Performance optimizations (mcopt-performance.toml)
+         * - Gameplay modifications (mcopt-gameplay.toml)
+         * - Safety features (mcopt-safety.toml)
+         * </p>
+         *
+         * @param modContainer the mod container to register configs with
+         */
+        public static void registerConfigs(ModContainer modContainer) {
+                MCOPT.LOGGER.info("Registering MCOPT configuration files");
 
-        // Register domain-specific configurations
-        modContainer.registerConfig(ModConfig.Type.CLIENT,
-                MCOPTConfig.getRenderingSpec(),
-                "mcopt-rendering.toml");
+                // Register domain-specific configurations
+                modContainer.registerConfig(ModConfig.Type.CLIENT,
+                                MCOPTConfig.getRenderingSpec(),
+                                "mcopt-rendering.toml");
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT,
-                MCOPTConfig.getPerformanceSpec(),
-                "mcopt-performance.toml");
+                modContainer.registerConfig(ModConfig.Type.CLIENT,
+                                MCOPTConfig.getPerformanceSpec(),
+                                "mcopt-performance.toml");
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT,
-                MCOPTConfig.getGameplaySpec(),
-                "mcopt-gameplay.toml");
+                modContainer.registerConfig(ModConfig.Type.CLIENT,
+                                MCOPTConfig.getGameplaySpec(),
+                                "mcopt-gameplay.toml");
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT,
-                MCOPTConfig.getSafetySpec(),
-                "mcopt-safety.toml");
+                modContainer.registerConfig(ModConfig.Type.CLIENT,
+                                MCOPTConfig.getSafetySpec(),
+                                "mcopt-safety.toml");
 
-        MCOPT.LOGGER.info("Configuration files registered: 4 domain-specific configs");
-    }
+                modContainer.registerConfig(ModConfig.Type.CLIENT,
+                                MCOPTConfig.getSoundSpec(),
+                                "mcopt-sound.toml");
+
+                modContainer.registerConfig(ModConfig.Type.CLIENT,
+                                MCOPTConfig.getEntitySpec(),
+                                "mcopt-entity.toml");
+
+                MCOPT.LOGGER.info("Configuration files registered: 6 domain-specific configs");
+        }
 }

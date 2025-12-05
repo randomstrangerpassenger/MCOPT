@@ -10,10 +10,10 @@
  * <ul>
  * <li>{@link com.randomstrangerpassenger.mcopt.client.rendering.RenderFrameCache}
  * - Per-frame cache</li>
- * <li>{@link com.randomstrangerpassenger.mcopt.client.rendering.EntityCullingHandler}
- * - Entity culling</li>
- * <li>{@link com.randomstrangerpassenger.mcopt.client.rendering.BlockEntityCullingHandler}
- * - Block entity culling</li>
+ * <li>{@link com.randomstrangerpassenger.mcopt.client.rendering.AnimatedTextureOptimizer}
+ * - Smart texture animation updates</li>
+ * <li>{@link com.randomstrangerpassenger.mcopt.client.rendering.ItemEntityBatcher}
+ * - Visual item merging</li>
  * </ul>
  *
  * <h2>Memory Management</h2>

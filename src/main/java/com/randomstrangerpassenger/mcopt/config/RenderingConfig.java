@@ -54,6 +54,25 @@ public class RenderingConfig {
         public static final ModConfigSpec.DoubleValue ITEM_MERGE_RADIUS;
         public static final ModConfigSpec.IntValue MAX_ITEMS_PER_BATCH;
 
+        // Animation LOD Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_ANIMATION_LOD;
+        public static final ModConfigSpec.IntValue ANIMATION_LOD_NEAR_DISTANCE;
+        public static final ModConfigSpec.IntValue ANIMATION_LOD_FAR_DISTANCE;
+
+        // Text/UI Caching Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_TEXT_CACHING;
+        public static final ModConfigSpec.IntValue SIGN_RENDER_DISTANCE_NEAR;
+        public static final ModConfigSpec.IntValue SIGN_RENDER_DISTANCE_FAR;
+
+        // Map Texture Throttling Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_MAP_THROTTLING;
+        public static final ModConfigSpec.IntValue MAP_UPDATES_PER_TICK;
+        public static final ModConfigSpec.IntValue MAP_UPDATE_DISTANCE;
+
+        // Adaptive Chunk Upload Settings
+        public static final ModConfigSpec.BooleanValue ENABLE_ADAPTIVE_CHUNK_UPLOAD;
+        public static final ModConfigSpec.IntValue BASE_CHUNK_UPLOAD_LIMIT;
+
         // Input Fixes
         public static final ModConfigSpec.BooleanValue ENABLE_MOUSE_INPUT_FIX;
 
@@ -236,6 +255,82 @@ public class RenderingConfig {
                                 .comment("Maximum number of items to render in a single batch",
                                                 "Higher = more aggressive batching, may affect visual accuracy")
                                 .defineInRange("maxItemsPerBatch", 8, 2, 32);
+
+                BUILDER.pop();
+
+                // Animation LOD settings
+                BUILDER.comment("Animation LOD (Level of Detail) - Optimize entity animations by distance")
+                                .push("animation_lod");
+
+                ENABLE_ANIMATION_LOD = BUILDER
+                                .comment("Enable animation LOD optimization (Recommended: true)",
+                                                "Reduces animation update frequency for distant entities",
+                                                "Saves CPU cycles on skeletal bone matrix calculations")
+                                .define("enableAnimationLod", true);
+
+                ANIMATION_LOD_NEAR_DISTANCE = BUILDER
+                                .comment("Distance (in blocks) for full animation updates",
+                                                "Entities closer than this always get full animation")
+                                .defineInRange("nearDistance", 16, 8, 64);
+
+                ANIMATION_LOD_FAR_DISTANCE = BUILDER
+                                .comment("Distance (in blocks) beyond which entities use static idle pose",
+                                                "Between near and far distance, animations update every 2-3 frames")
+                                .defineInRange("farDistance", 32, 16, 128);
+
+                BUILDER.pop();
+
+                // Text/UI Caching settings
+                BUILDER.comment("Text/UI Caching - Reduce font rendering overhead")
+                                .push("text_caching");
+
+                ENABLE_TEXT_CACHING = BUILDER
+                                .comment("Enable text/UI caching optimization (Recommended: true)",
+                                                "Caches sign text and skips rendering for distant signs",
+                                                "Sodium does not cover text/UI rendering")
+                                .define("enableTextCaching", true);
+
+                SIGN_RENDER_DISTANCE_NEAR = BUILDER
+                                .comment("Distance (in blocks) for full sign text rendering")
+                                .defineInRange("signNearDistance", 16, 4, 64);
+
+                SIGN_RENDER_DISTANCE_FAR = BUILDER
+                                .comment("Distance (in blocks) beyond which sign text is skipped entirely")
+                                .defineInRange("signFarDistance", 32, 8, 128);
+
+                BUILDER.pop();
+
+                // Map Texture Throttling settings
+                BUILDER.comment("Map Texture Throttling - Limit map texture updates")
+                                .push("map_throttling");
+
+                ENABLE_MAP_THROTTLING = BUILDER
+                                .comment("Enable map texture update throttling (Recommended: true)",
+                                                "Limits how many maps can update per tick")
+                                .define("enableMapThrottling", true);
+
+                MAP_UPDATES_PER_TICK = BUILDER
+                                .comment("Maximum map texture updates per tick")
+                                .defineInRange("updatesPerTick", 4, 1, 16);
+
+                MAP_UPDATE_DISTANCE = BUILDER
+                                .comment("Distance (in blocks) beyond which maps are deprioritized")
+                                .defineInRange("updateDistance", 32, 8, 128);
+
+                BUILDER.pop();
+
+                // Adaptive Chunk Upload settings
+                BUILDER.comment("Adaptive Chunk Upload - Frame-based chunk upload limiting")
+                                .push("adaptive_chunk_upload");
+
+                ENABLE_ADAPTIVE_CHUNK_UPLOAD = BUILDER
+                                .comment("Enable adaptive chunk upload limiting (Recommended: true)",
+                                                "Uses frame counter instead of milliseconds for better precision")
+                                .define("enableAdaptiveChunkUpload", true);
+
+                BASE_CHUNK_UPLOAD_LIMIT = BUILDER
+                                .comment("Base limit for chunk uploads per frame")
+                                .defineInRange("baseUploadLimit", 4, 1, 16);
 
                 BUILDER.pop();
 

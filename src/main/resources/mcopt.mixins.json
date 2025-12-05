@@ -15,6 +15,12 @@
     "common.SnowLayerBlockMixin",
     "common.SplashPotionItemMixin",
     "common.LookAtPlayerGoalMixin",
+    "common.RecipeManagerMixin",
+    "common.BrainMixin",
+    "common.EntitySleepMixin",
+    "common.PathFinderMixin",
+    "common.CompoundTagMixin",
+    "common.HopperBlockEntityMixin",
     "server.BeeStuckFixMixin",
     "server.EntityPortalMixin",
     "server.EnchantmentMenuMixin",
@@ -37,7 +43,13 @@
     "client.MultiPlayerGameModeMixin",
     "client.SoundEngineMixin",
     "client.SpriteContentsMixin",
-    "client.ItemEntityRendererMixin"
+    "client.ItemEntityRendererMixin",
+    "client.AnimationLODMixin",
+    "client.ParticlePhysicsMixin",
+    "client.SignRendererMixin",
+    "client.MapRendererMixin",
+    "client.ChunkRenderDispatcherMixin",
+    "client.SoundOcclusionCacheMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -56,6 +56,15 @@ public final class FeatureToggles {
                 RenderingConfig.ENABLE_SMART_LEAVES::get,
                 "cull-leaves", "moreculling", "optileaves", "cull-less-leaves");
 
+        register(FeatureKey.ITEM_NBT_SANITIZER,
+                GameplayConfig.ENABLE_ITEM_NBT_SANITIZER::get);
+
+        register(FeatureKey.DAMAGE_TILT_FIX,
+                GameplayConfig.ENABLE_DAMAGE_TILT_FIX::get);
+
+        register(FeatureKey.RIGHT_CLICK_FALLTHROUGH,
+                GameplayConfig.ENABLE_RIGHT_CLICK_FALLTHROUGH::get);
+
         // Add other keys if they were present in incoming but missing here
         // Checked: Incoming had same set.
     }

@@ -3,6 +3,7 @@ package com.randomstrangerpassenger.mcopt;
 import com.randomstrangerpassenger.mcopt.client.MCOPTClient;
 import com.randomstrangerpassenger.mcopt.common.EventRegistrar;
 import com.randomstrangerpassenger.mcopt.common.FeatureInitializer;
+import com.randomstrangerpassenger.mcopt.config.ConfigCacheManager;
 import com.randomstrangerpassenger.mcopt.config.ConfigMigrationHandler;
 import com.randomstrangerpassenger.mcopt.config.ConfigRegistrar;
 import com.randomstrangerpassenger.mcopt.util.FeatureToggles;
@@ -60,6 +61,10 @@ public class MCOPT {
         // Register config migration handlers
         modEventBus.addListener(ConfigMigrationHandler::onConfigLoad);
         modEventBus.addListener(ConfigMigrationHandler::onConfigReload);
+
+        // Register config cache manager (Phase 5 refresh)
+        modEventBus.addListener(ConfigCacheManager::onConfigLoad);
+        modEventBus.addListener(ConfigCacheManager::onConfigReload);
 
         // Register setup event listeners
         modEventBus.addListener(this::commonSetup);

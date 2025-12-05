@@ -60,6 +60,29 @@ public class PerformanceConfig {
         public static final ModConfigSpec.BooleanValue REMOVE_SQUID_RANDOM_MOVEMENT;
         public static final ModConfigSpec.BooleanValue REMOVE_SQUID_FLEE;
 
+        // Particle Physics Optimization
+        public static final ModConfigSpec.BooleanValue ENABLE_SIMPLIFIED_PARTICLE_PHYSICS;
+        public static final ModConfigSpec.IntValue PARTICLE_PHYSICS_SIMPLIFY_DISTANCE;
+
+        // Data Caching Settings (Phase 3)
+        public static final ModConfigSpec.BooleanValue ENABLE_RECIPE_CACHING;
+        public static final ModConfigSpec.IntValue RECIPE_CACHE_SIZE;
+        public static final ModConfigSpec.BooleanValue ENABLE_TAG_CACHING;
+        public static final ModConfigSpec.BooleanValue ENABLE_BIOME_CACHING;
+
+        // AI Optimization Settings (Phase 4)
+        public static final ModConfigSpec.BooleanValue ENABLE_BRAIN_OPTIMIZATION;
+        public static final ModConfigSpec.BooleanValue ENABLE_ENTITY_SLEEPING;
+        public static final ModConfigSpec.IntValue ENTITY_SLEEPING_DISTANCE;
+        public static final ModConfigSpec.BooleanValue ENABLE_PATHFINDING_CACHE;
+        public static final ModConfigSpec.IntValue PATHFINDING_CACHE_SIZE;
+
+        // Roadmap Phase 5
+        public static final ModConfigSpec.BooleanValue ENABLE_ADAPTIVE_LIMITS;
+        public static final ModConfigSpec.IntValue TARGET_FRAME_TIME_MS;
+        public static final ModConfigSpec.BooleanValue ENABLE_NBT_HASH_CACHING;
+        public static final ModConfigSpec.BooleanValue ENABLE_HOPPER_OPTIMIZATION;
+
         static {
                 BUILDER.comment("MCOPT Performance Optimizations Configuration")
                                 .push("performance");
@@ -262,7 +285,121 @@ public class PerformanceConfig {
 
                 BUILDER.pop();
                 BUILDER.pop();
+                // pop for ai_optimizations handled in line 287
+
+                // Particle Physics Optimization settings
+                BUILDER.comment("Particle Physics Optimization - Simplify physics for distant particles")
+                                .push("particle_physics");
+
+                ENABLE_SIMPLIFIED_PARTICLE_PHYSICS = BUILDER
+                                .comment("Enable simplified particle physics for distant particles (Recommended: true)",
+                                                "Reduces collision checks for particles far from the player",
+                                                "Distant smoke/explosions may clip through walls - imperceptible at distance")
+                                .define("enableSimplifiedParticlePhysics", true);
+
+                PARTICLE_PHYSICS_SIMPLIFY_DISTANCE = BUILDER
+                                .comment("Distance (in blocks) beyond which particles use simplified physics",
+                                                "Particles closer than this get full collision detection")
+                                .defineInRange("simplifyDistance", 16, 8, 64);
+
                 BUILDER.pop();
+
+                // continued under performance
+
+                // Data Caching Settings (Phase 3)
+                BUILDER.comment("Data Lookup Caching - Reduce overhead of frequent data queries")
+                                .push("data_caching");
+
+                ENABLE_RECIPE_CACHING = BUILDER
+                                .comment("Enable recipe lookup caching (Recommended: true)",
+                                                "Caches recipe lookup results to speed up crafting and auto-crafting",
+                                                "Optimizes O(n) recipe search to O(1) for repeated lookups")
+                                .define("enableRecipeCaching", true);
+
+                RECIPE_CACHE_SIZE = BUILDER
+                                .comment("Maximum number of cached recipes",
+                                                "Higher values = more memory, better performance for diverse crafting")
+                                .defineInRange("recipeCacheSize", 512, 64, 4096);
+
+                ENABLE_TAG_CACHING = BUILDER
+                                .comment("Enable tag lookup caching (Recommended: true)",
+                                                "Caches tag membership checks (e.g., is block mineable?) for 1 tick",
+                                                "Reduces overhead of frequent tag checks in rendering and logic")
+                                .define("enableTagCaching", true);
+
+                ENABLE_BIOME_CACHING = BUILDER
+                                .comment("Enable biome lookup caching (Recommended: true)",
+                                                "Caches biome lookups per chunk",
+                                                "Reduces overhead of biome checks in rendering and entity AI")
+                                .define("enableBiomeCaching", true);
+
+                BUILDER.pop();
+
+                // continued under performance
+
+                // AI Optimization Settings (Phase 4)
+                BUILDER.comment("AI/Brain Optimization - Reduce entity logic overhead")
+                                .push("ai_optimization");
+
+                ENABLE_BRAIN_OPTIMIZATION = BUILDER
+                                .comment("Enable brain tick optimization (Recommended: true)",
+                                                "Throttles entity brain ticks based on distance and activity",
+                                                "Reduces CPU usage from entity AI processing")
+                                .define("enableBrainOptimization", true);
+
+                ENABLE_ENTITY_SLEEPING = BUILDER
+                                .comment("Enable entity sleeping (Recommended: true)",
+                                                "Distant entities with no interactions will 'sleep' (reduced AI ticks)",
+                                                "Significantly improves performance in worlds with many entities")
+                                .define("enableEntitySleeping", true);
+
+                ENTITY_SLEEPING_DISTANCE = BUILDER
+                                .comment("Distance (in blocks) at which entities can start sleeping")
+                                .defineInRange("sleepingDistance", 48, 16, 256);
+
+                ENABLE_PATHFINDING_CACHE = BUILDER
+                                .comment("Enable pathfinding result caching (Recommended: true)",
+                                                "Caches path calculations to reuse them for similar requests",
+                                                "Optimizes navigation performance for groups of entities")
+                                .define("enablePathfindingCache", true);
+
+                PATHFINDING_CACHE_SIZE = BUILDER
+                                .comment("Maximum number of cached paths")
+                                .defineInRange("pathfindingCacheSize", 128, 32, 1024);
+
+                BUILDER.pop();
+
+                // continued under performance
+
+                // Roadmap Phase 5: Adaptive Systems & Misc
+                BUILDER.comment("Adaptive Systems - Dynamic performance balancing")
+                                .push("adaptive_systems");
+
+                ENABLE_ADAPTIVE_LIMITS = BUILDER
+                                .comment("Enable adaptive performance limits (Recommended: true)",
+                                                "Dynamically adjusts particle/chunk limits based on FPS",
+                                                "Helps maintain stable framerate in heavy scenes")
+                                .define("enableAdaptiveLimits", true);
+
+                TARGET_FRAME_TIME_MS = BUILDER
+                                .comment("Target frame time in milliseconds (16 = 60 FPS)",
+                                                "System will try to keep performance better than this target")
+                                .defineInRange("targetFrameTimeMs", 16, 5, 50);
+
+                ENABLE_NBT_HASH_CACHING = BUILDER
+                                .comment("Enable NBT tag hash caching (Recommended: true)",
+                                                "Speeds up item comparisons significantly",
+                                                "Reduces lag in inventory operations with NBT-heavy items")
+                                .define("enableNbtHashCaching", true);
+
+                ENABLE_HOPPER_OPTIMIZATION = BUILDER
+                                .comment("Enable Hopper optimization (Recommended: false)",
+                                                "Experimental: Reduces hopper lag by optimizing inventory checks",
+                                                "May affect redstone timing in specific edge cases")
+                                .define("enableHopperOptimization", false);
+
+                BUILDER.pop(); // Close adaptive_systems
+                BUILDER.pop(); // Close performance
 
                 SPEC = BUILDER.build();
         }

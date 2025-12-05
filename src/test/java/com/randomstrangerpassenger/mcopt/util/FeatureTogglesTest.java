@@ -55,6 +55,9 @@ class FeatureTogglesTest {
             boolean result4 = FeatureToggles.isEnabled(FeatureKey.DYNAMIC_FPS);
             boolean result5 = FeatureToggles.isEnabled(FeatureKey.BETTER_SNOW_LOGIC);
             boolean result6 = FeatureToggles.isEnabled(FeatureKey.ACTION_GUARD);
+            boolean result7 = FeatureToggles.isEnabled(FeatureKey.ITEM_NBT_SANITIZER);
+            boolean result8 = FeatureToggles.isEnabled(FeatureKey.DAMAGE_TILT_FIX);
+            boolean result9 = FeatureToggles.isEnabled(FeatureKey.RIGHT_CLICK_FALLTHROUGH);
 
             // Results should be valid boolean values
             assertThat(result1).isIn(true, false);
@@ -63,6 +66,9 @@ class FeatureTogglesTest {
             assertThat(result4).isIn(true, false);
             assertThat(result5).isIn(true, false);
             assertThat(result6).isIn(true, false);
+            assertThat(result7).isIn(true, false);
+            assertThat(result8).isIn(true, false);
+            assertThat(result9).isIn(true, false);
         })
                 .as("All feature keys should return boolean values")
                 .doesNotThrowAnyException();
